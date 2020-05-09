@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enviroment</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+    <script src="./js/axios.min.js"></script>
+    <script src="./js/pixi.js"></script>
+    <script src="./js/pixi-filters.js"></script>
+    <script src="./js/pixi-sound.js"></script>
+    <script>
+        /*------------------------------------------------*/
+        var enviro_data = [];
+        var enviro_index = -1;
+        var object_data = [];
+        var load_arr = [];
+        var mode = '';
+        var exam = { now: null, selected: null, Unused: [], answer: [], myanswer: [] };
+        /*------------------------------------------------*/
+        PIXI.settings.RESOLUTION = window.devicePixelRatio || 1;
+        //Aliases
+        let Application = PIXI.Application,
+            Container = PIXI.Container,
+            loader = PIXI.loader,
+            resources = PIXI.loader.resources,
+            TextureCache = PIXI.utils.TextureCache,
+            Sprite = PIXI.Sprite;
+
+        //Create a Pixi Application
+        let app = new Application({
+            width: 1200,
+            height: 625,
+            antialias: true,    // default: false
+            transparent: false, // default: false
+            resolution: 1,       // default: 1            
+        });
+        /*------------------------------------------------*/
+        document.body.appendChild(app.view);
+        var mode_container = new Container();
+        var enviro_menu = new Container();
+        var enviro_container = new Container();
+        var mode_arr = [];
+
+        mode_container.width = 1200;
+        mode_container.height = 625;
+        creatModeBtn("訓練模式", 'training');
+        creatModeBtn("練習模式", 'exercise');
+        creatModeBtn("測驗模式", 'testing');
+        creatModeBtn("編輯模式", 'editor');
+        app.stage.addChild(mode_container);
+
+        function creatModeBtn(text, type) {
+            var btn = new PIXI.Text(text, { fontFamily: 'jf-openhuninn', fontSize: 20, fill: 0xf1f1f1, align: 'center' });
+            btn.interactive = true; // 設定可以互動
+            btn.buttonMode = true; // 當滑鼠滑過時顯示為手指圖示
+            btn.click = function () {
+                mode = type;
+                mode_container.visible = false;
+                enviro_menuCreat();
+            }
+            var order = mode_arr.length;
+            btn.scale.set(1, 1);
+            btn.position.set((mode_container._width - btn.width) / 2, 200 + order * 50);
+            mode_container.addChild(btn);
+            mode_arr.push(btn);
+        }
+
+        function enviro_menuCreat() {
+            enviro_menu = new Container();
+            var btn = new PIXI.Text('back',
+                { fontFamily: 'jf-openhuninn', fontSize: 20, fill: 0xf1f1f1, align: 'center' });
+            btn.interactive = true; // 設定可以互動
+            btn.buttonMode = true; // 當滑鼠滑過時顯示為手指圖示
+            btn.click = function () {
+                mode_container.visible = true;
+                enviro_menu.visible = false;
+            }
+            enviro_menu.addChild(btn);
+            enviro_data.forEach((o, index) => { enviro_menu_object(index); })
+            app.stage.addChild(enviro_menu);
+        }
+
+        function enviro_menu_object(index) {
+
+            var maskGraphic = new PIXI.Graphics();
+            maskGraphic.beginFill(0xff0000); // 遮罩使用不透明色塊
+            maskGraphic.drawRoundedRect(0, 0, 300, 180, 8);
+            maskGraphic.endFill();
+
+            var enviro_option = new Sprite(resources[enviro_data[index].background_src].texture);
+            var scale = 350 / enviro_option.width;
+            enviro_option.scale.set(scale, scale);
+            enviro_option.position.set(-((enviro_option.width - maskGraphic.width) / 2), -((enviro_option.height - maskGraphic.height) / 2));
+            enviro_option.mask = maskGraphic;
+            enviro_option.filters = [new PIXI.filters.GlowFilter(25, 1.6, 0)];
+
+            var btn = new PIXI.Text(enviro_data[index].name,
+                { fontFamily: 'jf-openhuninn', fontSize: 20, fill: 0xf1f1f1, align: 'center' });
+            btn.position.set((maskGraphic.width - btn.width) / 2, 205);
+
+            var option_container = new Container();
+            option_container.addChild(enviro_option);
+            option_container.addChild(maskGraphic);
+            option_container.addChild(btn);
+
+            option_container.interactive = true; // 設定可以互動
+            option_container.buttonMode = true; // 當滑鼠滑過時顯示為手指圖示
+            option_container.click = function () {
+                console.log('click')
+                var enviro_object_data = [];
+                var tmp_arr = enviro_data[index].object.split(",")
+                object_data.forEach(o => {
+                    if (tmp_arr.indexOf(o.id) >= 0) {
+                        enviro_object_data.push(o);
+                    }
+                })
+                switch (mode) {
+                    case 'training':
+                        var enviro = new Training(enviro_data[index], enviro_object_data)
+                        break;
+                    case 'exercise':
+                        var enviro = new Exercise(enviro_data[index], enviro_object_data)
+                        break;
+                    case 'testing':
+                        var enviro = new Exercise(enviro_data[index], enviro_object_data)
+                        break;
+                    case 'editor':
+                        var enviro = new Editor(enviro_data[index], enviro_object_data)
+                        break;
+                    default:
+                        break;
+                }
+                enviro_container = enviro.getEnvironment();
+                enviro_container.position.set(0, 0);
+                var btn = new PIXI.Text('back',
+                    { fontFamily: 'jf-openhuninn', fontSize: 20, fill: 0xf1f1f1, align: 'center' });
+                btn.interactive = true; // 設定可以互動
+                btn.buttonMode = true; // 當滑鼠滑過時顯示為手指圖示
+                btn.click = function () {
+                    enviro_container.destroy();
+                    enviro_menu.visible = true;
+                }
+                btn.position.set(app.screen.width - btn.width, 0);
+                enviro_container.addChild(btn);
+                app.stage.addChild(enviro_container);
+                enviro_menu.visible = false;
+            }
+            option_container.mouseover = function () {
+                btn.style.fill = 0x56c6f5;
+                enviro_option.filters = [new PIXI.filters.GlowFilter(25, 1.6, 0, 0x56c6f5)];
+            }
+            option_container.mouseout = function () {
+                btn.style.fill = 0xf1f1f1;
+                enviro_option.filters = [new PIXI.filters.GlowFilter(25, 1.6, 0)];
+            }
+            option_container.position.set((app.screen.width / 3 - option_container.width) / 2 + (app.screen.width / 3) * index, (app.screen.height - option_container.height) / 2 - 50);
+            enviro_menu.addChild(option_container);
+        }
+
+        class Environment {
+            constructor(enviro_data, object_data) {
+                this.enviro_data = enviro_data;
+                this.object_data = object_data;
+                this.enviro_container = new Container();
+                this.setup();
+            }
+
+            setup() {
+                this.creat_Background();
+                this.creat_Object();
+            }
+
+            creat_Background() {
+                // 新增情境背景並設定大小
+                this.enviro_bg = new Sprite(resources[this.enviro_data.background_src].texture);
+                var scale = (app.screen.width - 200) / this.enviro_bg.width;
+                this.enviro_bg.scale.set(scale, scale);
+                this.enviro_container.addChild(this.enviro_bg);
+            }
+
+            creat_Object() {
+                this.object_data.forEach(object_item => {
+                    var object = new Sprite(resources[object_item.pic_src].texture);
+                    var scale = object_item.size / object.width;
+                    object.scale.set(scale, scale);
+                    var position_arr = object_item.coordinate.split(",");
+                    object.position.set(position_arr[0], position_arr[1]);
+
+                    object.filters = [new PIXI.filters.OutlineFilter(3, 0xf0f8ff)]; //邊框
+
+                    object.interactive = true; // 設定可以互動
+                    object.buttonMode = true; // 當滑鼠滑過時顯示為手指圖示
+                    object.mouseover = function () { object.filters = [new PIXI.filters.OutlineFilter(3, 0x99ff99)]; }
+                    object.mouseout = function () { object.filters = [new PIXI.filters.OutlineFilter(3, 0xf0f8ff)]; }
+                    this.enviro_container.addChild(object);
+                    object_item.sprite = object;
+                });
+            }
+
+            getEnvironment() {
+                return this.enviro_container;
+            }
+        }
+
+        class EditorUI {
+            constructor() {
+                this.scaleSlider();
+            }
+
+            scaleSlider() {
+
+                this.bar = new PIXI.Graphics();
+                this.bar.beginFill(0xFF00BB, 1);
+                this.bar.drawRoundedRect(1040, 90, 120, 8, 4);
+                this.bar.endFill();
+
+                this.dot = new PIXI.Graphics();
+                // this.dot.lineStyle(0);
+                this.dot.beginFill(0x5555ff, 1);
+                this.dot.drawCircle(1042, 94, 8);
+                this.dot.endFill();
+
+
+            }
+        }
+
+        class Editor extends Environment {
+            setup() {
+                super.setup();
+                var editorUI = new EditorUI();
+                this.enviro_container.addChild(editorUI.bar);
+                this.enviro_container.addChild(editorUI.dot);
+
+            }
+
+            creat_Object() {
+                super.creat_Object();
+                this.object_data.forEach(object_item => {
+                    // object_item.sprite.click = function () {
+                    //     this.selectedObj = object_item.sprite;
+                    // }
+                    object_item.sprite
+                        .on('mousedown', this.onDragStart)
+                        .on('mouseup', this.onDragEnd)
+                        .on('mouseupoutside', this.onDragEnd)
+                        .on('mousemove', this.onDragMove)
+                });
+            }
+
+            onDragStart(event) {
+                this.data = event.data;
+                this.alpha = 0.7;
+                this.dragging = true;
+
+                this.offset_x = this.data.getLocalPosition(this.parent).x - this.position._x;
+                this.offset_y = this.data.getLocalPosition(this.parent).y - this.position._y;
+            }
+
+            onDragEnd() {
+                this.alpha = 1;
+                this.dragging = false;
+                this.data = null;
+            }
+
+            onDragMove() {
+                if (this.dragging) {
+                    var newPosition = this.data.getLocalPosition(this.parent);
+                    this.position.x = newPosition.x - this.offset_x;
+                    this.position.y = newPosition.y - this.offset_y;
+                }
+            }
+        }
+
+        class Training extends Environment {
+
+            creat_Object() {
+                super.creat_Object();
+                this.object_data.forEach(object_item => {
+                    object_item.sprite.click = function () {
+                        PIXI.sound.stopAll();
+                        PIXI.sound.add(object_item.audio.audio_id, resources[object_item.audio.sound_src]);
+                        PIXI.sound.play(object_item.audio.audio_id);
+                    }
+                });
+            }
+        }
+
+        class ExerciseUI {
+            constructor() {
+                this.playAudioBtn();
+                this.nextBtn();
+            }
+
+            playAudioBtn() {
+                this.playbtn = new PIXI.Text("播放",
+                    { fontFamily: 'jf-openhuninn', fontSize: 20, fill: 0xf1f1f1, align: 'center' });
+                this.playbtn.interactive = true; // 設定可以互動
+                this.playbtn.buttonMode = true; // 當滑鼠滑過時顯示為手指圖示
+                this.playbtn.position.set(1000, 0);
+            }
+
+            nextBtn() {
+                this.nextbtn = new PIXI.Text("下一題",
+                    { fontFamily: 'jf-openhuninn', fontSize: 20, fill: 0xf1f1f1, align: 'center' });
+                this.nextbtn.interactive = true; // 設定可以互動
+                this.nextbtn.buttonMode = true; // 當滑鼠滑過時顯示為手指圖示
+                this.nextbtn.position.set(1060, 0);
+            }
+        }
+
+        class Exercise extends Environment {
+
+            question_prepare() {
+                this.exam = { now: null, selected: null, Unused: [], answer: [], myanswer: [] };
+                this.object_data.forEach((o, index) => {
+                    this.exam.Unused.push(index);
+                })
+            }
+
+            next_question() {
+                this.exam.selected = null;
+                this.exam.now = this.exam.Unused[Math.round(Math.random() * this.exam.Unused.length) % this.exam.Unused.length];
+                this.exam.Unused.splice(this.exam.Unused.indexOf(this.exam.now), 1);
+            }
+
+            setup() {
+                this.question_prepare();
+                this.next_question();
+                super.setup();
+                this.UIEvent();
+
+            }
+
+            UIEvent() {
+                var enviro = this;
+                var exerciseUI = new ExerciseUI();
+                exerciseUI.playbtn.click = function () {
+                    PIXI.sound.stopAll();
+                    PIXI.sound.add(enviro.object_data[enviro.exam.now].audio.audio_id, resources[enviro.object_data[enviro.exam.now].audio.sound_src]);
+                    PIXI.sound.play(enviro.object_data[enviro.exam.now].audio.audio_id);
+                }
+                this.enviro_container.addChild(exerciseUI.playbtn);
+                exerciseUI.nextbtn.click = function () {
+                    PIXI.sound.stopAll();
+                    if (enviro.exam.selected != null) {
+                        enviro.exam.answer.push(enviro.exam.now);
+                        enviro.exam.myanswer.push(enviro.exam.selected);
+                        enviro.exam.selected = null;
+                        enviro.exam.now = enviro.exam.Unused[Math.round(Math.random() * enviro.exam.Unused.length) % enviro.exam.Unused.length];
+                        enviro.exam.Unused.splice(enviro.exam.Unused.indexOf(enviro.exam.now), 1);
+                    }
+                    else {
+                        alert('尚未作答');
+                    }
+                }
+                this.enviro_container.addChild(exerciseUI.nextbtn);
+            }
+
+            creat_Object() {
+                super.creat_Object();
+                var enviro = this;
+                this.object_data.forEach(object_item => {
+                    object_item.sprite.click = function () {
+                        enviro.exam.selected = object_item.id;
+                        console.log(enviro.exam.selected);
+                    }
+                });
+            }
+        }
+
+        function setup() {
+            console.log('ready');
+        }
+
+        async function RequestDataAndLoad() {
+
+            // 請求情境的資料
+            await call_enviro_data()
+                .then((returnVal) => { console.log('<--finish call enviro data-->'); })
+                .catch(err => console.log("Axios err: ", err));
+
+            // 請求情境物件的資料
+            await call_object_data(getObject_arr())
+                .then((returnVal) => { console.log('<--finish call object data-->'); })
+                .catch(err => console.log("Axios err: ", err));
+
+            // 請求情境物件聲音的資料
+            await call_audio_data(getAudio_arr())
+                .then((returnVal) => { console.log('<--finish call audio data-->'); })
+                .catch(err => console.log("Axios err: ", err));
+
+            // 將需加載的資源放入陣列
+            load_arr = [];
+            enviro_data.forEach(data => { load_arr.push(data.background_src) });
+            object_data.forEach(object => {
+                load_arr.push(object.pic_src);
+                load_arr.push(object.audio.sound_src);
+            });
+
+            // 加載資源並執行情境設定
+            loader
+                .add(load_arr)
+                .load(setup);
+        }
+
+        //取得情境物件內所包含的聲音ID
+        function getAudio_arr() {
+            var audio_arr = [];
+            object_data.forEach(object => {
+                audio_arr.push(object.sound_src);
+            });
+            return audio_arr;
+        }
+
+        //取得情境內所包含的物件ID
+        function getObject_arr() {
+            var object_arr = [];
+            enviro_data.forEach(data => {
+                var tmp = object_arr;
+                object_arr = tmp.concat(data.object.split(","));
+            });
+            return object_arr;
+        }
+
+        /*------------------------------------------------*/
+
+        function call_enviro_data() {
+            return axios.get('./php/test.php', { params: { type: "enviro" } })
+                .then((res) => {
+                    // console.log(res.data);
+                    enviro_data = res.data;
+                })
+                .catch((error) => { console.error(error) })
+        }
+
+        function call_object_data(object_arr) {
+            return axios.get('./php/test.php', { params: { type: "object", data: object_arr } })
+                .then((res) => {
+                    // console.log(res.data);
+                    object_data = res.data;
+                })
+                .catch((error) => { console.error(error) })
+        }
+
+        function call_audio_data(audio_arr) {
+            return axios.get('./php/test.php', { params: { type: "audio", data: audio_arr } })
+                .then((res) => {
+                    // console.log(res.data);
+                    var audio_data = res.data;
+                    object_data.forEach(object => {
+                        audio_data.forEach(audio => {
+                            if (object.sound_src == audio.id)
+                                object.audio = audio;
+                        });
+                    });
+                })
+                .catch((error) => { console.error(error) })
+        }
+
+        /*------------------------------------------------*/
+        RequestDataAndLoad();
+    </script>
+</body>
+
+</html>

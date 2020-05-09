@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="./css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta charset="utf-8">
+    <style>
+        #envrio {
+            position: absolute;
+            left: 256px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <v-app id="inspire">
+            <v-card height="100%">
+                <v-navigation-drawer absolute permanent left width="256px">
+                    <template v-slot:prepend>
+                        <v-list-item two-line>
+                            <v-list-item-content>
+                                <v-list-item-title>Title</v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                    </template>
+
+                    <v-divider></v-divider>
+
+                    <v-list>
+                        <v-list-item v-for="item in items" :key="item.title" @click="test">
+                            <v-list-item-icon>
+                                <v-icon>{{ item.icon }}</v-icon>
+                            </v-list-item-icon>
+
+                            <v-list-item-content>
+                                <v-list-item-title>{{ item.title }}</v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                    </v-list>
+                </v-navigation-drawer>
+                <canvas id="envrio"></canvas>
+                <v-navigation-drawer absolute permanent right width="320px">
+                    <template v-slot:prepend>
+                        <v-list-item two-line>
+                            <v-list-item-content>
+                                <v-list-item-title>Edit Area</v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                    </template>
+
+                    <v-divider></v-divider>
+                    <v-list-item>
+                        <v-list-item-content>
+                            <v-btn class="mb-6" block :loading="loading" :disabled="loading"
+                                @click="loader = 'loading'">
+                                New Object
+                            </v-btn>
+                            <v-text-field v-model="object.name" label="Name" outlined clearable hide-details>
+                            </v-text-field>
+                            <v-row class="mt-2">
+                                <v-col>
+                                    <v-text-field v-model=" object.position.x" label="Position-X" dense outlined>
+                                    </v-text-field>
+                                </v-col>
+                                <v-col>
+                                    <v-text-field v-model="object.position.y" label="Position-Y" dense outlined>
+                                    </v-text-field>
+                                </v-col>
+                            </v-row>
+
+                            <v-slider class="mt-0 pa-0" v-model="object.degree" min="0" max="360" label="Degree"
+                                :thumb-size="24" thumb-label="always" hide-details>
+                            </v-slider>
+
+                            <v-file-input class="mb-6 mt-4" label="Image File" dense outlined hide-details
+                                v-model="object.imagefile">
+                            </v-file-input>
+
+
+                            <v-row no-gutters class="mb-4">
+                                <v-col class="mr-2" cols="12" sm="5">
+                                    <v-select v-model="object.audio.type" :items="audio_type_arr" label="Audio type"
+                                        dense outlined hide-details>
+                                    </v-select>
+                                </v-col>
+                                <v-col class="mr-0" cols="12" sm="5">
+                                    <v-select v-model="object.audio.name" :items="audio_name_arr" label="Audio name"
+                                        dense outlined hide-details>
+                                    </v-select>
+                                </v-col>
+                                <v-col cols="12" sm="1">
+                                    <v-btn icon @click="playAudio">
+                                        <v-icon>volume_up</v-icon>
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                        </v-list-item-content>
+                    </v-list-item>
+                    <v-footer absolute padless color="rgba(0, 0, 0, 0)" class="font-weight-medium">
+                        <v-list-item>
+                            <v-list-item-content>
+                                <v-row>
+                                    <v-col class="pt-0 pb-0">
+                                        <v-btn block :loading="loading" :disabled="loading" color="secondary"
+                                            @click="loader = 'loading'">
+                                            Save
+                                        </v-btn>
+                                    </v-col>
+                                    <v-col class="pt-0 pb-0">
+                                        <v-btn block :loading="loading" :disabled="loading" color="error"
+                                            @click="loader = 'loading'">
+                                            Delete
+                                        </v-btn>
+                                    </v-col>
+                                </v-row>
+                    </v-footer>
+                    </v-list-item-content>
+                    </v-list-item>
+                </v-navigation-drawer>
+            </v-card>
+        </v-app>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="./js/axios.min.js"></script>
+    <script src="./js/pixi.js"></script>
+    <script src="./js/pixi-filters.js"></script>
+    <script src="./js/pixi-sound.js"></script>
+    <script src="./js/envrio.js"></script>
+    <script>
+        var editor = new Vue({
+            el: '#app',
+            vuetify: new Vuetify(),
+            data() {
+                return {
+                    loader: null,
+                    loading: false,
+                    items: [
+                        { title: 'Home', icon: 'mdi-home-city' },
+                        { title: 'My Account', icon: 'mdi-account' },
+                        { title: 'Users', icon: 'mdi-account-group-outline' },
+                    ],
+                    audio_data: null,
+                    audio_type_arr: [],
+                    audio_name_arr: [],
+                    object: {
+                        id: null,
+                        name: null,
+                        degree: null,
+                        position: { x: null, y: null },
+                        imagefile: null,
+                        audio_type: null,
+                        audio_name: null,
+                        audio_src: null,
+                        audio: { type: null, name: null, src: null, id: null }
+                    },
+                    t: new PIXI.Container()
+                }
+            },
+            methods: {
+                test: function (event) {
+                    console.log('click')
+                },
+                getAudio_type_arr: function (event) {
+                    var app = this;
+                    app.audio_type_arr.push("全部");
+                    audio_data.forEach(element => {
+                        var tmp_arr = element.category.split(";");
+                        tmp_arr.forEach(item => {
+                            app.audio_type_arr.push(item);
+                        })
+                    });
+                },
+                getAudio_name_arr: function (event) {
+                    var app = this;
+                    app.audio_name_arr = []
+                    audio_data.forEach(element => {
+                        if (app.object.audio.type == "全部")
+                            app.audio_name_arr.push(element.name);
+                        else if (element.category.indexOf(app.object.audio.type) != -1) {
+                            app.audio_name_arr.push(element.name)
+                        }
+                    });
+                },
+                playAudio: function (event) {
+                    var app = this;
+                    console.log(app.object.audio.id)
+                    PIXI.sound.stopAll();
+                    PIXI.sound.add(app.object.audio.id, resources[app.object.audio.src]);
+                    PIXI.sound.play(app.object.audio.id);
+                },
+            },
+            watch: {
+                object: {
+                    handler(val) {
+                        this.t.position.x = this.object.position.x;
+                        this.t.position.y = this.object.position.y;
+                        this.t.rotation = this.object.degree * (Math.PI / 180);
+                        this.getAudio_name_arr();
+                        console.log(object_data);
+                        var app = this;
+                        object_data.forEach(item => {
+                            if (item.id == app.object.id) {
+                                // item.audio.category = 
+                            }
+                        })
+                    },
+                    deep: true
+                }
+            },
+            created: function () {
+                axios.get('./php/test.php', { params: { type: "audio_data" } })
+                    .then((res) => {
+                        console.log(res.data);
+                        audio_data = res.data;
+                        this.getAudio_type_arr()
+                    })
+                    .catch((error) => { console.error(error) })
+            }
+        })
+    </script>
+
+    <script src="./js/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,18 @@
+@font-face {
+    font-family: "jf-openhuninn";
+    src: url('../res/font/jf-openhuninn-1.0.ttf');
+}
+*{
+    margin: 0;
+    padding: 0;
+}
+#nav{
+    position: relative;
+    top: 0;
+    width: 100vw;
+    height: 30px;
+}
+button{
+    width: 60px;
+    height: 30px;
+}
