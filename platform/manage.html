@@ -57,41 +57,59 @@
                     <v-divider></v-divider>
                     <v-list-item>
                         <v-list-item-content>
-                            <v-btn class="mb-6" block :loading="loading" :disabled="loading"
+                            <v-btn class="mb-4" block :loading="loading" :disabled="loading"
                                 @click="loader = 'loading'">
                                 New Object
                             </v-btn>
+
+                            <v-btn class="mb-4" block :loading="loading" :disabled="loading" color="secondary"
+                                @click="img_profile.dialog = true">
+                                Select Image
+                            </v-btn>
                             <v-text-field v-model="object.name" label="Name" outlined clearable hide-details>
                             </v-text-field>
-                            <v-row class="mt-2">
+                            <v-row class="mt-1">
                                 <v-col>
-                                    <v-text-field v-model=" object.position.x" label="Position-X" dense outlined>
+                                    <v-text-field v-model=" object.position.x" label="Position-X" dense outlined
+                                        hide-details>
                                     </v-text-field>
                                 </v-col>
                                 <v-col>
-                                    <v-text-field v-model="object.position.y" label="Position-Y" dense outlined>
+                                    <v-text-field v-model="object.position.y" label="Position-Y" dense outlined
+                                        hide-details>
                                     </v-text-field>
                                 </v-col>
                             </v-row>
 
-                            <v-slider class="mt-0 pa-0" v-model="object.degree" min="0" max="360" label="Degree"
-                                :thumb-size="24" thumb-label="always" hide-details>
+                            <v-slider class="mb-4 mt-2" class="align-center" v-model="object.scale" :max="20"
+                                :min="0.0001" step="0.0001" prepend-icon="aspect_ratio" hide-details>
+                                <template v-slot:append>
+                                    <v-text-field v-model="object.scale" class="mt-0 pt-0" hide-details single-line
+                                        type="number" style="width: 60px"></v-text-field>
+                                </template>
                             </v-slider>
 
-                            <v-file-input class="mb-6 mt-4" label="Image File" dense outlined hide-details
+                            <v-slider class="mt-0 pa-0" v-model="object.degree" min="0" max="360"
+                                prepend-icon="rotate_90_degrees_ccw" hide-details>
+                                <template v-slot:append>
+                                    <v-text-field v-model="object.degree" class="mt-0 pt-0" hide-details single-line
+                                        type="number" style="width: 60px"></v-text-field>
+                                </template>
+                            </v-slider>
+
+                            <!-- <v-file-input class="mb-6 mt-4" label="Image File" dense outlined hide-details
                                 v-model="object.imagefile">
-                            </v-file-input>
+                            </v-file-input> -->
 
-
-                            <v-row no-gutters class="mb-4">
+                            <v-row no-gutters class="mb-4 mt-4">
                                 <v-col class="mr-2" cols="12" sm="5">
-                                    <v-select v-model="object.audio.type" :items="audio_type_arr" label="Audio type"
-                                        dense outlined hide-details>
+                                    <v-select v-model="audio_type" :items="audio_type_arr" label="Audio type" dense
+                                        outlined hide-details>
                                     </v-select>
                                 </v-col>
                                 <v-col class="mr-0" cols="12" sm="5">
-                                    <v-select v-model="object.audio.name" :items="audio_name_arr" label="Audio name"
-                                        dense outlined hide-details>
+                                    <v-select v-model="object.audio" :items="audioName" item-text="name"
+                                        label="Audio name" dense outlined hide-detail return-object>
                                     </v-select>
                                 </v-col>
                                 <v-col cols="12" sm="1">
@@ -100,6 +118,7 @@
                                     </v-btn>
                                 </v-col>
                             </v-row>
+
                         </v-list-item-content>
                     </v-list-item>
                     <v-footer absolute padless color="rgba(0, 0, 0, 0)" class="font-weight-medium">
@@ -124,6 +143,66 @@
                     </v-list-item>
                 </v-navigation-drawer>
             </v-card>
+
+            <v-dialog v-model="img_profile.dialog" persistent max-width="1000px">
+                <v-card>
+                    <v-card-title>
+                        <span class="headline">Image Gallery</span>
+                        <v-spacer></v-spacer>
+                        <v-btn icon @click="img_profile.dialog = false">
+                            <v-icon color="grey lighten-1">mdi-check</v-icon>
+                        </v-btn>
+                    </v-card-title>
+                    <v-tabs v-model="img_profile.tab" background-color="transparent" color="basil" grow>
+                        <v-tab>
+                            Colud
+                        </v-tab>
+                        <v-tab>
+                            Import from your computer
+                        </v-tab>
+                    </v-tabs>
+
+                    <v-tabs-items v-model="img_profile.tab">
+                        <v-tab-item>
+                            <v-card>
+                                <v-container fluid>
+                                    <v-row dense>
+                                        <v-col v-for="card in 6" :key="card.title" cols="4">
+                                            <v-card class="ma-2 pa-0">
+                                                <v-img :aspect-ratio="16/9" height="180" width="320"
+                                                    src="https://cdn.vuetifyjs.com/images/parallax/material.jpg"
+                                                    @click="img_profile.overlay = !img_profile.overlay">
+                                                    <v-overlay :absolute="img_profile.absolute"
+                                                        :value="img_profile.overlay">
+                                                        <v-card-text>Hide Overlay</v-card-text>
+                                                    </v-overlay>
+                                                </v-img>
+                                            </v-card>
+                                        </v-col>
+                                    </v-row>
+                                </v-container>
+                            </v-card>
+                        </v-tab-item>
+                        <v-tab-item>
+                            <v-card>
+                                <v-file-input v-model="img_profile.files" color="deep-purple accent-4" counter
+                                    label="File input" multiple placeholder="Select your files"
+                                    prepend-icon="mdi-paperclip" outlined :show-size="1000">
+                                    <template v-slot:selection="{ index, text }">
+                                        <v-chip v-if="index < 2" color="deep-purple accent-4" dark label small>
+                                            {{ text }}
+                                        </v-chip>
+
+                                        <span v-else-if="index === 2" class="overline grey--text text--darken-3 mx-2">
+                                            +{{ img_profile.files.length - 2 }} File(s)
+                                        </span>
+                                    </template>
+                                </v-file-input>
+                            </v-card>
+                        </v-tab-item>
+                    </v-tabs-items>
+                </v-card>
+            </v-dialog>
         </v-app>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
@@ -149,18 +228,38 @@
                     audio_data: null,
                     audio_type_arr: [],
                     audio_name_arr: [],
+                    audio_type: null,
                     object: {
                         id: null,
                         name: null,
+                        scale: null,
                         degree: null,
                         position: { x: null, y: null },
                         imagefile: null,
-                        audio_type: null,
-                        audio_name: null,
-                        audio_src: null,
-                        audio: { type: null, name: null, src: null, id: null }
+                        audio: { name: null, category: null },
+                        sound_src: null,
                     },
-                    t: new PIXI.Container()
+                    img_profile: {
+                        dialog: true,
+                        absolute: true,
+                        overlay: false,
+                        files: [],
+                    },
+                    t: new PIXI.Container(),
+                    using_object: [],
+                }
+            },
+            computed: {
+                audioName() {
+                    var app = this;
+                    if (app.audio_type != '全部' && app.audio_type != null) {
+                        return app.audio_data.filter(item => {
+                            return item.category == app.audio_type;
+                        })
+                    }
+                    else if (app.audio_type != null) {
+                        return app.audio_data;
+                    }
                 }
             },
             methods: {
@@ -170,7 +269,7 @@
                 getAudio_type_arr: function (event) {
                     var app = this;
                     app.audio_type_arr.push("全部");
-                    audio_data.forEach(element => {
+                    app.audio_data.forEach(element => {
                         var tmp_arr = element.category.split(";");
                         tmp_arr.forEach(item => {
                             app.audio_type_arr.push(item);
@@ -180,7 +279,7 @@
                 getAudio_name_arr: function (event) {
                     var app = this;
                     app.audio_name_arr = []
-                    audio_data.forEach(element => {
+                    app.audio_data.forEach(element => {
                         if (app.object.audio.type == "全部")
                             app.audio_name_arr.push(element.name);
                         else if (element.category.indexOf(app.object.audio.type) != -1) {
@@ -202,23 +301,26 @@
                         this.t.position.x = this.object.position.x;
                         this.t.position.y = this.object.position.y;
                         this.t.rotation = this.object.degree * (Math.PI / 180);
-                        this.getAudio_name_arr();
-                        console.log(object_data);
-                        var app = this;
-                        object_data.forEach(item => {
-                            if (item.id == app.object.id) {
-                                // item.audio.category = 
-                            }
-                        })
+                        this.t.scale.set(this.object.scale, this.object.scale);
+
+                        // this.getAudio_name_arr();
+                        // this.object.audio.name
+                        // console.log(object_data);
+                        // var app = this;
+                        // object_data.forEach(item => {
+                        //     if (item.id == app.object.id) {
+                        //         // item.audio.category = 
+                        //     }
+                        // })
                     },
                     deep: true
-                }
+                },
             },
             created: function () {
                 axios.get('./php/test.php', { params: { type: "audio_data" } })
                     .then((res) => {
                         console.log(res.data);
-                        audio_data = res.data;
+                        this.audio_data = res.data;
                         this.getAudio_type_arr()
                     })
                     .catch((error) => { console.error(error) })

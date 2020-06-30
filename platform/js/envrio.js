@@ -61,13 +61,15 @@ class Editor extends Environment {
                 object_item.sprite.mouseout = null
                 object_item.sprite.filters = [new PIXI.filters.OutlineFilter(3, 0x11aaff)];
                 editor.t = object_item.sprite;
+                editor.enviro_object = object_item;
                 editor.object.id = object_item.id;
                 editor.object.name = object_item.name;
                 editor.object.degree = object_item.sprite.rotation * (180 / Math.PI);
-                editor.object.audio.type = object_item.audio.category;
-                editor.object.audio.name = object_item.audio.name;
-                editor.object.audio.src = object_item.audio.sound_src;
-                editor.object.audio.id = object_item.audio.id;
+                editor.audio_type = object_item.audio.category;
+                editor.object.audio = object_item.audio;
+                editor.object.scale = object_item.sprite.scale.x;
+                console.log(object_item)
+                // console.log(object_item.sprite.scale.x)
             }
             object_item.sprite
                 .on('mousedown', this.onDragStart)

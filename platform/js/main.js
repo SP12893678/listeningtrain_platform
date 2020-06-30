@@ -2,6 +2,8 @@ var enviro_data = [];
 var enviro_index = 0;
 var object_data = [];
 var load_arr = [];
+var enviro_object_data = [];
+var enviro = null;
 /*------------------------------------------------*/
 PIXI.settings.RESOLUTION = window.devicePixelRatio || 1;
 //Aliases
@@ -26,14 +28,13 @@ RequestDataAndLoad();
 
 function setup() {
   console.log('ready');
-  var enviro_object_data = [];
   var tmp_arr = enviro_data[enviro_index].object.split(",")
   object_data.forEach(o => {
     if (tmp_arr.indexOf(o.id) >= 0) {
       enviro_object_data.push(o);
     }
   })
-  var enviro = new Editor(enviro_data[enviro_index], enviro_object_data);
+  enviro = new Editor(enviro_data[enviro_index], enviro_object_data);
   var enviro_container = enviro.getEnvironment();
   enviro_container.position.set(0, 0);
   app.stage.addChild(enviro_container);
