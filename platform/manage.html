@@ -187,7 +187,7 @@
                             <v-card>
                                 <v-file-input v-model="img_profile.files" color="deep-purple accent-4" counter
                                     label="File input" multiple placeholder="Select your files"
-                                    prepend-icon="mdi-paperclip" outlined :show-size="1000">
+                                    prepend-icon="mdi-paperclip" outlined :show-size="1000" @change="onChange($event)">
                                     <template v-slot:selection="{ index, text }">
                                         <v-chip v-if="index < 2" color="deep-purple accent-4" dark label small>
                                             {{ text }}
@@ -198,6 +198,22 @@
                                         </span>
                                     </template>
                                 </v-file-input>
+                                <v-container fluid>
+                                    <v-row dense justify="space-around">
+                                        <v-col v-for="item in img_profile.local">
+                                            <v-card class="ma-0 pa-0" min-width="150" min-height="150" max-width="150"
+                                                max-height="150">
+                                                <v-img :aspect-ratio="1" :src="item"
+                                                    @click="img_profile.overlay = !img_profile.overlay">
+                                                    <v-overlay :absolute="img_profile.absolute"
+                                                        :value="img_profile.overlay">
+                                                        <v-card-text>Hide Overlay</v-card-text>
+                                                    </v-overlay>
+                                                </v-img>
+                                            </v-card>
+                                        </v-col>
+                                    </v-row>
+                                </v-container>
                             </v-card>
                         </v-tab-item>
                     </v-tabs-items>
@@ -244,6 +260,8 @@
                         absolute: true,
                         overlay: false,
                         files: [],
+                        local: [],
+                        selected: null,
                     },
                     t: new PIXI.Container(),
                     using_object: [],
@@ -263,7 +281,7 @@
                 }
             },
             methods: {
-                test: function (event) {
+                test(event) {
                     console.log('click')
                 },
                 getAudio_type_arr: function (event) {
@@ -289,11 +307,27 @@
                 },
                 playAudio: function (event) {
                     var app = this;
-                    console.log(app.object.audio.id)
+                    console.log(app.object.audio.audio_id)
+                    console.log(app.object.audio.sound_src)
                     PIXI.sound.stopAll();
-                    PIXI.sound.add(app.object.audio.id, resources[app.object.audio.src]);
-                    PIXI.sound.play(app.object.audio.id);
+                    PIXI.sound.add(app.object.audio.audio_id, resources[app.object.audio.sound_src]);
+                    PIXI.sound.play(app.object.audio.audio_id);
                 },
+                onChange: function (event) {
+                    console.log(event)
+                    console.log(event.length + "A")
+                    event.forEach(file => {
+                        var reader = new FileReader();
+
+                        var app = this;
+                        reader.onload = function (event) {
+                            // 文件里的文本会在这里被打印出来
+                            console.log(event)
+                            app.img_profile.local.push(event.target.result)
+                        };
+                        reader.readAsDataURL(file);
+                    })
+                }
             },
             watch: {
                 object: {

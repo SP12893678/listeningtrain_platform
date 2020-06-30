@@ -54,16 +54,16 @@ async function RequestDataAndLoad() {
     .catch(err => console.log("Axios err: ", err));
 
   // 請求情境物件聲音的資料
-  await call_audio_data(getAudio_arr())
-    .then((returnVal) => { console.log('<--finish call audio data-->'); })
-    .catch(err => console.log("Axios err: ", err));
+  // await call_audio_data(getAudio_arr())
+  //   .then((returnVal) => { console.log('<--finish call audio data-->'); })
+  //   .catch(err => console.log("Axios err: ", err));
 
   // 將需加載的資源放入陣列
   load_arr = [];
   enviro_data.forEach(data => { load_arr.push(data.background_src) });
   object_data.forEach(object => {
     load_arr.push(object.pic_src);
-    load_arr.push(object.audio.sound_src);
+    // load_arr.push(object.audio.sound_src);
   });
 
   // 加載資源並執行情境設定
