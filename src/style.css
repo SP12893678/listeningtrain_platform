@@ -1,0 +1,11 @@
+@font-face {
+    font-family: 'jf-openhuninn';
+    src: url('./assets/font/jf-openhuninn-1.0.woff');
+}
+* {
+    font-family: 'jf-openhuninn';
+}
+
+.border {
+    border: 5px dashed #116eff;
+}
