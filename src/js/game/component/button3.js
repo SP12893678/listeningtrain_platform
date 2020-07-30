@@ -10,54 +10,54 @@ let Application = PIXI.Application,
 /**
  * A button component 
  * @constructor
- * @param {number} width - The width of the button
- * @param {number} height - The height of the button
- * @param {number} border - The border of the button
+ * @param {number} btnWidth - The btnWidth of the button
+ * @param {number} btnHeight - The btnHeight of the button
+ * @param {number} btnBorder - The border of the button
  * @param {number} cornerRadius - The corner radius of the button
- * @param {number} backgroundColor - The background color of the button
- * @param {string} label - The label(Text) of the button
+ * @param {number} btnBgColor - The background color of the button
+ * @param {string} btnLabel - The label(Text) of the button
  */
-export default class Button3 {
-    constructor(width, height, label) {
-        this.width = width;
-        this.height = height;
-        this.border = 4;
-        this.borderColor = "0xFFFFFF";
+export default class Button3 extends PIXI.Container {
+    constructor(btnWidth, btnHeight, label) {
+        super();
+        this.btnWidth = btnWidth;
+        this.btnHeight = btnHeight;
+        this.btnBorder = 4;
+        this.btnBorderColor = "0xFFFFFF";
         this.cornerRadius = 30;
-        this.backgroundColor = "0x000000";
-        this.label = label;
-        this.container = new PIXI.Container();
+        this.btnBgColor = "0x000000";
+        this.btnLabel = label;
         this.setButton();
         this.setText();
-        this.container.interactive = true;
-        this.container.buttonMode = true;
-        this.container.mouseover = function(mouseData) {
+        this.interactive = true;
+        this.btnMode = true;
+        this.mouseover = function(mouseData) {
             this.alpha = 0.95;
         }
-        this.container.mouseout = function(mouseData) {
+        this.mouseout = function(mouseData) {
             this.alpha = 1;
         }
     }
 
     setButton(){
        /* Draws a button */
-       this.button = new PIXI.Graphics();
-       this.button.lineStyle(this.border,this.borderColor);
-       this.button.beginFill(this.backgroundColor,0.8);//填充
-       this.button.drawRoundedRect(0,0,this.width,this.height,this.cornerRadius);
-       this.button.endFill();
-       this.container.addChild(this.button);
+       this.btn = new PIXI.Graphics();
+       this.btn.lineStyle(this.btnBorder,this.btnBorderColor);
+       this.btn.beginFill(this.btnBgColor,0.8);//填充
+       this.btn.drawRoundedRect(0,0,this.btnWidth,this.btnHeight,this.cornerRadius);
+       this.btn.endFill();
+       this.addChild(this.btn);
     }
     setBorder(border){
-        this.border = border;
+        this.btnBorder = border;
         this.reDraw();
     }
     setBorderColor(borderColor){
-        this.borderColor = borderColor;
+        this.btnBorderColor = borderColor;
         this.reDraw();
     }
     setBackgroundColor(backgroundColor){
-        this.backgroundColor = backgroundColor;
+        this.btnBgColor = backgroundColor;
         this.reDraw();
     }
     setCornerRadius(cornerRadius){
@@ -65,21 +65,21 @@ export default class Button3 {
         this.reDraw();
     }
     reDraw(){
-        this.button.clear();
-        this.button.lineStyle(this.border,this.borderColor);
-        this.button.beginFill(this.backgroundColor);//填充
-        this.button.drawRoundedRect(0,0,this.width,this.height,this.cornerRadius);
-        this.button.endFill();
+        this.btn.clear();
+        this.btn.lineStyle(this.btnBorder,this.btnBorderColor);
+        this.btn.beginFill(this.btnBgColor);//填充
+        this.btn.drawRoundedRect(0,0,this.btnWidth,this.btnHeight,this.cornerRadius);
+        this.btn.endFill();
     }
     setText(){
-        var text = new PIXI.Text(this.label, {
+        var text = new PIXI.Text(this.btnLabel, {
             fontFamily: 'Noto Sans TC',
-            fontSize: this.height*0.5,
+            fontSize: this.btnHeight*0.5,
             fill: 0xf1f1f1,
             align: 'center',
             fontWeight: '400',
         })
-        text.position.set((this.width - text.width) / 2, (this.height - text.height) / 2);
-        this.container.addChild(text);
+        text.position.set((this.btnWidth - text.width) / 2, (this.btnHeight - text.height) / 2);
+        this.addChild(text);
     }
 }
