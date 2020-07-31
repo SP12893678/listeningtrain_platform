@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
+import { style2 }  from '@/js/game/engine/TextStyleManager'
 import Config from '@/js/game/Config'
 import Scene from '@/js/game/engine/Scene'
 import Events from '@/js/game/Events'
@@ -9,7 +10,6 @@ import SettingMenu from 'Component/SettingMenu'
 import { GlowFilter } from 'pixi-filters'
 import character from '@/js/game/character'
 import Button2 from 'Component/button2'
-import Button3 from 'Component/button3'
 import Dialog from 'Component/dialog'
 import * as particles from 'pixi-particles'
 import emitter2 from '@/assets/json/emitter2.json'
@@ -48,20 +48,8 @@ export default class CreateRoleScene extends Scene {
     }
     /* 創建角色title */
     setTitle() {
-        let style = new PIXI.TextStyle({
-            fontFamily: 'Arial',
-            fontSize: 36,
-            fill: ' white ',
-            stroke: '#0x66FF33',
-            strokeThickness: 4,
-            dropShadow: true,
-            dropShadowColor: '#000000',
-            dropShadowBlur: 4,
-            dropShadowAngle: Math.PI / 6,
-            dropShadowDistance: 6,
-        })
         /* Title */
-        let title = new PIXI.Text('創建角色', style)
+        let title = new PIXI.Text('創建角色', style2)
         title.anchor.set(0.5, 0.5)
         this.addChild(title)
         title.position.set(Config.screen.width / 2, Config.screen.height * 0.1)
@@ -186,7 +174,6 @@ export default class CreateRoleScene extends Scene {
         this.addChild(saveBtn);
         let t = this;
         saveBtn.click = function(){
-            // t.character.clothing.changeClothes();
             if(t.dialog == null){
                 let dialog = new Dialog('確認要建立角色嗎？');
                 t.addChild(dialog);
@@ -194,6 +181,7 @@ export default class CreateRoleScene extends Scene {
                 /* yesBtn action */
                 t.dialog.yesBtn.click = function(){
                     console.log('press yesBtn');
+                    t.character.clothing.saveClothes();
                 }
                 /* cancelBtn action */
                 t.dialog.cancelBtn.click = function(){
