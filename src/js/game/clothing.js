@@ -19,22 +19,13 @@ export default class Clothing{
         this.armatureDisplay = armatureDisplay;
         this.factory = factory;
         this.gender = gender;
+        this.name = 'emily';
         this.loadData(character_tex_json);
-    }
-    get_character_clothing_data(name) {
-        return apiManageRoleClothes({ type: 'get',name: name })
-        .then((res) => {
-            console.log('clothingdata',res.data);
-            this.clothing = res.data
-        })
-        .catch((error) => {
-            console.error(error);
-        })
+        this.initialClothing();
     }
     loadData(itemPath){
         this.item_data = itemPath;
         this.item_classifier(this.item_data);
-        // console.log('from Clothing',this.item_data);
     }
     /* 將讀取的json檔內容 配件info做好分類 */
     item_classifier(item_data){
@@ -62,10 +53,22 @@ export default class Clothing{
         // console.log(itemClass.mm.hair[1]);//可以叫出mm hair1的info
         this.item_data = itemClass;
     }
+    initialClothing(){
+        this.clothingData = {'hair':'','clothes':'','cleft':'','cright':'','bottoms':'','shoe':'','sright':'','h_deco':'','wrist_deco':''};
+        let itemName = Object.keys(this.clothingData);
+        let armature = this.armatureDisplay._armature;
+        itemName.forEach(item =>{
+            if(armature.getSlot(item)._textureData){
+               this.clothingData[item] = armature.getSlot(item)._textureData.name;
+            }
+        });
+
+    }
     change_character_clothing(armatureDisplay,factory,gender){
         this.armatureDisplay = armatureDisplay;
         this.factory = factory;
         this.gender = gender;
+        this.initialClothing();
     }
      /* 建立換衣間 */
      create_dressing_room(){
@@ -241,6 +244,9 @@ export default class Clothing{
                 t.takeoff_item(armature,'clothes',c);
                 t.takeoff_item(armature,'cleft',cl);
                 t.takeoff_item(armature,'cright',cr);
+                t.clothingData['clothes'] = c;
+                t.clothingData['cleft'] = cl;
+                t.clothingData['cright'] = cr;
                 t.factory.replaceSlotDisplay( "Character", role,'clothes',c,armature.getSlot("clothes"));//局部換裝
                 t.factory.replaceSlotDisplay( "Character", role,'cleft',cl,armature.getSlot("cleft"));//局部換裝
                 t.factory.replaceSlotDisplay( "Character", role,'cright',cr,armature.getSlot("cright"));//局部換裝
@@ -251,6 +257,8 @@ export default class Clothing{
                 let sr = temp[t.gender]['sright'][no].name;
                 t.takeoff_item(armature,'shoe',sl);
                 t.takeoff_item(armature,'sright',sr);
+                t.clothingData['shoe'] = sl;
+                t.clothingData['sright'] = sr;
                 t.factory.replaceSlotDisplay( "Character", role,'shoe',sl,armature.getSlot("shoe"));//局部換裝
                 t.factory.replaceSlotDisplay( "Character", role,'sright',sr,armature.getSlot("sright"));//局部換裝
             }
@@ -258,6 +266,7 @@ export default class Clothing{
                 /* 可以拿掉配件 */
                 let str = temp[t.gender][itemName][no].name;
                 t.takeoff_item(armature,itemName,str);
+                t.clothingData[itemName] = str;
                 //factory.replaceSlotDisplay(dragonBonesName, armatureName, slotName, displayName, slot, displayIndex)
                 t.factory.replaceSlotDisplay( "Character", role,itemName,str,armature.getSlot(itemName));//局部換裝
             }
@@ -267,30 +276,55 @@ export default class Clothing{
     }
     /* 可以拿掉配件 */
     takeoff_item(armature,itemName,str){
-        if(armature.getSlot(itemName).displayIndex > -1 && armature.getSlot(itemName)._textureData.name == str)
-            armature.getSlot(itemName).displayIndex = -1;//讓原本空卡槽的部分顯示圖片
+        if(armature.getSlot(itemName).displayIndex > -1 && armature.getSlot(itemName)._textureData.name == str){
+            armature.getSlot(itemName).displayIndex = -1;
+            this.clothingData[itemName] = null;
+        }
         else
-            armature.getSlot(itemName).displayIndex = 1;
+            armature.getSlot(itemName).displayIndex = 1;//讓原本空卡槽的部分顯示圖片
     }
     /*--------------------------------------------------------------------------------*/
     /* 根據資料庫內容進行換裝 */
     changeClothes(){
         let temp = this.clothing_data[0];
-        let itemName = ['hair','clothes','bottoms','shoe','h_deco','wrist_deco'];
+        let itemName = ['hair','clothes','cleft','cright','bottoms','shoe','sright','h_deco','wrist_deco'];
         itemName.forEach(item=>{
-            let no = temp[item];
-            this.factory.replaceSlotDisplay("Character",(temp.gender == 'gg')?'Girl':'Boy',item,this.item_data[temp.gender][item][no].name,this.armatureDisplay._armature.getSlot(item));//局部換裝
+            let str = temp[item];
+            this.factory.replaceSlotDisplay("Character",(temp.gender == 'gg')?'Girl':'Boy',item,str,this.armatureDisplay._armature.getSlot(item));//局部換裝
             // console.log(item,temp[this.gender][item][random_no].name);
-            if(item == 'clothes'){
-                    this.factory.replaceSlotDisplay("Character",(temp.gender == 'gg')?'Girl':'Boy','cleft',this.item_data[temp.gender]['cleft'][no].name,this.armatureDisplay._armature.getSlot('cleft'));//局部換裝
-                    this.factory.replaceSlotDisplay("Character",(temp.gender == 'gg')?'Girl':'Boy','cright',this.item_data[temp.gender]['cright'][no].name,this.armatureDisplay._armature.getSlot('cright'));//局部換裝
-            }
-            if(item == 'shoe'){
-                this.factory.replaceSlotDisplay("Character",(temp.gender == 'gg')?'Girl':'Boy','sright',this.item_data[temp.gender]['sright'][no].name,this.armatureDisplay._armature.getSlot('sright'));//局部換裝
-            }
+            // if(item == 'clothes'){
+            //         this.factory.replaceSlotDisplay("Character",(temp.gender == 'gg')?'Girl':'Boy','cleft',this.item_data[temp.gender]['cleft'][no].name,this.armatureDisplay._armature.getSlot('cleft'));//局部換裝
+            //         this.factory.replaceSlotDisplay("Character",(temp.gender == 'gg')?'Girl':'Boy','cright',this.item_data[temp.gender]['cright'][no].name,this.armatureDisplay._armature.getSlot('cright'));//局部換裝
+            // }
+            // if(item == 'shoe'){
+            //     this.factory.replaceSlotDisplay("Character",(temp.gender == 'gg')?'Girl':'Boy','sright',this.item_data[temp.gender]['sright'][no].name,this.armatureDisplay._armature.getSlot('sright'));//局部換裝
+            // }
             if(this.armatureDisplay._armature.getSlot(item).displayIndex == -1)
                 this.armatureDisplay._armature.getSlot(item).displayIndex = 1;
         });
+    }
+    /* 將服裝info上傳至資料庫  */
+    saveClothes(){
+        return apiManageRoleClothes({
+            type: 'save',
+            name: this.name,
+            gender: this.gender,
+            hair: this.clothingData.hair,
+            clothes: this.clothingData.clothes,
+            cleft: this.clothingData.cleft,
+            cright: this.clothingData.cright,
+            bottoms: this.clothingData.bottoms,
+            shoe: this.clothingData.shoe ,
+            sright: this.clothingData.sright,
+            h_deco: this.clothingData.h_deco,
+            wrist_deco: this.clothingData.wrist_deco
+        })
+        .then((res) => {
+            console.log('saving clothes',res.data);
+        })
+        .catch((error) => {
+            console.error(error)
+        })
     }
     /* 隨機換裝 */
     randomChangeClothes(){
