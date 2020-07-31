@@ -34,7 +34,7 @@ export default class Button2 extends PIXI.Container{
         this.interactive = true;
         this.buttonMode = true;
         this.mouseover = function(mouseData) {
-            this.alpha = 0.95;
+            this.alpha = 0.85;
         }
         this.mouseout = function(mouseData) {
             this.alpha = 1;
