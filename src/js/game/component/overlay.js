@@ -1,19 +1,32 @@
 import * as PIXI from 'pixi.js'
 import Config from '@/js/game/Config'
 
+/**
+ *
+ *
+ * @export
+ * @class Overlay
+ * @extends {PIXI.Container}
+ */
 export default class Overlay extends PIXI.Container {
-    constructor() {
+    /**
+     *Creates an instance of Overlay.
+     * @param {number} [opacity=0.45]
+     * @param {number} [color=0x000000]
+     * @memberof Overlay
+     */
+    constructor(opacity = 0.45, color = 0x000000) {
         super()
         this.interactive = true
-        this.setOverlay()
+        this.setOverlay(color, opacity)
     }
 
-    setOverlay() {
+    setOverlay(color, opacity) {
         var overlay = new PIXI.Graphics()
-        overlay.beginFill(0x000000, 0.45)
+        overlay.beginFill(color, opacity)
         overlay.drawRect(0, 0, Config.screen.width, Config.screen.height)
-        console.log('width',Config.screen.width);
-        console.log('height',Config.screen.height);
+        console.log('width', Config.screen.width)
+        console.log('height', Config.screen.height)
 
         overlay.endFill()
         this.addChild(overlay)
