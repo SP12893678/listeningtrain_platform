@@ -27,14 +27,25 @@
             $sright = $_GET['sright'];
             $h_deco = $_GET['h_deco'];
             $wrist_deco = $_GET['wrist_deco'];
-            $save = "UPDATE `role_clothing` SET `gender`='$gender',`hair`='$hair',`clothes`='$clothes',`cleft`='$cleft',`cright`='$cright',`bottoms`='$bottoms',`shoe`='$shoe',`sright`='$sright',`h_deco`='$h_deco',`wrist_deco`='$wrist_deco' WHERE name='$name'";
+            //check 是否有data
+            $sql = "SELECT * FROM `role_clothing` WHERE name IN ('$name')";
+            $result = mysqli_query($con, $sql);
+            $row=mysqli_fetch_assoc($result);
+            if ($row == null) {
+                $save = "INSERT IGNORE INTO `role_clothing`(`name`, `gender`, `hair`, `clothes`, `cleft`, `cright`, `bottoms`, `shoe`, `sright`, `h_deco`, `wrist_deco`) VALUES ('$name','$gender','$hair','$clothes','$cleft','$cright','$bottoms','$shoe','$sright','$h_deco','$wrist_deco')";
+            }
+            else{
+                //更新clothing data
+                $save = "UPDATE `role_clothing` SET `gender`='$gender',`hair`='$hair',`clothes`='$clothes',`cleft`='$cleft',`cright`='$cright',`bottoms`='$bottoms',`shoe`='$shoe',`sright`='$sright',`h_deco`='$h_deco',`wrist_deco`='$wrist_deco' WHERE name='$name'";
+            }
             $result = mysqli_query($con, $save);
             if (!$result) {
                 printf("Error: %s\n", mysqli_error($con));
                 exit();
             }
-            $data = '['.$result.']';
-        break;
+            $data = $row;
+            echo json_encode($data, JSON_UNESCAPED_UNICODE);
+            break;
         default:
             # code...
             break;
