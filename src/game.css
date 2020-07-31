@@ -1,0 +1,20 @@
+@font-face {
+    font-family: 'jf-openhuninn';
+    src: url('./assets/font/jf-openhuninn-1.0.woff');
+}
+* {
+    font-family: 'jf-openhuninn';
+    margin: 0;
+    padding: 0;
+}
+body {
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
+}
+#app {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
