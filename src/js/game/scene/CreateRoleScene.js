@@ -14,8 +14,6 @@ import Dialog from 'Component/dialog'
 import * as particles from 'pixi-particles'
 import emitter2 from '@/assets/json/emitter2.json'
 
-import ScenesManager from '@/js/game/engine/ScenesManager'
-
 let Application = PIXI.Application,
     Container = PIXI.Container,
     loader = PIXI.loader,
@@ -171,11 +169,10 @@ export default class CreateRoleScene extends Scene {
     }
     /* 設定隨機換裝按鈕 */
     setRandomButton(){
-        let temp = new Button2(120,50,ResourcesManager.random,"隨機");
-        temp.setCornerRadius(30);
-        temp.setBackgroundColor("0x6495ed");
-        temp.setBorder(0);
-        let randomBtn = temp.container;
+        let randomBtn = new Button2(120,50,ResourcesManager.random,"隨機");
+        randomBtn.setCornerRadius(30);
+        randomBtn.setBackgroundColor("0x6495ed");
+        randomBtn.setBorder(0);
         randomBtn.position.set(260,698);
         randomBtn.filters = [new GlowFilter(7,2,2,0xffffff)];
         this.addChild(randomBtn);
@@ -186,11 +183,10 @@ export default class CreateRoleScene extends Scene {
     }
     /* 設定確認黃裝按鈕 */
     setSaveButton(){
-        let temp = new Button2(120,50,ResourcesManager.confirm,"確認");
-        temp.setCornerRadius(30);
-        temp.setBackgroundColor("0xffd700");
-        temp.setBorder(0);
-        let saveBtn = temp.container;
+        let saveBtn = new Button2(120,50,ResourcesManager.confirm,"確認");
+        saveBtn.setCornerRadius(30);
+        saveBtn.setBackgroundColor("0xffd700");
+        saveBtn.setBorder(0);
         saveBtn.position.set(400,698);
         saveBtn.filters = [new GlowFilter(7,2,2,0xffffff)];
         this.addChild(saveBtn);
