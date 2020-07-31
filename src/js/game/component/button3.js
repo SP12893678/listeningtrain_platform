@@ -23,16 +23,17 @@ export default class Button3 extends PIXI.Container {
         this.btnWidth = btnWidth;
         this.btnHeight = btnHeight;
         this.btnBorder = 4;
-        this.btnBorderColor = "0xFFFFFF";
+        this.btnBorderColor = 0xFFFFFF;
         this.cornerRadius = 30;
-        this.btnBgColor = "0x000000";
+        this.btnBgColor = 0x000000;
+        this.btnBgColorAlpha = 1;
         this.btnLabel = label;
         this.setButton();
-        this.setText();
+        this.setText(this.textColor);
         this.interactive = true;
-        this.btnMode = true;
+        this.buttonMode = true;
         this.mouseover = function(mouseData) {
-            this.alpha = 0.95;
+            this.alpha = 0.85;
         }
         this.mouseout = function(mouseData) {
             this.alpha = 1;
@@ -56,8 +57,9 @@ export default class Button3 extends PIXI.Container {
         this.btnBorderColor = borderColor;
         this.reDraw();
     }
-    setBackgroundColor(backgroundColor){
+    setBackgroundColor(backgroundColor,alpha){
         this.btnBgColor = backgroundColor;
+        this.btnBgColorAlpha = alpha;
         this.reDraw();
     }
     setCornerRadius(cornerRadius){
@@ -67,12 +69,12 @@ export default class Button3 extends PIXI.Container {
     reDraw(){
         this.btn.clear();
         this.btn.lineStyle(this.btnBorder,this.btnBorderColor);
-        this.btn.beginFill(this.btnBgColor);//填充
+        this.btn.beginFill(this.btnBgColor,this.btnBgColorAlpha);//填充
         this.btn.drawRoundedRect(0,0,this.btnWidth,this.btnHeight,this.cornerRadius);
         this.btn.endFill();
     }
     setText(){
-        var text = new PIXI.Text(this.btnLabel, {
+        let text = new PIXI.Text(this.btnLabel, {
             fontFamily: 'Noto Sans TC',
             fontSize: this.btnHeight*0.5,
             fill: 0xf1f1f1,
@@ -80,6 +82,10 @@ export default class Button3 extends PIXI.Container {
             fontWeight: '400',
         })
         text.position.set((this.btnWidth - text.width) / 2, (this.btnHeight - text.height) / 2);
-        this.addChild(text);
+        this.text = text;
+        this.addChild(this.text);
+    }
+    setTextColor(color){
+        this.text.tint = color;
     }
 }
