@@ -2,11 +2,10 @@
     require_once './connect.php';
     $type = $_GET['type'];
     $name = $_GET['name'];
-    // $sql = "SELECT * FROM `role_clothing` name";
-    $sql = "SELECT * FROM `role_clothing` WHERE name IN ('$name')";
-    $result = mysqli_query($con, $sql);
     switch ($type) {
         case 'get':
+            $sql = "SELECT * FROM `role_clothing` WHERE name IN ('$name')";
+            $result = mysqli_query($con, $sql);
             if (!$result) {
                 printf("Error: %s\n", mysqli_error($con));
                 exit();
@@ -17,13 +16,27 @@
             }
             echo json_encode($data, JSON_UNESCAPED_UNICODE);
             break;
-        case 'delete':
-            // $items = $_GET['items'];
-            // $object_arr = join(",",$items);
-            // echo $object_arr;
-            // $sql = "DELETE FROM data WHERE id IN (".$object_arr.")";
-            break;
+        case 'save':
+            $gender = $_GET['gender'];
+            $hair = $_GET['hair'];
+            $clothes = $_GET['clothes'];
+            $cleft = $_GET['cleft'];
+            $cright = $_GET['cright'];
+            $bottoms = $_GET['bottoms'];
+            $shoe = $_GET['shoe'];
+            $sright = $_GET['sright'];
+            $h_deco = $_GET['h_deco'];
+            $wrist_deco = $_GET['wrist_deco'];
+            $save = "UPDATE `role_clothing` SET `gender`='$gender',`hair`='$hair',`clothes`='$clothes',`cleft`='$cleft',`cright`='$cright',`bottoms`='$bottoms',`shoe`='$shoe',`sright`='$sright',`h_deco`='$h_deco',`wrist_deco`='$wrist_deco' WHERE name='$name'";
+            $result = mysqli_query($con, $save);
+            if (!$result) {
+                printf("Error: %s\n", mysqli_error($con));
+                exit();
+            }
+            $data = '['.$result.']';
+        break;
         default:
             # code...
             break;
     }
+    
