@@ -16,10 +16,7 @@ export default class Dialog extends Overlay {
         this.dialogLabel = label;
         this.settingDialog(Config.screen.width,Config.screen.height);
         this.click = () => {
-            if(this.visible)
                 this.visible = false;
-            else 
-                this.visible = true;
         }
     }
     settingDialog(width,height){
