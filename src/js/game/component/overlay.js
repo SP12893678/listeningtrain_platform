@@ -25,8 +25,6 @@ export default class Overlay extends PIXI.Container {
         var overlay = new PIXI.Graphics()
         overlay.beginFill(color, opacity)
         overlay.drawRect(0, 0, Config.screen.width, Config.screen.height)
-        console.log('width', Config.screen.width)
-        console.log('height', Config.screen.height)
 
         overlay.endFill()
         this.addChild(overlay)
