@@ -206,6 +206,9 @@ export default class CreateRoleScene extends Scene {
                     console.log('press cancelBtn');
                 }
             }
+            else{
+                t.dialog.visible = true;
+            }
         }     
     }
     setDressingRoom(){
