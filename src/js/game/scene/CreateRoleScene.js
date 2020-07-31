@@ -5,11 +5,11 @@ import Scene from '@/js/game/engine/Scene'
 import Events from '@/js/game/Events'
 import Button from 'Component/button'
 import SettingMenu from 'Component/SettingMenu'
-import Overlay from 'Component/overlay'
 
 import { GlowFilter} from 'pixi-filters'
 import character from '@/js/game/character'
 import Button2 from 'Component/button2'
+import Button3 from 'Component/button3'
 import Dialog from 'Component/dialog'
 import * as particles from 'pixi-particles'
 import emitter2 from '@/assets/json/emitter2.json'
@@ -36,8 +36,8 @@ export default class CreateRoleScene extends Scene {
         this.setRandomButton();
         this.setSaveButton();
         this.setDressingRoom();
-        this.setButton();
-        this.setMenu();
+        // this.setButton();
+        // this.setMenu();
     }
 
     setBackground() {
@@ -185,17 +185,27 @@ export default class CreateRoleScene extends Scene {
     setSaveButton(){
         let saveBtn = new Button2(120,50,ResourcesManager.confirm,"確認");
         saveBtn.setCornerRadius(30);
-        saveBtn.setBackgroundColor("0xffd700");
+        saveBtn.setBackgroundColor(0xffd700);
         saveBtn.setBorder(0);
         saveBtn.position.set(400,698);
         saveBtn.filters = [new GlowFilter(7,2,2,0xffffff)];
         this.addChild(saveBtn);
         let t = this;
         saveBtn.click = function(){
-            t.character.clothing.changeClothes();
-            let dialog = new Dialog();
-            t.addChild(dialog);
-            t.dialog = dialog;
+            // t.character.clothing.changeClothes();
+            if(t.dialog == null){
+                let dialog = new Dialog('確認要建立角色嗎？');
+                t.addChild(dialog);
+                t.dialog = dialog;
+                /* yesBtn action */
+                t.dialog.yesBtn.click = function(){
+                    console.log('press yesBtn');
+                }
+                /* cancelBtn action */
+                t.dialog.cancelBtn.click = function(){
+                    console.log('press cancelBtn');
+                }
+            }
         }     
     }
     setDressingRoom(){
