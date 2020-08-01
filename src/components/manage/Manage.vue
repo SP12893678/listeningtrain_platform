@@ -18,25 +18,26 @@
                         <v-card-title>通知</v-card-title>
                         <v-divider></v-divider>
                         <v-list>
-                            <v-list-item>
-                                <v-list-item-content>
-                                    <v-list-item-title>問題標題</v-list-item-title>
-                                    <v-list-item-subtitle>提問者</v-list-item-subtitle>
-                                </v-list-item-content>
-                                <v-list-item-action>
-                                    <v-list-item-action-text>2020/07/24</v-list-item-action-text>
-                                </v-list-item-action>
-                            </v-list-item>
-
-                            <v-list-item>
-                                <v-list-item-content>
-                                    <v-list-item-title>Question title</v-list-item-title>
-                                    <v-list-item-subtitle>Name</v-list-item-subtitle>
-                                </v-list-item-content>
-                                <v-list-item-action>
-                                    <v-list-item-action-text>2020/07/24</v-list-item-action-text>
-                                </v-list-item-action>
-                            </v-list-item>
+                            <v-list-item-group>
+                                <v-list-item>
+                                    <v-list-item-content>
+                                        <v-list-item-title>問題標題</v-list-item-title>
+                                        <v-list-item-subtitle>提問者</v-list-item-subtitle>
+                                    </v-list-item-content>
+                                    <v-list-item-action>
+                                        <v-list-item-action-text>2020/07/24</v-list-item-action-text>
+                                    </v-list-item-action>
+                                </v-list-item>
+                                <v-list-item>
+                                    <v-list-item-content>
+                                        <v-list-item-title>Question title</v-list-item-title>
+                                        <v-list-item-subtitle>Name</v-list-item-subtitle>
+                                    </v-list-item-content>
+                                    <v-list-item-action>
+                                        <v-list-item-action-text>2020/07/24</v-list-item-action-text>
+                                    </v-list-item-action>
+                                </v-list-item>
+                            </v-list-item-group>
                         </v-list>
                     </v-card>
                 </v-menu>
@@ -114,6 +115,13 @@
                                 <v-icon>mdi-account-cog</v-icon>
                             </v-list-item-icon>
                             <v-list-item-title>學生帳戶管理</v-list-item-title>
+                        </v-list-item>
+
+                        <v-list-item to="/consultant-dashboard">
+                            <v-list-item-icon>
+                                <v-icon>mdi-account-cog</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-title>客服諮詢管理</v-list-item-title>
                         </v-list-item>
                     </v-list-item-group>
                 </v-list>

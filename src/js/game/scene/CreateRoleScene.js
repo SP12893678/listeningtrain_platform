@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
-import { style2 }  from '@/js/game/engine/TextStyleManager'
+import { style2 } from '@/js/game/engine/TextStyleManager'
 import Config from '@/js/game/Config'
 import Scene from '@/js/game/engine/Scene'
 import Events from '@/js/game/Events'
@@ -23,19 +23,19 @@ let Application = PIXI.Application,
 
 export default class CreateRoleScene extends Scene {
     constructor() {
-        super();
-        this.setBackground();
-        this.setTitle();
-        this.container = new Container();
-        this.addChild(this.container);
-        this.doParticles();
-        this.setStage();
-        this.character = new character();
-        this.setCharacter();
-        this.setGenderBtn();
-        this.setRandomButton();
-        this.setSaveButton();
-        this.setDressingRoom();
+        super()
+        this.setBackground()
+        this.setTitle()
+        this.container = new Container()
+        this.addChild(this.container)
+        this.doParticles()
+        this.setStage()
+        this.character = new character()
+        this.setCharacter()
+        this.setGenderBtn()
+        this.setRandomButton()
+        this.setSaveButton()
+        this.setDressingRoom()
         // this.setButton();
         // this.setMenu();
     }
@@ -152,8 +152,8 @@ export default class CreateRoleScene extends Scene {
     /* 設定隨機換裝按鈕 */
     setRandomButton() {
         let randomBtn = new Button2(120, 50, ResourcesManager.random, '隨機')
-        randomBtn.setCornerRadius(30)
-        randomBtn.setBackgroundColor('0x6495ed')
+        randomBtn.setCornerRadius(25)
+        randomBtn.setBackgroundColor(0x6495ed)
         randomBtn.setBorder(0)
         randomBtn.position.set(260, 698)
         randomBtn.filters = [new GlowFilter(7, 2, 2, 0xffffff)]
@@ -164,35 +164,34 @@ export default class CreateRoleScene extends Scene {
         }
     }
     /* 設定確認黃裝按鈕 */
-    setSaveButton(){
-        let saveBtn = new Button2(120,50,ResourcesManager.confirm,"確認");
-        saveBtn.setCornerRadius(30);
-        saveBtn.setBackgroundColor(0xffd700);
-        saveBtn.setBorder(0);
-        saveBtn.position.set(400,698);
-        saveBtn.filters = [new GlowFilter(7,2,2,0xffffff)];
-        this.addChild(saveBtn);
-        let t = this;
-        saveBtn.click = function(){
-            if(t.dialog == null){
-                let dialog = new Dialog('確認要建立角色嗎？');
-                t.addChild(dialog);
-                t.dialog = dialog;
+    setSaveButton() {
+        let saveBtn = new Button2(120, 50, ResourcesManager.confirm, '確認')
+        saveBtn.setCornerRadius(25)
+        saveBtn.setBackgroundColor(0xffd700)
+        saveBtn.setBorder(0)
+        saveBtn.position.set(400, 698)
+        saveBtn.filters = [new GlowFilter(7, 2, 2, 0xffffff)]
+        this.addChild(saveBtn)
+        let t = this
+        saveBtn.click = function() {
+            if (t.dialog == null) {
+                let dialog = new Dialog('確認要建立角色嗎？')
+                t.addChild(dialog)
+                t.dialog = dialog
                 /* yesBtn action */
-                t.dialog.yesBtn.click = function(){
-                    console.log('press yesBtn');
-                    t.character.clothing.saveClothes();
+                t.dialog.yesBtn.click = function() {
+                    console.log('press yesBtn')
+                    t.character.clothing.saveClothes()
                 }
                 /* cancelBtn action */
-                t.dialog.cancelBtn.click = function(){
-                    console.log('press cancelBtn');
+                t.dialog.cancelBtn.click = function() {
+                    console.log('press cancelBtn')
                 }
+            } else {
+                t.dialog.visible = true
             }
-            else{
-                t.dialog.visible = true;
-            }
-        } 
-    }    
+        }
+    }
     setDressingRoom() {
         /* Create a dressing_room */
         this.dressing_room = this.character.clothing.create_dressing_room()
