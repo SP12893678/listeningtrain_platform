@@ -4,6 +4,8 @@ import Config from '@/js/game/Config'
 import Scene from '@/js/game/engine/Scene'
 import Events from '@/js/game/Events'
 import Button from 'Component/button'
+import ScenesManager from '@/js/game/engine/ScenesManager'
+import Scroller from 'Component/Scroller'
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -17,15 +19,16 @@ export default class GameStartScene extends Scene {
         super()
         this.interactive = true
         this.buttonMode = true
-        this.click = () => {
-            Events.emit('goto', { id: 'create_role', animate: 'fadeIn' })
-        }
+        // this.click = () => {
+        //     Events.emit('goto', { id: 'create_role', animate: 'fadeIn' })
+        // }
         this.setBackground()
         this.setButton()
+        this.setScrollableBoard()
     }
 
     setBackground() {
-        var background = new Sprite(resources[ResourcesManager.game_start].texture)
+        var background = new Sprite(resources[ResourcesManager.create_role_bg].texture)
         var scale = Config.screen.width / background.width
         background.scale.set(scale, scale)
         this.addChild(background)
@@ -40,6 +43,43 @@ export default class GameStartScene extends Scene {
         }
         this.addChild(button)
         this.button = button
+    }
+
+    setScrollableBoard() {
+        var board = new PIXI.Graphics()
+        board.beginFill(0xffffff, 0.5)
+        board.drawRoundedRect(0, 0, 500, 300, 16)
+        board.endFill()
+        board.position.set(500, 200)
+
+        var container = new Container()
+        container.position.set(500, 200)
+
+        for (let index = 0; index < 30; index++) {
+            var rectangle = new PIXI.Graphics()
+            var color = Math.random() * 0xff0000
+            rectangle.beginFill(color, 1)
+            rectangle.drawRoundedRect(0, 0, 50, 50, 10)
+            rectangle.endFill()
+            rectangle.position.set(50, index * 100)
+            container.addChild(rectangle)
+        }
+
+        var mask = new PIXI.Graphics()
+        mask.beginFill(0xffffff, 0.5)
+        mask.drawRoundedRect(0, 0, 500, 300, 16)
+        mask.endFill()
+        mask.position.set(500, 200)
+
+        container.mask = mask
+        this.addChild(mask)
+        this.addChild(board)
+        this.board = board
+        this.addChild(container)
+
+        var scroller = new Scroller(20, board.height - 10, 10, container, board.height)
+        scroller.position.set(board.position.x + board.width - 20 - 10, board.position.y + 5)
+        this.addChild(scroller)
     }
 
     update() {
