@@ -6,6 +6,7 @@ import Events from '@/js/game/Events'
 import Button from 'Component/button'
 import ScenesManager from '@/js/game/engine/ScenesManager'
 import Scroller from 'Component/Scroller'
+import GraphicsTool from 'Component/GraphicsTool'
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -19,12 +20,37 @@ export default class GameStartScene extends Scene {
         super()
         this.interactive = true
         this.buttonMode = true
-        // this.click = () => {
-        //     Events.emit('goto', { id: 'create_role', animate: 'fadeIn' })
-        // }
+        this.click = () => {
+            Events.emit('goto', { id: 'create_role', animate: 'fadeIn' })
+        }
         this.setBackground()
         this.setButton()
         this.setScrollableBoard()
+
+        var rect = new PIXI.Graphics()
+        GraphicsTool.setPaintingContainer(rect)
+        rect.beginFill(0x000000, 1)
+        GraphicsTool.drawRoundedRect(100, 100, 25, 25, 25, 25)
+        rect.endFill()
+        rect.position.set(100, 100)
+        this.addChild(rect)
+
+        var radius1 = Math.round(Math.random() * 50)
+        var radius2 = Math.round(Math.random() * 50)
+        var radius3 = Math.round(Math.random() * 50)
+        var radius4 = Math.round(Math.random() * 50)
+        let count = 0
+        let direct = true
+        this.onUpdate(() => {
+            count += direct ? 0.01 : -0.01
+            direct = count > 1 || count < 0 ? !direct : direct
+            count = count > 1 ? 1 : count
+            count = count < 0 ? 0 : count
+            rect.clear()
+            rect.beginFill(0x000000, 1)
+            GraphicsTool.drawRoundedRect(100, 100, radius1 * count, radius2 * count, radius3 * count, radius4 * count)
+            rect.endFill()
+        })
     }
 
     setBackground() {
