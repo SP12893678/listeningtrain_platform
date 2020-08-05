@@ -26,7 +26,7 @@ export default class CreateRoleScene extends Scene {
         super()
         this.setBackground()
         this.setTitle()
-        this.container = new Container()
+        this.container = new Container()//for bubble
         this.addChild(this.container)
         this.doParticles()
         this.setStage()
@@ -182,6 +182,7 @@ export default class CreateRoleScene extends Scene {
                 t.dialog.yesBtn.click = function() {
                     console.log('press yesBtn')
                     t.character.clothing.saveClothes()
+                    Events.emit('goto', { id: 'game_main', animate: 'fadeIn' })
                 }
                 /* cancelBtn action */
                 t.dialog.cancelBtn.click = function() {

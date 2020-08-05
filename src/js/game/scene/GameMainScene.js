@@ -5,6 +5,8 @@ import Scene from '@/js/game/engine/Scene'
 import Events from '@/js/game/Events'
 import Button from 'Component/button'
 
+import character from '@/js/game/character'
+
 let Application = PIXI.Application,
     Container = PIXI.Container,
     loader = PIXI.loader,
@@ -16,7 +18,8 @@ export default class GameMainScene extends Scene {
     constructor() {
         super()
         this.setBackground()
-        this.setButton()
+        this.setCharacter()
+        // this.setButton()
     }
 
     setBackground() {
@@ -25,7 +28,27 @@ export default class GameMainScene extends Scene {
         background.scale.set(scale, scale)
         this.addChild(background)
     }
-
+     /* 建立角色 */
+    setCharacter() {
+        /* Character */
+        this.character = new character()
+        this.factory = this.character.factory
+        this.armatureDisplay = this.character.armatureDisplay
+        this.armatureDisplay.position.set(395, 490)
+        this.armatureDisplay.scale.set(0.4)
+        this.addChild(this.armatureDisplay)
+        this.armatureDisplay.interactive = true
+        this.armatureDisplay.buttonMode = true
+        let t = this
+        this.armatureDisplay.mouseover = function(mouseData) {
+            t.armatureDisplay.animation.play('shakeHand',1);
+        }
+        this.armatureDisplay.mouseout = function(mouseData) {
+            
+        }
+        //this.armatureDisplay.animation.play('shakeHand',1);
+    }
+    /*---------*/
     setButton() {
         var button = new Button(150, 50, 20)
         button.text.text = '返回'
