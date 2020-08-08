@@ -1,5 +1,2 @@
 node_modules/
 **/.DS_Store
-dist/game.bundle.js
-dist/index.bundle.js
-dist/manage.bundle.js
