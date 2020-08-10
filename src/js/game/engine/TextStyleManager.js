@@ -22,5 +22,22 @@ const style2 = new TextStyle({
     dropShadowAngle: Math.PI / 6,
     dropShadowDistance: 6,
 })
-
-export { style1,style2 }
+const style3 = new TextStyle({
+    fontFamily: 'jf-openhuninn',
+    fontSize: 24,
+    fill: '0xff9933',
+})
+const style4 = new TextStyle({
+    fontFamily: 'jf-openhuninn',
+    fontSize: 20,
+    fill: '0xffffff',
+    breakWords: true,
+    wordWrap: true,
+    wordWrapWidth: 520,
+})
+const style5 = new TextStyle({
+    fontFamily: 'jf-openhuninn',
+    fontSize: 16,
+    fill: '#000000',
+})
+export { style1, style2, style3, style4, style5 }

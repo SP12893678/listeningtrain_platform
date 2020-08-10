@@ -26,6 +26,7 @@ import bubble from '@/assets/images/bubble.png'
 
 const resources = {
     loading_bg: loadingBackground,
+    create_role_bg: create_role_bg,
     game_start: sound001,
     game_main: sound002,
     create_role: sound003,
@@ -35,7 +36,6 @@ const resources = {
     sound007: sound007,
     menu: menu,
     menu_btn: menu_btn,
-    create_role_bg: create_role_bg,
     character_stage: character_stage,
     icon_hair: icon_hair,
     icon_clothes: icon_clothes,

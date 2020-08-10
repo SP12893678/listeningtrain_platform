@@ -20,6 +20,7 @@
     "homepage": "https://github.com/SP12893678/listeningtrain_platform#readme",
     "dependencies": {
         "axios": "^0.19.2",
+        "chart.js": "^2.9.3",
         "dat.gui": "^0.7.7",
         "eventemitter3": "^4.0.4",
         "gsap": "^3.4.0",
