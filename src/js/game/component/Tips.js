@@ -19,7 +19,8 @@ export default class Tips extends PIXI.Container {
 
     setTitle() {
         let title = this.title
-        title.text = '提示！'
+        // title.text = '提示！'
+        title.text = Config.text.title
         title.style = style3
         this.addChild(title)
     }

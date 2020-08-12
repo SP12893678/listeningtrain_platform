@@ -40,4 +40,14 @@ const style5 = new TextStyle({
     fontSize: 16,
     fill: '#000000',
 })
-export { style1, style2, style3, style4, style5 }
+const style6 = new TextStyle({
+    fontFamily: 'jf-openhuninn',
+    fontSize: 32,
+    fill: '#ffffff',
+})
+const style7 = new TextStyle({
+    fontFamily: 'jf-openhuninn',
+    fontSize: 24,
+    fill: '#ffffff',
+})
+export { style1, style2, style3, style4, style5, style6, style7 }

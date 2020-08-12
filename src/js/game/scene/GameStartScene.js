@@ -2,14 +2,12 @@ import * as PIXI from 'pixi.js'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
 import Config from '@/js/game/Config'
 import Scene from '@/js/game/engine/Scene'
-import Events from '@/js/game/Events'
 import Button from 'Component/button'
-import ScenesManager from '@/js/game/engine/ScenesManager'
 import VerticalScroller from 'Component/VerticalScroller'
 import HorizontalScroller from 'Component/HorizontalScroller'
 import GraphicsTool from 'Component/GraphicsTool'
-import Chart from 'chart.js'
 import RadarChart from 'Component/RadarChart'
+import LanguageDialog from 'Component/LanguageDialog'
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -105,7 +103,9 @@ export default class GameStartScene extends Scene {
         button.position.set(100, 400)
         button.click = () => {
             console.log(132)
-            Events.emit('goto', { id: 'create_role', animate: 'fadeIn' })
+            let languageDialog = new LanguageDialog()
+            this.addChild(languageDialog)
+            // Events.emit('goto', { id: 'create_role', animate: 'fadeIn' })
         }
         this.addChild(button)
         this.button = button

@@ -4,6 +4,9 @@ import Config from '@/js/game/Config'
 import Scene from '@/js/game/engine/Scene'
 import ProgressBar from 'Component/ProgressBar'
 import Tips from 'Component/Tips'
+import LanguageChooser from '@/js/game/LanguageChooser'
+import ScenesManager from '@/js/game/engine/ScenesManager'
+import Events from '@/js/game/Events'
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -46,6 +49,13 @@ export default class LoadingScene extends Scene {
         //     if (i >= 1) clearInterval(count)
         //     this.progress_bar.setProgress(i)
         // }, 1)
+
+        // setTimeout(() => {
+        //     console.log('go')
+        //     LanguageChooser.select('english')
+        //     ScenesManager.scenes = {}
+        //     Events.emit('goto', { id: 'game_start' })
+        // }, 5000)
     }
 
     init() {}
