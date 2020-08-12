@@ -1,8 +1,9 @@
 import * as PIXI from 'pixi.js'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
 import Config from '@/js/game/Config'
-import { GlowFilter } from 'pixi-filters'
 import Scene from '@/js/game/engine/Scene'
+import ProgressBar from 'Component/ProgressBar'
+import Tips from 'Component/Tips'
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -14,40 +15,55 @@ let Application = PIXI.Application,
 export default class LoadingScene extends Scene {
     constructor() {
         super()
+        this.background = new Sprite()
+        this.box = new Container()
+
         this.setBackground()
-        this.setText()
-        this.setLoadingBar()
+
+        let box = new PIXI.Graphics()
+        box.beginFill(0x000000, 0.7)
+        box.drawRoundedRect(0, 0, 1600 * 0.6, 200, 12)
+        box.endFill()
+
+        let tips = new Tips()
+
+        let progress_bar = new ProgressBar(1600 * 0.8 * 0.6)
+
+        let container = new PIXI.Container()
+        container.addChild(box)
+        container.addChild(tips)
+        container.addChild(progress_bar)
+
+        tips.position.set((container.width / 40) * 9, container.height / 3)
+        progress_bar.position.set((container.width - progress_bar.width) / 2, container.height - progress_bar.height - 25)
+        container.position.set((Config.screen.width - container.width) / 2, Config.screen.height - container.height - 20)
+        this.addChild(container)
+
+        this.progress_bar = progress_bar
+        // let i = 0
+        // let count = setInterval(() => {
+        //     i += 0.01
+        //     if (i >= 1) clearInterval(count)
+        //     this.progress_bar.setProgress(i)
+        // }, 1)
     }
 
+    init() {}
+
     setBackground() {
-        console.log(ResourcesManager)
-        var background = new Sprite(resources[ResourcesManager.loading_bg].texture)
-        var scale = Config.screen.width / background.width
+        let background = this.background
+        background.texture = resources[ResourcesManager.create_role_bg].texture
+        let scale = Config.screen.width / background.width
         background.scale.set(scale, scale)
         this.addChild(background)
     }
 
-    setText() {
-        var text = new PIXI.Text('加載資源000%', {
-            fontFamily: 'Noto Sans TC',
-            fontSize: 16,
-            fill: 0x000000,
-            align: 'center',
-            fontWeight: '400',
-        })
-        text.position.set((Config.screen.width - text.width) / 2, Config.screen.height - 65 - 5 - text.height)
-        this.addChild(text)
-        this.text = text
-    }
-
-    setLoadingBar() {
-        let bar = new Sprite(resources[ResourcesManager.loading_bar].texture)
-        bar.filters = [new GlowFilter(10, 1.6, 0)]
-        var scale = Config.screen.width / (bar.width - 100)
-        bar.scale.set(scale, scale)
-        bar.position.set(-bar.width, Config.screen.height - 65)
-        this.addChild(bar)
-        this.bar = bar
+    setBox() {
+        let box = this.box
+        let background = new PIXI.Graphics()
+        background.beginFill(0x000000, 0.7)
+        background.drawRoundedRect(0, 0, Config.screen.width * 0.6, 200, 12)
+        background.endFill()
     }
 
     update() {

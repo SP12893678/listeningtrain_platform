@@ -1,4 +1,5 @@
 import 'babel-polyfill'
+import './game.css'
 import * as PIXI from 'pixi.js'
 import * as dat from 'dat.gui'
 import ScenesManager from '@/js/game/engine/ScenesManager'
@@ -14,15 +15,9 @@ PixiPlugin.registerPIXI(PIXI)
 /**----------------------------- */
 ;(function() {
     function loadProgressHandler(loader, resource) {
-        if (resources[ResourcesManager.loading_bg].texture && resources[ResourcesManager.loading_bar].texture && scenesManager.scenes['loading'] == null)
-            Events.emit('goto', { id: 'loading' })
+        if (resources[ResourcesManager.create_role_bg].texture && scenesManager.scenes['loading'] == null) Events.emit('goto', { id: 'loading' })
         if (scenesManager.scenes['loading'] != null) {
-            scenesManager.scenes['loading'].text.text = '加載資源' + (Math.ceil(loader.progress) | 0) + '%'
-            gsap.set(scenesManager.scenes['loading'].bar, {
-                pixi: {
-                    positionX: -scenesManager.scenes['loading'].bar.width + (Math.ceil(loader.progress) * Config.screen.width) / 100,
-                },
-            })
+            scenesManager.scenes['loading'].progress_bar.setProgress(loader.progress / 100)
         }
     }
 
