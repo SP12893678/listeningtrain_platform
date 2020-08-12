@@ -15,13 +15,12 @@ let Application = PIXI.Application,
     Sprite = PIXI.Sprite
 
 export default class Clothing{
-    constructor(armatureDisplay,factory,gender) {
+    constructor(armatureDisplay,factory,gender,name) {
         this.armatureDisplay = armatureDisplay;
         this.factory = factory;
         this.gender = gender;
-        this.name = 'emily';
+        this.name = name;
         this.loadData(character_tex_json);
-        this.initialClothing();
     }
     loadData(itemPath){
         this.item_data = itemPath;
@@ -290,17 +289,11 @@ export default class Clothing{
         let itemName = ['hair','clothes','cleft','cright','bottoms','shoe','sright','h_deco','wrist_deco'];
         itemName.forEach(item=>{
             let str = temp[item];
+            if(str !== ''){
             this.factory.replaceSlotDisplay("Character",(temp.gender == 'gg')?'Girl':'Boy',item,str,this.armatureDisplay._armature.getSlot(item));//局部換裝
-            // console.log(item,temp[this.gender][item][random_no].name);
-            // if(item == 'clothes'){
-            //         this.factory.replaceSlotDisplay("Character",(temp.gender == 'gg')?'Girl':'Boy','cleft',this.item_data[temp.gender]['cleft'][no].name,this.armatureDisplay._armature.getSlot('cleft'));//局部換裝
-            //         this.factory.replaceSlotDisplay("Character",(temp.gender == 'gg')?'Girl':'Boy','cright',this.item_data[temp.gender]['cright'][no].name,this.armatureDisplay._armature.getSlot('cright'));//局部換裝
-            // }
-            // if(item == 'shoe'){
-            //     this.factory.replaceSlotDisplay("Character",(temp.gender == 'gg')?'Girl':'Boy','sright',this.item_data[temp.gender]['sright'][no].name,this.armatureDisplay._armature.getSlot('sright'));//局部換裝
-            // }
             if(this.armatureDisplay._armature.getSlot(item).displayIndex == -1)
                 this.armatureDisplay._armature.getSlot(item).displayIndex = 1;
+            }
         });
     }
     /* 將服裝info上傳至資料庫  */
