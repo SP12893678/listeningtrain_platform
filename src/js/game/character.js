@@ -15,11 +15,12 @@ let Application = PIXI.Application,
     Sprite = PIXI.Sprite
 
 export default class Character{
-    constructor() {
+    constructor(name) {
+        this.name = name
         this.gender ='gg';
         this.show_character(this.gender);
-        this.clothing = new clothing(this.armatureDisplay,this.factory,this.gender);
-        this.check_if_has_clothing();
+        this.clothing = new clothing(this.armatureDisplay,this.factory,this.gender,name);
+        this.check_if_has_clothing(name);
     }
     show_character(gender){
         /* Character */
@@ -39,15 +40,18 @@ export default class Character{
     get_character_clothing_data(name) {
         return apiManageRoleClothes({ type: 'get',name: name })
         .then((res) => {
-            console.log('clothingdata',res.data);
+            console.log('clothing_data',res.data);
             this.clothing.clothing_data = res.data;
         })
         .catch((error) => {
             console.error(error);
         })
     } 
-    async check_if_has_clothing(){
-        await this.get_character_clothing_data('emily');
-        console.log('hello');
+    async check_if_has_clothing(name){
+        await this.get_character_clothing_data(name);
+        if(this.clothing.clothing_data.length != 0){
+            this.clothing.changeClothes();
+            this.clothing.initialClothing();
+        }
     }
 }
