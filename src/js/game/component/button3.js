@@ -24,9 +24,9 @@ export default class Button3 extends PIXI.Container {
         this.btnHeight = btnHeight;
         this.btnBorder = 4;
         this.btnBorderColor = 0xFFFFFF;
-        this.cornerRadius = 30;
+        this.cornerRadius = this.btnHeight/2;
         this.btnBgColor = 0x000000;
-        this.btnBgColorAlpha = 1;
+        this.btnBgColorAlpha = 0.8;
         this.btnLabel = label;
         this.setButton();
         this.setText(this.textColor);
@@ -44,7 +44,7 @@ export default class Button3 extends PIXI.Container {
        /* Draws a button */
        this.btn = new PIXI.Graphics();
        this.btn.lineStyle(this.btnBorder,this.btnBorderColor);
-       this.btn.beginFill(this.btnBgColor,0.8);//填充
+       this.btn.beginFill(this.btnBgColor,this.btnBgColorAlpha);//填充
        this.btn.drawRoundedRect(0,0,this.btnWidth,this.btnHeight,this.cornerRadius);
        this.btn.endFill();
        this.addChild(this.btn);
