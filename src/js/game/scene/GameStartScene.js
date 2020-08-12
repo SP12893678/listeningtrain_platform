@@ -105,7 +105,7 @@ export default class GameStartScene extends Scene {
         button.position.set(100, 400)
         button.click = () => {
             console.log(132)
-            // Events.emit('goto', { id: 'create_role', animate: 'fadeIn' })
+            Events.emit('goto', { id: 'create_role', animate: 'fadeIn' })
         }
         this.addChild(button)
         this.button = button
