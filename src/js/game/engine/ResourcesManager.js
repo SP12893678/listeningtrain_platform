@@ -24,6 +24,10 @@ import genderBoy from '@/assets/images/genderBoy.png'
 import Character_tex from '@/assets/images/Character_tex.png'
 import bubble from '@/assets/images/bubble.png'
 
+import edit from '@/assets/images/icon/edit.png'
+import save from '@/assets/images/icon/save.png'
+
+
 const resources = {
     loading_bg: loadingBackground,
     game_start: sound001,
@@ -49,6 +53,8 @@ const resources = {
     genderBoy: genderBoy,
     Character_tex: Character_tex,
     bubble: bubble,
+    edit: edit,
+    save: save,
 }
 
 export default resources
