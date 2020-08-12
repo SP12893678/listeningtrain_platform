@@ -30,7 +30,7 @@ export default class CreateRoleScene extends Scene {
         this.addChild(this.container)
         this.doParticles()
         this.setStage()
-        this.character = new character()
+        this.character = new character('Mary')
         this.setCharacter()
         this.setGenderBtn()
         this.setRandomButton()
@@ -166,7 +166,7 @@ export default class CreateRoleScene extends Scene {
     /* 設定確認黃裝按鈕 */
     setSaveButton() {
         let saveBtn = new Button2(120, 50, ResourcesManager.confirm, '確認')
-        saveBtn.setCornerRadius(25)
+        saveBtn.setCornerRadius(24)
         saveBtn.setBackgroundColor(0xffd700)
         saveBtn.setBorder(0)
         saveBtn.position.set(400, 698)
@@ -178,15 +178,20 @@ export default class CreateRoleScene extends Scene {
                 let dialog = new Dialog('確認要建立角色嗎？')
                 t.addChild(dialog)
                 t.dialog = dialog
+                t.dialog.click = () => {
+                    t.dialog.visible = false;
+                }
                 /* yesBtn action */
-                t.dialog.yesBtn.click = function() {
+                t.dialog.yesBtn.click = async function() {
                     console.log('press yesBtn')
-                    t.character.clothing.saveClothes()
+                    await t.character.clothing.saveClothes()
                     Events.emit('goto', { id: 'game_main', animate: 'fadeIn' })
                 }
                 /* cancelBtn action */
                 t.dialog.cancelBtn.click = function() {
                     console.log('press cancelBtn')
+                    console.log('change clothes',t.character.clothing_data)
+                    t.character.clothing.changeClothes()
                 }
             } else {
                 t.dialog.visible = true
