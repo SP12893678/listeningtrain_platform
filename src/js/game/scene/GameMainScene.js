@@ -20,7 +20,7 @@ let Application = PIXI.Application,
 export default class GameMainScene extends Scene {
     constructor() {
         super()
-        this.setBackground()
+        // this.setBackground()
         this.setCharacter()
         this.setTextField()
         this.setButton()
@@ -28,10 +28,16 @@ export default class GameMainScene extends Scene {
     }
 
     setBackground() {
-        var background = new Sprite(resources[ResourcesManager.game_main].texture)
-        var scale = Config.screen.width / background.width
-        background.scale.set(scale, scale)
+        // var background = new Sprite(resources[ResourcesManager.game_main].texture)
+        // var scale = Config.screen.width / background.width
+        // background.scale.set(scale, scale)
+
+        let background = new PIXI.Graphics()
+        background.beginFill(0xffffff)
+        background.drawRect(0,0,Config.screen.width,Config.screen.height)
+        background.endFill();
         this.addChild(background)
+        
     }
      /* 建立角色 */
     setCharacter() {
