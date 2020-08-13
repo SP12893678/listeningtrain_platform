@@ -26,6 +26,7 @@ import bubble from '@/assets/images/bubble.png'
 
 import edit from '@/assets/images/icon/edit.png'
 import save from '@/assets/images/icon/save.png'
+import profileBg from '@/assets/images/profileBg.png'
 
 
 const resources = {
@@ -55,6 +56,7 @@ const resources = {
     bubble: bubble,
     edit: edit,
     save: save,
+    profileBg: profileBg
 }
 
 export default resources
