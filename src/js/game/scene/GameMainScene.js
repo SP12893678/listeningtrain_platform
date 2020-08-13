@@ -20,11 +20,13 @@ let Application = PIXI.Application,
 export default class GameMainScene extends Scene {
     constructor() {
         super()
-        // this.setBackground()
+        this.setBackground()
+        this.setButton()
         this.setCharacter()
         this.setTextField()
-        this.setButton()
         this.setDialog()
+        this.setPanel()
+
     }
 
     setBackground() {
@@ -35,7 +37,7 @@ export default class GameMainScene extends Scene {
         let background = new PIXI.Graphics()
         background.beginFill(0xffffff)
         background.drawRect(0,0,Config.screen.width,Config.screen.height)
-        background.endFill();
+        background.endFill()
         this.addChild(background)
         
     }
@@ -72,14 +74,12 @@ export default class GameMainScene extends Scene {
     setDialog() {
         this.dialog = new Dialog('',1)
         this.addChild(this.dialog)
-        this.dialog.setSize(100,60)
-        this.dialog.setSize(1000,600)
+        this.dialog.setSize(1000,530)
         this.dialog.setBackgroundColor(0xFF9300,0.95)
         this.dialog.setCloseBtnBackgroundColor(0xF8BA00,0.95)
-        this.setTextField();
-        this.dialog.addChild(this.input)
-        this.setEditSaveBtn();
-       console.log( this.dialog.children)
+        // this.setTextField();
+        // this.dialog.addChild(this.input)
+        // this.setEditSaveBtn();
     }
         /* 建立一個textfield */
     setTextField() {
@@ -153,6 +153,48 @@ export default class GameMainScene extends Scene {
         })
         this.dialog.addChild(editBtn)
         this.dialog.addChild(saveBtn)
+    }
+    setPanel(){
+        this.personInfoContainer = new Container()
+        /* panel */
+        let personInfoPanel = new PIXI.Graphics()
+        personInfoPanel.beginFill(0xFBFFE0)
+        personInfoPanel.drawRoundedRect(this.dialog.dialog.x+15,this.dialog.dialog.y+10,620,500,10)
+        personInfoPanel.endFill()
+        personInfoPanel.beginFill(0xFEC036)
+        personInfoPanel.drawRoundedRect(this.dialog.dialog.x+40,this.dialog.dialog.y+70,248,392,10)
+        personInfoPanel.endFill()
+        this.personInfoContainer.addChild(personInfoPanel)
+        /* character background */
+        let characterBg = new Sprite(PIXI.loader.resources[ResourcesManager.profileBg].texture)
+        let scale = 240 / characterBg.width
+        characterBg.scale.set(scale)
+        characterBg.position.set(this.dialog.dialog.x+44,this.dialog.dialog.y+76)
+        this.personInfoContainer.addChild(characterBg)
+        /* character */
+        let person = new character('Mary').armatureDisplay
+        person.scale.set(0.35)
+        person.position.set(this.dialog.dialog.x+164,this.dialog.dialog.y+300)
+        person.interactive = false
+        person.buttonMode = false
+        this.personInfoContainer.addChild(person)
+        /* profile item */
+        this.personInfoItemContainer = new Container()
+        this.personInfoContainer.addChild(this.personInfoItemContainer)
+        this.personInfoItemContainer.position.set(this.dialog.dialog.x+288,this.dialog.dialog.y+76)
+        this.create_item('','')
+
+        this.dialog.addChild(this.personInfoContainer)
+    }
+    create_item(itemName,iconPic){
+        // let icon = new Sprite(PIXI.loader.resources[iconPic].texture);
+        // icon.scale.set(0.3,0.3);
+        // icon.position.set(280*0.3*(this.IconContainer.children.length),0);
+        let g = new PIXI.Graphics()
+        g.beginFill(0xFF644E)
+        g.drawRoundedRect(0,0,100,50,10)
+        g.endFill()
+        this.personInfoItemContainer.addChild(g)
     }
     /*---------*/
     setButton() {
