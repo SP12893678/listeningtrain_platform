@@ -92,9 +92,15 @@ export default class GameStartScene extends Scene {
     }
 
     setBackground() {
-        var background = new Sprite(resources[ResourcesManager.create_role_bg].texture)
-        var scale = Config.screen.width / background.width
-        background.scale.set(scale, scale)
+        // var background = new Sprite(resources[ResourcesManager.create_role_bg].texture)
+        // var scale = Config.screen.width / background.width
+        // background.scale.set(scale, scale)
+
+        let background = new PIXI.Graphics()
+        background.beginFill(this.dialogBgColor,this.dialogBgColorAlpha)
+        background.drawRect(0,0,tConfig.screen.width,Config.screen.height)
+        background.endFill();
+
         this.addChild(background)
     }
 
