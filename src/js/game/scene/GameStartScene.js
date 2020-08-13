@@ -2,12 +2,14 @@ import * as PIXI from 'pixi.js'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
 import Config from '@/js/game/Config'
 import Scene from '@/js/game/engine/Scene'
+import Events from '@/js/game/Events'
 import Button from 'Component/button'
+import ScenesManager from '@/js/game/engine/ScenesManager'
 import VerticalScroller from 'Component/VerticalScroller'
 import HorizontalScroller from 'Component/HorizontalScroller'
 import GraphicsTool from 'Component/GraphicsTool'
+import Chart from 'chart.js'
 import RadarChart from 'Component/RadarChart'
-import LanguageDialog from 'Component/LanguageDialog'
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -92,15 +94,9 @@ export default class GameStartScene extends Scene {
     }
 
     setBackground() {
-        // var background = new Sprite(resources[ResourcesManager.create_role_bg].texture)
-        // var scale = Config.screen.width / background.width
-        // background.scale.set(scale, scale)
-
-        let background = new PIXI.Graphics()
-        background.beginFill(this.dialogBgColor,this.dialogBgColorAlpha)
-        background.drawRect(0,0,tConfig.screen.width,Config.screen.height)
-        background.endFill();
-
+        var background = new Sprite(resources[ResourcesManager.create_role_bg].texture)
+        var scale = Config.screen.width / background.width
+        background.scale.set(scale, scale)
         this.addChild(background)
     }
 
@@ -109,8 +105,6 @@ export default class GameStartScene extends Scene {
         button.position.set(100, 400)
         button.click = () => {
             console.log(132)
-            let languageDialog = new LanguageDialog()
-            this.addChild(languageDialog)
             // Events.emit('goto', { id: 'create_role', animate: 'fadeIn' })
         }
         this.addChild(button)
