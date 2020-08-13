@@ -298,6 +298,7 @@ export default class Clothing{
     }
     /* 將服裝info上傳至資料庫  */
     saveClothes(){
+        console.log('here',this.clothingData)
         return apiManageRoleClothes({
             type: 'save',
             name: this.name,
@@ -329,10 +330,13 @@ export default class Clothing{
                 if(number > 0){
                     let random_no = Math.floor(Math.random() * number) + 1;
                     this.factory.replaceSlotDisplay("Character",(this.gender == 'gg')?'Girl':'Boy',item,temp[this.gender][item][random_no].name,this.armatureDisplay._armature.getSlot(item));//局部換裝
+                    this.clothingData[item] = temp[this.gender][item][random_no].name;
                     // console.log(item,temp[this.gender][item][random_no].name);
                     if(item == 'clothes'){
                         this.factory.replaceSlotDisplay("Character",(this.gender == 'gg')?'Girl':'Boy','cleft',temp[this.gender]['cleft'][random_no].name,this.armatureDisplay._armature.getSlot('cleft'));//局部換裝
                         this.factory.replaceSlotDisplay("Character",(this.gender == 'gg')?'Girl':'Boy','cright',temp[this.gender]['cright'][random_no].name,this.armatureDisplay._armature.getSlot('cright'));//局部換裝
+                        this.clothingData['cleft'] = temp[this.gender]['cleft'][random_no].name;
+                        this.clothingData['cright'] = temp[this.gender]['cright'][random_no].name;
                         if(this.armatureDisplay._armature.getSlot('cleft').displayIndex == -1)
                             this.armatureDisplay._armature.getSlot('cleft').displayIndex = 1;
                         if(this.armatureDisplay._armature.getSlot('cright').displayIndex == -1)
@@ -340,6 +344,7 @@ export default class Clothing{
                     }
                     if(item == 'shoe'){
                         this.factory.replaceSlotDisplay("Character",(this.gender == 'gg')?'Girl':'Boy','sright',temp[this.gender]['sright'][random_no].name,this.armatureDisplay._armature.getSlot('sright'));//局部換裝
+                        this.clothingData['sright'] = temp[this.gender]['sright'][random_no].name;
                         if(this.armatureDisplay._armature.getSlot('sright').displayIndex == -1)
                             this.armatureDisplay._armature.getSlot('sright').displayIndex = 1;
                     }
