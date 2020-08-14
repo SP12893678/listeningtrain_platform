@@ -57,90 +57,154 @@
             <v-toolbar-title>情境式環境音訓練平台</v-toolbar-title>
 
             <v-spacer></v-spacer>
-            <v-dialog v-model="dialog" persistent max-width="600px">
+
+            <v-btn text large color="blue">首頁</v-btn>
+            <v-btn text large color="amber">介紹</v-btn>
+            <v-btn text large color="error" @click="gotoManage">幫助我們</v-btn>
+            <v-btn text large color="green" @click="gotoGame">遊戲</v-btn>
+
+            <v-menu v-if="islogin===1" offset-y>
+                <template v-slot:activator="{ on, attr }">
+                    <v-btn icon v-bind="attr" v-on="on">
+                        <v-icon large>mdi-format-list-bulleted-square</v-icon>
+                    </v-btn>
+                </template>
+                <v-list>
+                    <v-list-item v-for="(item, index) in itemss" :key="index">
+                        <v-list-item-title>{{ item.title }}</v-list-item-title>
+                    </v-list-item>
+                </v-list>
+            </v-menu>
+
+            <!-- spacer  -->
+            <!-- <v-btn text disabled></v-btn> -->
+            <!-- spacer  -->
+
+            <v-dialog v-if="islogin===0" v-model="dialog" max-width="600px">
                 <template v-slot:activator="{ on, attrs }">
                     <v-btn icon v-bind="attrs" v-on="on">
                         <v-icon large>mdi-login-variant</v-icon>
                     </v-btn>
                 </template>
                 <v-card color="	#8E8E8E">
-                    <v-card-title>
-                        <span class="headline" style="color: #007979;">登入系統</span>
-                    </v-card-title>
-                    <v-card-text>
-                        <v-container>
-                            <v-row>
-                                <v-col cols="12">
-                                    <v-text-field v-model="ac" label="帳號" required></v-text-field>
-                                </v-col>
-                                <v-col cols="12">
-                                    <v-text-field v-model="pw" label="密碼" type="password" required></v-text-field>
-                                </v-col>
-                            </v-row>
-                        </v-container>
-                    </v-card-text>
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn
-                            color="#EA0000"
-                            text
-                            @click="
+                    <v-form v-model="valid" lazy-validation ref="form">
+                        <v-card-title>
+                            <span class="headline" style="color: #007979;">登入系統</span>
+                        </v-card-title>
+                        <v-card-text>
+                            <v-container>
+                                <v-row>
+                                    <v-col cols="12">
+                                        <v-text-field
+                                            v-model="ac"
+                                            label="帳號"
+                                            required
+                                            :rules="required"
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12">
+                                        <v-text-field
+                                            v-model="pw"
+                                            label="密碼"
+                                            type="password"
+                                            required
+                                            :rules="required"
+                                        ></v-text-field>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn
+                                color="#EA0000"
+                                text
+                                @click="
                                 dialog2 = true
                                 dialog = false
                             "
-                            >去註冊</v-btn
-                        >
-                        <v-btn color="blue" text v-on:click="dialog = falselogin()">登入</v-btn>
-                    </v-card-actions>
+                            >去註冊</v-btn>
+                            <v-btn
+                                color="success"
+                                v-on:click="                                
+                               invalidate();
+                            "
+                            >登入</v-btn>
+                        </v-card-actions>
+                    </v-form>
                 </v-card>
             </v-dialog>
-            <v-dialog v-model="dialog2" persistent max-width="600px">
+            <v-dialog v-model="dialog2" max-width="600px">
                 <v-card color="	#8E8E8E" dark>
                     <v-card-title>
                         <span class="headline" style="color: #007979;">註冊系統</span>
                     </v-card-title>
                     <v-card-text>
                         <v-container>
-                            <v-row>
-                                <v-col cols="12" sm="6">
-                                    <v-text-field v-model="name" label="姓名" :rules="[rules.counter8]" counter required></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6">
-                                    <v-text-field v-model="mail" label="Email" :rules="[rules.email]" required></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="4">
-                                    <v-text-field v-model="acr" label="帳號" :rules="[rules.counter12]" counter required></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="4">
-                                    <v-text-field v-model="pwr" label="密碼" :rules="[rules.counter12]" counter type="password" required></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="4">
-                                    <v-text-field
-                                        v-model="pwr2"
-                                        label="再次輸入密碼"
-                                        :rules="[rules.counter12]"
-                                        counter
-                                        type="password"
-                                        required
-                                    ></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6">
-                                    <v-select v-model="items" :items="['學生', '教師']" label="身分" required></v-select>
-                                </v-col>
-                            </v-row>
+                            <v-form v-model="valid" lazy-validation ref="form2">
+                                <v-row>
+                                    <v-col cols="12" sm="6">
+                                        <v-text-field
+                                            v-model="name"
+                                            label="姓名"
+                                            :rules="counter12"
+                                            counter
+                                            required
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="6">
+                                        <v-text-field
+                                            v-model="mail"
+                                            label="Email"
+                                            :rules="email"
+                                            required
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="4">
+                                        <v-text-field
+                                            v-model="acr"
+                                            label="帳號"
+                                            :rules="counter12"
+                                            counter
+                                            required
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="4">
+                                        <v-text-field
+                                            v-model="pwr"
+                                            label="密碼"
+                                            :rules="counter16"
+                                            counter
+                                            type="password"
+                                            required
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="4">
+                                        <v-text-field
+                                            v-model="pwr2"
+                                            label="再次輸入密碼"
+                                            :rules="counter16"
+                                            counter
+                                            type="password"
+                                            required
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="6">
+                                        <v-select
+                                            v-model="items"
+                                            :items="['學生', '教師']"
+                                            :rules="[v => !!v || 'Item is required']"
+                                            label="身分"
+                                            required
+                                        ></v-select>
+                                    </v-col>
+                                </v-row>
+                            </v-form>
                         </v-container>
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn
-                            color="#EA0000"
-                            text
-                            @click="
-                                dialog2 = false
-                                register()
-                            "
-                            >註冊</v-btn
-                        >
+                        <v-btn color="success" v-on:click="revalidate()">註冊</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
@@ -149,11 +213,20 @@
         <v-main>
             <v-container class="ma-0 pa-0" fluid fill-height>
                 <!-- <router-view></router-view> -->
-                <v-carousel ref="carousel" id="carousel" v-model="value" class="ma-0 pa-0" height="100%" vertical vertical-delimiters hide-delimiter-background>
+                <v-carousel
+                    ref="carousel"
+                    id="carousel"
+                    v-model="value"
+                    class="ma-0 pa-0"
+                    height="100%"
+                    vertical
+                    vertical-delimiters
+                    hide-delimiter-background
+                >
                     <v-carousel-item v-for="(slide, i) in slides" :key="i">
                         <v-sheet :color="colors[i]" height="100%">
                             <v-row class="fill-height" align="center" justify="center">
-                                <div class="display-3">{{ slide }} Slide</div>
+                                <div class="display-3">{{ slide }}</div>
                             </v-row>
                         </v-sheet>
                     </v-carousel-item>
@@ -161,16 +234,24 @@
             </v-container>
         </v-main>
 
+        <v-dialog v-model="msg" width="300">
+            <v-card center>
+                <v-card-title>Hello</v-card-title>
+            </v-card>
+        </v-dialog>
         <!-- <v-footer app></v-footer> -->
     </v-app>
 </template>
 
 <script>
-import { apiManageLogin } from '@/js/api'
-import { apiManageRegister } from '@/js/api'
+import { apiManageLogin } from "@/js/api";
+import { apiManageRegister } from "@/js/api";
 export default {
     data() {
         return {
+            msg: false,
+            islogin: 0,
+            valid: true,
             nav_drawer: false,
             dialog: false,
             dialog2: false,
@@ -184,41 +265,87 @@ export default {
             pwr: null,
             pwr2: null,
             items: null,
-            colors: ['indigo', 'warning', 'pink darken-2', 'red lighten-1', 'deep-purple accent-4'],
-            slides: ['First', 'Second', 'Third', 'Fourth', 'Fifth'],
+            colors: [
+                "indigo",
+                "warning",
+                "pink darken-2",
+                "red lighten-1",
+                "deep-purple accent-4",
+            ],
+            itemss: [
+                { title: "Click Me" },
+                { title: "Click Me" },
+                { title: "Click Me" },
+                { title: "Click Me 2" },
+            ],
+            slides: [
+                "index",
+                "Introduction1",
+                "Introduction2",
+                "Introduction3",
+                "help",
+            ],
             value: 0,
             scrollable: true,
-            rules: {
-                counter8: (value) => value.length <= 8 || 'Max 8 characters',
-                counter12: (value) => value.length <= 12 || 'Max 12 characters',
-                email: (value) => {
-                    const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                    return pattern.test(value) || 'Invalid e-mail.'
-                },
-            },
-        }
+            //rule start
+            counter16: [
+                (v) => !!v || "必填!",
+                (v) => (v && v.length <= 16) || "Max 16 characters",
+            ],
+            counter12: [
+                (v) => !!v || "必填!",
+                (v) => (v && v.length <= 12) || "Max 12 characters",
+            ],
+            email: [
+                (v) => !!v || "必填!",
+                (v) => /.+@.+\..+/.test(v) || "不符合E-mail格式",
+            ],
+            required: [(v) => !!v || "必填!"],
+            //rule end
+        };
     },
     mounted() {
-        document.querySelector('.v-carousel__controls').style.right = 0
-        this.setCarouselEvent()
+        document.querySelector(".v-carousel__controls").style.right = 0;
+        this.setCarouselEvent();
     },
     methods: {
         login() {
             return apiManageLogin({
+                type: "login",
                 account: this.ac,
                 password: this.pw,
             })
                 .then((res) => {
-                    console.log(res.data)
+                    console.log(res.data);
                     if (res.data == 1) {
-                        alert('登入成功！')
+                        // alert("登入成功！");
+                        this.islogin = 1;
+
+                        this.msg = true;
                     } else {
-                        alert('查無此人！')
+                        alert("查無此人！");
                     }
                 })
                 .catch((error) => {
-                    console.error(error)
+                    console.error(error);
+                });
+        },
+
+        checklogin() {
+            return apiManageLogin({
+                type: "checklogin",
+            })
+                .then((res) => {
+                    console.log(res.data);
+                    if (res.data == 1) {
+                        alert("登入成功！");
+                    } else {
+                        alert("查無此人！");
+                    }
                 })
+                .catch((error) => {
+                    console.error(error);
+                });
         },
 
         register() {
@@ -231,40 +358,69 @@ export default {
                     id: this.items,
                 })
                     .then((res) => {
-                        console.log(res.data)
+                        console.log(res.data);
                         if (res.data == 1) {
-                            alert('註冊成功！')
+                            alert("註冊成功！");
                         } else if (res.data == 2) {
-                            alert('使用者名稱已被使用！')
+                            alert("使用者名稱已被使用！");
                         } else {
-                            alert('帳號已被使用！')
+                            alert("帳號已被使用！");
                         }
                     })
                     .catch((error) => {
-                        console.error(error)
-                    })
+                        console.error(error);
+                    });
             } else {
-                alert('密碼輸入失敗')
+                alert("密碼不一!");
             }
         },
 
         setCarouselEvent() {
-            var app = this
-            window.addEventListener('wheel', function(event) {
-                if (!app.scrollable) return
-                let offset = event.deltaY < 0 ? -1 : 1
-                let slides_length = app.$refs['carousel'].$slots.default.length
-                app.scrollable = false
-                app.value = app.value + offset < slides_length && app.value + offset >= 0 ? app.value + offset : app.value
-                if (!(app.value + offset < slides_length && app.value + offset >= 0)) app.scrollable = true
-            })
-            const transition = document.querySelector('#carousel')
-            transition.addEventListener('transitionend', (e) => {
-                if (e.propertyName.indexOf('transform') != -1) this.scrollable = true
-            })
+            var app = this;
+            window.addEventListener("wheel", function (event) {
+                if (!app.scrollable) return;
+                let offset = event.deltaY < 0 ? -1 : 1;
+                let slides_length = app.$refs["carousel"].$slots.default.length;
+                app.scrollable = false;
+                app.value =
+                    app.value + offset < slides_length &&
+                    app.value + offset >= 0
+                        ? app.value + offset
+                        : app.value;
+                if (
+                    !(
+                        app.value + offset < slides_length &&
+                        app.value + offset >= 0
+                    )
+                )
+                    app.scrollable = true;
+            });
+            const transition = document.querySelector("#carousel");
+            transition.addEventListener("transitionend", (e) => {
+                if (e.propertyName.indexOf("transform") != -1)
+                    this.scrollable = true;
+            });
+        },
+        revalidate() {
+            if (this.$refs.form2.validate()) {
+                this.dialog2 = false;
+                this.register();
+            }
+        },
+        invalidate() {
+            if (this.$refs.form.validate()) {
+                this.dialog = false;
+                this.login();
+            }
+        },
+        gotoGame() {
+            window.location.href = "./game.html";
+        },
+        gotoManage() {
+            window.location.href = "./manage.html";
         },
     },
-}
+};
 </script>
 
 <style scoped>

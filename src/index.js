@@ -1,4 +1,5 @@
 import 'babel-polyfill'
+import './style.css'
 import Vue from 'vue'
 import vuetify from '@/js/plugins/vuetify'
 import App from '@/components/homepage/App.vue'
