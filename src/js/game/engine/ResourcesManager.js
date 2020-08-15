@@ -27,6 +27,14 @@ import bubble from '@/assets/images/bubble.png'
 import edit from '@/assets/images/icon/edit.png'
 import save from '@/assets/images/icon/save.png'
 import profileBg from '@/assets/images/profileBg.png'
+import id from '@/assets/images/icon/id.png'
+import name from '@/assets/images/icon/name.png'
+import gender from '@/assets/images/icon/gender.png'
+import birthday from '@/assets/images/icon/birthday.png'
+import title from '@/assets/images/icon/title.png'
+import money from '@/assets/images/icon/money.png'
+import newPlayer from '@/assets/images/newPlayer.png'
+import question from '@/assets/images/icon/question.png'
 
 
 const resources = {
@@ -56,7 +64,15 @@ const resources = {
     bubble: bubble,
     edit: edit,
     save: save,
-    profileBg: profileBg
+    profileBg: profileBg,
+    id: id,
+    name: name,
+    gender: gender,
+    birthday: birthday,
+    title: title,
+    money: money,
+    newPlayer: newPlayer,
+    question: question
 }
 
 export default resources
