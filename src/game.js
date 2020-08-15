@@ -15,15 +15,24 @@ PixiPlugin.registerPIXI(PIXI)
 /**----------------------------- */
 ;(function() {
     function loadProgressHandler(loader, resource) {
-        if (resources[ResourcesManager.create_role_bg].texture && scenesManager.scenes['loading'] == null) Events.emit('goto', { id: 'loading' })
+        if (
+            resources[ResourcesManager.create_role_bg].texture &&
+            scenesManager.scenes['loading'] == null
+        )
+            Events.emit('goto', { id: 'loading' })
         if (scenesManager.scenes['loading'] != null) {
-            scenesManager.scenes['loading'].progress_bar.setProgress(loader.progress / 100)
+            scenesManager.scenes['loading'].progress_bar.setProgress(
+                loader.progress / 100
+            )
         }
     }
 
     function getloadResources(resources) {
         let data = Object.values(resources)
-        return data.filter((item, index, self) => index === self.indexOf(item) && !PIXI.loader.resources[item])
+        return data.filter(
+            (item, index, self) =>
+                index === self.indexOf(item) && !PIXI.loader.resources[item]
+        )
     }
 
     function start() {
@@ -79,10 +88,16 @@ PixiPlugin.registerPIXI(PIXI)
 
     function countChange() {
         if (scenesManager.scenes['game_start']) {
-            scenesManager.scenes['game_start'].button.position.set(effectController.button.X, effectController.button.Y)
+            scenesManager.scenes['game_start'].button.position.set(
+                effectController.button.X,
+                effectController.button.Y
+            )
         }
         if (scenesManager.scenes['create_role']) {
-            scenesManager.scenes['create_role'].menu.background.position.set(effectController.menu.X, effectController.menu.Y)
+            scenesManager.scenes['create_role'].menu.background.position.set(
+                effectController.menu.X,
+                effectController.menu.Y
+            )
         }
     }
 })()

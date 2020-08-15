@@ -12,7 +12,6 @@ import { style1,style8,style9,style10,style11,style13} from '@/js/game/engine/Te
 import RadarChart from 'Component/RadarChart'
 import Button2 from 'Component/button2'
 
-
 let Application = PIXI.Application,
     Container = PIXI.Container,
     loader = PIXI.loader,
@@ -42,12 +41,11 @@ export default class GameMainScene extends Scene {
 
         let background = new PIXI.Graphics()
         background.beginFill(0xffffff)
-        background.drawRect(0,0,Config.screen.width,Config.screen.height)
+        background.drawRect(0, 0, Config.screen.width, Config.screen.height)
         background.endFill()
         this.addChild(background)
-        
     }
-     /* 建立角色 */
+    /* 建立角色 */
     setCharacter() {
         /* Character */
         this.character = new character('Mary')
@@ -60,16 +58,14 @@ export default class GameMainScene extends Scene {
         this.armatureDisplay.buttonMode = true
         let t = this
         this.armatureDisplay.mouseover = function(mouseData) {
-            t.armatureDisplay.animation.play('shakeHand',1);
+            t.armatureDisplay.animation.play('shakeHand', 1)
         }
-        this.armatureDisplay.mouseout = function(mouseData) {
-            
-        }
+        this.armatureDisplay.mouseout = function(mouseData) {}
         this.armatureDisplay.click = function() {
             if (t.dialog == null) {
                 t.setDialog()
                 t.dialog.click = () => {
-                    t.dialog.visible = false;
+                    t.dialog.visible = false
                 }
             } else {
                 t.dialog.visible = true
@@ -84,8 +80,9 @@ export default class GameMainScene extends Scene {
         this.dialog.setSize(1000,530)
         this.dialog.setBackgroundColor(0xFF9300,0.95)
         this.dialog.setCloseBtnBackgroundColor(0xF8BA00,0.95)
+
     }
-        /* 建立一個textfield */
+    /* 建立一個textfield */
     setTextField() {
         // this.tempNickname = this.character.name
         this.input = new TextInput({
@@ -143,12 +140,12 @@ export default class GameMainScene extends Scene {
             t.editBtn.visible = true
             t.saveBtn.visible = false
             t.input.disabled = true
-            console.log('You have entered',t.input.text)
+            console.log('You have entered', t.input.text)
             console.log('now is editBtn')
             t.nickname = t.input.text
         }
         /*All events are dispatched via the default pixi EventEmitter.*/
-        this.input.on('keydown', keycode => {
+        this.input.on('keydown', (keycode) => {
             //搭配著input focus的部分
             if(keycode == 13){
                 t.editBtn.visible = true
@@ -172,7 +169,9 @@ export default class GameMainScene extends Scene {
         personInfoPanel.endFill()
         this.personInfoContainer.addChild(personInfoPanel)
         /* character background */
-        let characterBg = new Sprite(PIXI.loader.resources[ResourcesManager.profileBg].texture)
+        let characterBg = new Sprite(
+            PIXI.loader.resources[ResourcesManager.profileBg].texture
+        )
         let scale = 240 / characterBg.width
         characterBg.scale.set(scale)
         characterBg.position.set(44,76)
@@ -338,7 +337,7 @@ export default class GameMainScene extends Scene {
         button.text.text = '返回'
         button.position.set(700, 400)
         button.click = () => {
-            Events.emit('goto', { id: 'create_role', animate: 'fadeIn' })
+            Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
         }
         this.addChild(button)
         this.button = button
