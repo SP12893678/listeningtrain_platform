@@ -4,7 +4,6 @@ import Config from '@/js/game/Config'
 import Scene from '@/js/game/engine/Scene'
 import Events from '@/js/game/Events'
 import Button from 'Component/button'
-import Events from '@/js/game/Events'
 import { apiManageRoleClothes } from '@/js/api'
 
 let Application = PIXI.Application,
