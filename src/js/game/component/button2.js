@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js'
+import {style12} from '@/js/game/engine/TextStyleManager'
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -30,7 +31,8 @@ export default class Button2 extends PIXI.Container {
         this.iconPath = iconPath
         this.btnLabel = btnLabel
         this.setButton()
-        this.setText()
+        this.fontFamily = style12
+        this.setText(this.fontFamily)
         this.interactive = true
         this.buttonMode = true
         this.mouseover = function(mouseData) {
@@ -51,7 +53,7 @@ export default class Button2 extends PIXI.Container {
         var icon = new Sprite(PIXI.loader.resources[this.iconPath].texture)
         icon.width = this.btnHeight * 0.7
         icon.height = this.btnHeight * 0.7
-        icon.position.set(this.btnWidth * 0.1, (this.btnHeight * 0.3) / 2)
+        icon.position.set(10, (this.btnHeight * 0.3) / 2)
         this.button.addChild(icon)
         this.addChild(this.button)
     }
@@ -78,15 +80,10 @@ export default class Button2 extends PIXI.Container {
         this.button.drawRoundedRect(0, 0, this.btnWidth, this.btnHeight, this.cornerRadius)
         this.button.endFill()
     }
-    setText() {
-        var text = new PIXI.Text(this.btnLabel, {
-            fontFamily: 'Noto Sans TC',
-            fontSize: this.btnHeight * 0.5,
-            fill: 0xf1f1f1,
-            align: 'center',
-            fontWeight: '400',
-        })
-        text.position.set((this.btnHeight * 0.8 + this.btnWidth - text.width) / 2, (this.btnHeight - text.height) / 2)
-        this.addChild(text)
+    setText(fontFamily) {
+        this.removeChild(this.text)
+        this.text = new PIXI.Text(this.btnLabel,fontFamily)
+        this.text.position.set((this.btnHeight * 0.8 + this.btnWidth - this.text.width) / 2, (this.btnHeight - this.text.height) / 2)
+        this.addChild(this.text)
     }
 }
