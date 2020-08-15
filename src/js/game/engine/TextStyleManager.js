@@ -50,4 +50,67 @@ const style7 = new TextStyle({
     fontSize: 24,
     fill: '#ffffff',
 })
-export { style1, style2, style3, style4, style5, style6, style7 }
+const style8 = new TextStyle({
+    fontFamily: 'jf-openhuninn',
+    fontSize: 20,
+    fill: '#000000',
+    fontWeight: 'bold'
+})
+const style9 = new TextStyle({
+    fontFamily: 'jf-openhuninn',
+    fontSize: 20,
+    fill: '#000000',
+    breakWords: true,
+    wordWrap: true,
+    wordWrapWidth: 450
+})
+const style10 = new PIXI.TextStyle({
+    align: "center",
+    dropShadow: true,
+    dropShadowAlpha: 0.3,
+    dropShadowAngle: 0.4,
+    dropShadowDistance: 2,
+    fill: "#FF644E",
+    fillGradientStops: [
+        0.1
+    ],
+    fontFamily: 'jf-openhuninn',
+    fontSize: 30,
+    fontWeight: "bold",
+    letterSpacing: 5,
+    lineJoin: "round",
+    stroke: "#FF9300",
+    strokeThickness: 5
+});
+const style11 = new PIXI.TextStyle({
+    align: "center",
+    dropShadow: true,
+    dropShadowAlpha: 0.3,
+    dropShadowAngle: 0.4,
+    dropShadowDistance: 2,
+    fill: "#FFFFFF",
+    fillGradientStops: [
+        0.1
+    ],
+    fontFamily: 'jf-openhuninn',
+    fontSize: 30,
+    fontWeight: "bold",
+    letterSpacing: 5,
+    lineJoin: "round",
+    stroke: "#FF644E",
+    strokeThickness: 5
+});
+const style12 = new PIXI.TextStyle({
+    fontFamily: 'Noto Sans TC',
+    fontSize: 28,
+    fill: 0xf1f1f1,
+    align: 'center',
+    fontWeight: '400',
+});
+const style13 = new TextStyle({
+    fontFamily: 'jf-openhuninn',
+    fontSize: 24,
+    fill: '#004D7F',
+})
+export { style1, style2, style3, style4, style5, style6, style7, style8, style9, style10, 
+    style11, style12, style13}
