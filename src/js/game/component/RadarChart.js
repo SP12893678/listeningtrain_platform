@@ -12,6 +12,7 @@ export default class RadarChart extends PIXI.Container {
 
         this.chart = {}
         this.colors = [0x4ec9f5, 0xf54e99]
+        this.barLabel = new PIXI.Container()
 
         this.datasets.forEach((dataset) => {
             this.addChart(dataset.name, dataset.data)
@@ -170,6 +171,7 @@ export default class RadarChart extends PIXI.Container {
         }
         bar.addChild(rectangle)
         bar.position.set(150, -150 + Object.keys(this.chart).length * 40)
-        this.addChild(bar)
+        this.barLabel.addChild(bar)
+        this.addChild(this.barLabel)
     }
 }
