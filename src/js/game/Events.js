@@ -4,6 +4,7 @@ import LoadingScene from 'Scene/LoadingScene'
 import GameStartScene from 'Scene/GameStartScene'
 import CreateRoleScene from 'Scene/CreateRoleScene'
 import GameMainScene from 'Scene/GameMainScene'
+import EnviromentSelectScene from 'Scene/EnviromentSelectScene'
 
 import { gsap } from 'gsap'
 import { PixiPlugin } from 'gsap/PixiPlugin'
@@ -29,6 +30,9 @@ events.on('goto', (val) => {
                 break
             case 'game_main':
                 ScenesManager.createScene(val.id, new GameMainScene())
+                break
+            case 'enviro_select':
+                ScenesManager.createScene(val.id, new EnviromentSelectScene())
                 break
             default:
                 break

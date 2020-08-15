@@ -20,7 +20,7 @@ export default class Button extends PIXI.Container {
         this.setBorder()
         this.setText()
         this.setMaskArea()
-        this.setParticles()
+        // this.setParticles()
         this.setMouseEvent()
     }
 
@@ -81,7 +81,11 @@ export default class Button extends PIXI.Container {
     setParticles() {
         emitter_data.pos.x = -300
         emitter_data.pos.y = 50
-        var emitter = new particles.Emitter(this, [PIXI.Texture.fromImage(ResourcesManager.particles)], emitter_data)
+        var emitter = new particles.Emitter(
+            this,
+            [PIXI.Texture.fromImage(ResourcesManager.particles)],
+            emitter_data
+        )
         var elapsed = Date.now()
         var update = function() {
             requestAnimationFrame(update)

@@ -9,7 +9,6 @@ import character from '@/js/game/character'
 import TextInput from 'Component/TextInput'
 import Dialog from 'Component/dialog'
 
-
 let Application = PIXI.Application,
     Container = PIXI.Container,
     loader = PIXI.loader,
@@ -26,7 +25,6 @@ export default class GameMainScene extends Scene {
         this.setTextField()
         this.setDialog()
         this.setPanel()
-
     }
 
     setBackground() {
@@ -36,12 +34,11 @@ export default class GameMainScene extends Scene {
 
         let background = new PIXI.Graphics()
         background.beginFill(0xffffff)
-        background.drawRect(0,0,Config.screen.width,Config.screen.height)
+        background.drawRect(0, 0, Config.screen.width, Config.screen.height)
         background.endFill()
         this.addChild(background)
-        
     }
-     /* 建立角色 */
+    /* 建立角色 */
     setCharacter() {
         /* Character */
         this.character = new character('Mary')
@@ -54,16 +51,14 @@ export default class GameMainScene extends Scene {
         this.armatureDisplay.buttonMode = true
         let t = this
         this.armatureDisplay.mouseover = function(mouseData) {
-            t.armatureDisplay.animation.play('shakeHand',1);
+            t.armatureDisplay.animation.play('shakeHand', 1)
         }
-        this.armatureDisplay.mouseout = function(mouseData) {
-            
-        }
+        this.armatureDisplay.mouseout = function(mouseData) {}
         this.armatureDisplay.click = function() {
             if (t.dialog == null) {
                 t.setDialog()
                 t.dialog.click = () => {
-                    t.dialog.visible = false;
+                    t.dialog.visible = false
                 }
             } else {
                 t.dialog.visible = true
@@ -72,16 +67,16 @@ export default class GameMainScene extends Scene {
         //this.armatureDisplay.animation.play('shakeHand',1);
     }
     setDialog() {
-        this.dialog = new Dialog('',1)
+        this.dialog = new Dialog('', 1)
         this.addChild(this.dialog)
-        this.dialog.setSize(1000,530)
-        this.dialog.setBackgroundColor(0xFF9300,0.95)
-        this.dialog.setCloseBtnBackgroundColor(0xF8BA00,0.95)
+        this.dialog.setSize(1000, 530)
+        this.dialog.setBackgroundColor(0xff9300, 0.95)
+        this.dialog.setCloseBtnBackgroundColor(0xf8ba00, 0.95)
         // this.setTextField();
         // this.dialog.addChild(this.input)
         // this.setEditSaveBtn();
     }
-        /* 建立一個textfield */
+    /* 建立一個textfield */
     setTextField() {
         this.tempNickname = this.character.name
         this.input = new TextInput({
@@ -91,31 +86,48 @@ export default class GameMainScene extends Scene {
                 width: '200px',
                 color: '#26272E',
             },
-            box:{
-                default: {fill: '', rounded: 12, stroke: {color: 0x000000, width: 2}},
-                focused: {fill: '', rounded: 12, stroke: {color: 0xffffff, width: 2}},
-                disabled: {fill: '', rounded: 12}
-            }
+            box: {
+                default: {
+                    fill: '',
+                    rounded: 12,
+                    stroke: { color: 0x000000, width: 2 },
+                },
+                focused: {
+                    fill: '',
+                    rounded: 12,
+                    stroke: { color: 0xffffff, width: 2 },
+                },
+                disabled: { fill: '', rounded: 12 },
+            },
         })
         this.input.text = this.tempNickname
         this.input._placeholderColor = 0x000000
-        this.input.maxLength = 10 
+        this.input.maxLength = 10
         this.input.placeholder = '輸入你的暱稱...'
-        this.input.x = Config.screen.width/2
-        this.input.y = Config.screen.height/2
-        this.input.pivot.x = this.input.width/2
-        this.input.pivot.y = this.input.height/2
+        this.input.x = Config.screen.width / 2
+        this.input.y = Config.screen.height / 2
+        this.input.pivot.x = this.input.width / 2
+        this.input.pivot.y = this.input.height / 2
     }
     setEditSaveBtn() {
         /* Button to edit nickname */
-        let editBtn = new Sprite(PIXI.loader.resources[ResourcesManager.edit].texture)
-        let saveBtn = new Sprite(PIXI.loader.resources[ResourcesManager.save].texture)
+        let editBtn = new Sprite(
+            PIXI.loader.resources[ResourcesManager.edit].texture
+        )
+        let saveBtn = new Sprite(
+            PIXI.loader.resources[ResourcesManager.save].texture
+        )
         let t = this
         this.input.disabled = true
         editBtn.width = 40
         editBtn.height = 40
         editBtn.anchor.set(0.5)
-        editBtn.position.set(this.input.x+this.input.width/2+this.input._input_style.padding.split("px")[0]*2, this.input.y)
+        editBtn.position.set(
+            this.input.x +
+                this.input.width / 2 +
+                this.input._input_style.padding.split('px')[0] * 2,
+            this.input.y
+        )
         editBtn.visible = true
         editBtn.interactive = true // 設定可以互動
         editBtn.buttonMode = true // 當滑鼠滑過時顯示為手指圖示
@@ -130,7 +142,12 @@ export default class GameMainScene extends Scene {
         saveBtn.width = 35
         saveBtn.height = 35
         saveBtn.anchor.set(0.5)
-        saveBtn.position.set(this.input.x+this.input.width/2+this.input._input_style.padding.split("px")[0]*2, this.input.y)
+        saveBtn.position.set(
+            this.input.x +
+                this.input.width / 2 +
+                this.input._input_style.padding.split('px')[0] * 2,
+            this.input.y
+        )
         saveBtn.visible = false
         saveBtn.interactive = true // 設定可以互動
         saveBtn.buttonMode = true // 當滑鼠滑過時顯示為手指圖示
@@ -138,61 +155,84 @@ export default class GameMainScene extends Scene {
             editBtn.visible = true
             saveBtn.visible = false
             t.input.disabled = true
-            console.log('You have entered',t.input.text)
+            console.log('You have entered', t.input.text)
             console.log('now is editBtn')
         }
         /*All events are dispatched via the default pixi EventEmitter.*/
-        this.input.on('keydown', keycode => {
+        this.input.on('keydown', (keycode) => {
             //搭配著input focus的部分
-            if(keycode == 13){
+            if (keycode == 13) {
                 editBtn.visible = true
                 saveBtn.visible = false
                 t.input.disabled = true
                 console.log('enter')
-            }   
+            }
         })
         this.dialog.addChild(editBtn)
         this.dialog.addChild(saveBtn)
     }
-    setPanel(){
+    setPanel() {
         this.personInfoContainer = new Container()
         /* panel */
         let personInfoPanel = new PIXI.Graphics()
-        personInfoPanel.beginFill(0xFBFFE0)
-        personInfoPanel.drawRoundedRect(this.dialog.dialog.x+15,this.dialog.dialog.y+10,620,500,10)
+        personInfoPanel.beginFill(0xfbffe0)
+        personInfoPanel.drawRoundedRect(
+            this.dialog.dialog.x + 15,
+            this.dialog.dialog.y + 10,
+            620,
+            500,
+            10
+        )
         personInfoPanel.endFill()
-        personInfoPanel.beginFill(0xFEC036)
-        personInfoPanel.drawRoundedRect(this.dialog.dialog.x+40,this.dialog.dialog.y+70,248,392,10)
+        personInfoPanel.beginFill(0xfec036)
+        personInfoPanel.drawRoundedRect(
+            this.dialog.dialog.x + 40,
+            this.dialog.dialog.y + 70,
+            248,
+            392,
+            10
+        )
         personInfoPanel.endFill()
         this.personInfoContainer.addChild(personInfoPanel)
         /* character background */
-        let characterBg = new Sprite(PIXI.loader.resources[ResourcesManager.profileBg].texture)
+        let characterBg = new Sprite(
+            PIXI.loader.resources[ResourcesManager.profileBg].texture
+        )
         let scale = 240 / characterBg.width
         characterBg.scale.set(scale)
-        characterBg.position.set(this.dialog.dialog.x+44,this.dialog.dialog.y+76)
+        characterBg.position.set(
+            this.dialog.dialog.x + 44,
+            this.dialog.dialog.y + 76
+        )
         this.personInfoContainer.addChild(characterBg)
         /* character */
         let person = new character('Mary').armatureDisplay
         person.scale.set(0.35)
-        person.position.set(this.dialog.dialog.x+164,this.dialog.dialog.y+300)
+        person.position.set(
+            this.dialog.dialog.x + 164,
+            this.dialog.dialog.y + 300
+        )
         person.interactive = false
         person.buttonMode = false
         this.personInfoContainer.addChild(person)
         /* profile item */
         this.personInfoItemContainer = new Container()
         this.personInfoContainer.addChild(this.personInfoItemContainer)
-        this.personInfoItemContainer.position.set(this.dialog.dialog.x+288,this.dialog.dialog.y+76)
-        this.create_item('','')
+        this.personInfoItemContainer.position.set(
+            this.dialog.dialog.x + 288,
+            this.dialog.dialog.y + 76
+        )
+        this.create_item('', '')
 
         this.dialog.addChild(this.personInfoContainer)
     }
-    create_item(itemName,iconPic){
+    create_item(itemName, iconPic) {
         // let icon = new Sprite(PIXI.loader.resources[iconPic].texture);
         // icon.scale.set(0.3,0.3);
         // icon.position.set(280*0.3*(this.IconContainer.children.length),0);
         let g = new PIXI.Graphics()
-        g.beginFill(0xFF644E)
-        g.drawRoundedRect(0,0,100,50,10)
+        g.beginFill(0xff644e)
+        g.drawRoundedRect(0, 0, 100, 50, 10)
         g.endFill()
         this.personInfoItemContainer.addChild(g)
     }
@@ -202,7 +242,7 @@ export default class GameMainScene extends Scene {
         button.text.text = '返回'
         button.position.set(700, 400)
         button.click = () => {
-            Events.emit('goto', { id: 'create_role', animate: 'fadeIn' })
+            Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
         }
         this.addChild(button)
         this.button = button

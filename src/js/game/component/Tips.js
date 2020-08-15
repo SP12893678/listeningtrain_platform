@@ -41,10 +41,15 @@ export default class Tips extends PIXI.Container {
             tl.to(this, {
                 pixi: { alpha: 0 },
                 onComplete: () => {
-                    text.text = Config.text.tips[Math.round(Math.random() * (Config.text.tips.length - 1))]
+                    text.text =
+                        Config.text.tips[
+                            Math.round(
+                                Math.random() * (Config.text.tips.length - 1)
+                            )
+                        ]
                 },
             })
             tl.to(this, { pixi: { alpha: 1 }, duration: 1 })
-        }, 1000)
+        }, 4000)
     }
 }

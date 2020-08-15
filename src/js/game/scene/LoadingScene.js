@@ -38,24 +38,17 @@ export default class LoadingScene extends Scene {
         container.addChild(progress_bar)
 
         tips.position.set((container.width / 40) * 9, container.height / 3)
-        progress_bar.position.set((container.width - progress_bar.width) / 2, container.height - progress_bar.height - 25)
-        container.position.set((Config.screen.width - container.width) / 2, Config.screen.height - container.height - 20)
+        progress_bar.position.set(
+            (container.width - progress_bar.width) / 2,
+            container.height - progress_bar.height - 25
+        )
+        container.position.set(
+            (Config.screen.width - container.width) / 2,
+            Config.screen.height - container.height - 20
+        )
         this.addChild(container)
 
         this.progress_bar = progress_bar
-        // let i = 0
-        // let count = setInterval(() => {
-        //     i += 0.01
-        //     if (i >= 1) clearInterval(count)
-        //     this.progress_bar.setProgress(i)
-        // }, 1)
-
-        // setTimeout(() => {
-        //     console.log('go')
-        //     LanguageChooser.select('english')
-        //     ScenesManager.scenes = {}
-        //     Events.emit('goto', { id: 'game_start' })
-        // }, 5000)
     }
 
     init() {}
