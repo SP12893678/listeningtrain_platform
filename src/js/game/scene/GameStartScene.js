@@ -24,7 +24,7 @@ export default class GameStartScene extends Scene {
         this.interactive = true
         this.buttonMode = true
         this.click = () => {
-            // Events.emit('goto', { id: 'create_role', animate: 'fadeIn' })
+            Events.emit('goto', { id: 'create_role', animate: 'fadeIn' })
         }
         this.setBackground()
         this.setButton()
