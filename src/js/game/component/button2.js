@@ -26,10 +26,12 @@ export default class Button2 extends PIXI.Container {
         this.btnHeight = btnHeight
         this.btnBorder = 4
         this.btnBorderColor = '0xFFFFFF'
+        this.btnBgColorAlpha = 1
         this.cornerRadius = 30
         this.btnBgColor = '0x000000'
         this.iconPath = iconPath
         this.btnLabel = btnLabel
+        this.icon = new Sprite(PIXI.loader.resources[this.iconPath].texture)
         this.setButton()
         this.fontFamily = style12
         this.setText(this.fontFamily)
@@ -47,13 +49,14 @@ export default class Button2 extends PIXI.Container {
         /* Draws a button */
         this.button = new PIXI.Graphics()
         this.button.lineStyle(this.btnBorder, this.btnBorderColor)
-        this.button.beginFill(this.btnBgColor) //填充
+        this.button.beginFill(this.btnBgColor,this.btnBgColorAlpha) //填充
         this.button.drawRoundedRect(0, 0, this.btnWidth, this.btnHeight, this.cornerRadius)
         this.button.endFill()
-        var icon = new Sprite(PIXI.loader.resources[this.iconPath].texture)
+        let icon = this.icon
         icon.width = this.btnHeight * 0.7
         icon.height = this.btnHeight * 0.7
-        icon.position.set(10, (this.btnHeight * 0.3) / 2)
+        icon.anchor.set(0.5)
+        icon.position.set(28,this.btnHeight*0.5)
         this.button.addChild(icon)
         this.addChild(this.button)
     }
@@ -65,9 +68,10 @@ export default class Button2 extends PIXI.Container {
         this.btnBorderColor = btnBorderColor
         this.reDraw()
     }
-    setBackgroundColor(btnBgColor) {
-        this.btnBgColor = btnBgColor
-        this.reDraw()
+    setBackgroundColor(backgroundColor,alpha){
+        this.btnBgColor = backgroundColor;
+        this.btnBgColorAlpha = alpha;
+        this.reDraw();
     }
     setCornerRadius(cornerRadius) {
         this.cornerRadius = cornerRadius
@@ -76,7 +80,7 @@ export default class Button2 extends PIXI.Container {
     reDraw() {
         this.button.clear()
         this.button.lineStyle(this.btnBorder, this.btnBorderColor)
-        this.button.beginFill(this.btnBgColor) //填充
+        this.button.beginFill(this.btnBgColor,this.btnBgColorAlpha) //填充
         this.button.drawRoundedRect(0, 0, this.btnWidth, this.btnHeight, this.cornerRadius)
         this.button.endFill()
     }
