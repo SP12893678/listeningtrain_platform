@@ -36,6 +36,9 @@ import money from '@/assets/images/icon/money.png'
 import newPlayer from '@/assets/images/newPlayer.png'
 import question from '@/assets/images/icon/question.png'
 
+import goBack from '@/assets/images/icon/goBack.png'
+import help from '@/assets/images/icon/help.png'
+
 
 const resources = {
     loading_bg: loadingBackground,
@@ -72,7 +75,9 @@ const resources = {
     title: title,
     money: money,
     newPlayer: newPlayer,
-    question: question
+    question: question,
+    goBack: goBack,
+    help: help
 }
 
 export default resources
