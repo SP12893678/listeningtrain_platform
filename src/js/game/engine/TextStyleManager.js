@@ -112,5 +112,21 @@ const style13 = new TextStyle({
     fontSize: 24,
     fill: '#004D7F',
 })
+const style14 = new TextStyle({
+    fontFamily: 'jf-openhuninn',
+    fontSize: 48,
+    fill: '#000000',
+    breakWords: true,
+    wordWrap: true,
+    wordWrapWidth: 450
+})//Mode Title
+const style15 = new TextStyle({
+    fontFamily: 'jf-openhuninn',
+    fontSize: 36,
+    fill: '#000000',
+    breakWords: true,
+    wordWrap: true,
+    wordWrapWidth: 450
+})//goBack Text
 export { style1, style2, style3, style4, style5, style6, style7, style8, style9, style10, 
-    style11, style12, style13}
+    style11, style12, style13, style14, style15}
