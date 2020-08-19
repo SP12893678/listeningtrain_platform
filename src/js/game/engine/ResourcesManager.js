@@ -27,7 +27,7 @@ import bubble from '@/assets/images/bubble.png'
 import edit from '@/assets/images/icon/edit.png'
 import save from '@/assets/images/icon/save.png'
 import profileBg from '@/assets/images/profileBg.png'
-
+import background001 from '@/assets/images/background/background001.jpg'
 
 const resources = {
     loading_bg: loadingBackground,
@@ -56,7 +56,8 @@ const resources = {
     bubble: bubble,
     edit: edit,
     save: save,
-    profileBg: profileBg
+    profileBg: profileBg,
+    background001: background001,
 }
 
 export default resources

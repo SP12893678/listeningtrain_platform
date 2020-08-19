@@ -33,7 +33,7 @@ export default class GameMainScene extends Scene {
         // background.scale.set(scale, scale)
 
         let background = new PIXI.Graphics()
-        background.beginFill(0xffffff)
+        background.beginFill(0x000000)
         background.drawRect(0, 0, Config.screen.width, Config.screen.height)
         background.endFill()
         this.addChild(background)
@@ -111,23 +111,14 @@ export default class GameMainScene extends Scene {
     }
     setEditSaveBtn() {
         /* Button to edit nickname */
-        let editBtn = new Sprite(
-            PIXI.loader.resources[ResourcesManager.edit].texture
-        )
-        let saveBtn = new Sprite(
-            PIXI.loader.resources[ResourcesManager.save].texture
-        )
+        let editBtn = new Sprite(PIXI.loader.resources[ResourcesManager.edit].texture)
+        let saveBtn = new Sprite(PIXI.loader.resources[ResourcesManager.save].texture)
         let t = this
         this.input.disabled = true
         editBtn.width = 40
         editBtn.height = 40
         editBtn.anchor.set(0.5)
-        editBtn.position.set(
-            this.input.x +
-                this.input.width / 2 +
-                this.input._input_style.padding.split('px')[0] * 2,
-            this.input.y
-        )
+        editBtn.position.set(this.input.x + this.input.width / 2 + this.input._input_style.padding.split('px')[0] * 2, this.input.y)
         editBtn.visible = true
         editBtn.interactive = true // 設定可以互動
         editBtn.buttonMode = true // 當滑鼠滑過時顯示為手指圖示
@@ -142,12 +133,7 @@ export default class GameMainScene extends Scene {
         saveBtn.width = 35
         saveBtn.height = 35
         saveBtn.anchor.set(0.5)
-        saveBtn.position.set(
-            this.input.x +
-                this.input.width / 2 +
-                this.input._input_style.padding.split('px')[0] * 2,
-            this.input.y
-        )
+        saveBtn.position.set(this.input.x + this.input.width / 2 + this.input._input_style.padding.split('px')[0] * 2, this.input.y)
         saveBtn.visible = false
         saveBtn.interactive = true // 設定可以互動
         saveBtn.buttonMode = true // 當滑鼠滑過時顯示為手指圖示
@@ -176,52 +162,29 @@ export default class GameMainScene extends Scene {
         /* panel */
         let personInfoPanel = new PIXI.Graphics()
         personInfoPanel.beginFill(0xfbffe0)
-        personInfoPanel.drawRoundedRect(
-            this.dialog.dialog.x + 15,
-            this.dialog.dialog.y + 10,
-            620,
-            500,
-            10
-        )
+        personInfoPanel.drawRoundedRect(this.dialog.dialog.x + 15, this.dialog.dialog.y + 10, 620, 500, 10)
         personInfoPanel.endFill()
         personInfoPanel.beginFill(0xfec036)
-        personInfoPanel.drawRoundedRect(
-            this.dialog.dialog.x + 40,
-            this.dialog.dialog.y + 70,
-            248,
-            392,
-            10
-        )
+        personInfoPanel.drawRoundedRect(this.dialog.dialog.x + 40, this.dialog.dialog.y + 70, 248, 392, 10)
         personInfoPanel.endFill()
         this.personInfoContainer.addChild(personInfoPanel)
         /* character background */
-        let characterBg = new Sprite(
-            PIXI.loader.resources[ResourcesManager.profileBg].texture
-        )
+        let characterBg = new Sprite(PIXI.loader.resources[ResourcesManager.profileBg].texture)
         let scale = 240 / characterBg.width
         characterBg.scale.set(scale)
-        characterBg.position.set(
-            this.dialog.dialog.x + 44,
-            this.dialog.dialog.y + 76
-        )
+        characterBg.position.set(this.dialog.dialog.x + 44, this.dialog.dialog.y + 76)
         this.personInfoContainer.addChild(characterBg)
         /* character */
         let person = new character('Mary').armatureDisplay
         person.scale.set(0.35)
-        person.position.set(
-            this.dialog.dialog.x + 164,
-            this.dialog.dialog.y + 300
-        )
+        person.position.set(this.dialog.dialog.x + 164, this.dialog.dialog.y + 300)
         person.interactive = false
         person.buttonMode = false
         this.personInfoContainer.addChild(person)
         /* profile item */
         this.personInfoItemContainer = new Container()
         this.personInfoContainer.addChild(this.personInfoItemContainer)
-        this.personInfoItemContainer.position.set(
-            this.dialog.dialog.x + 288,
-            this.dialog.dialog.y + 76
-        )
+        this.personInfoItemContainer.position.set(this.dialog.dialog.x + 288, this.dialog.dialog.y + 76)
         this.create_item('', '')
 
         this.dialog.addChild(this.personInfoContainer)

@@ -18,6 +18,7 @@ export default class VerticalScroller extends PIXI.Container {
         let need_length = (controlled.height - container.height) / this.ratio
         let track_length = this.track.height - 2 - 2
         let thumb_height = need_length <= track_length - this.min_thumb ? track_length - need_length : this.min_thumb
+        thumb_height = need_length <= 0 ? container.height - radius * 2 + 6 : thumb_height
         this.scroll_length = track_length - thumb_height
         this.thumb = this.drawThumb(this.min_thumb, thumb_height, radius - 2)
 
@@ -41,7 +42,7 @@ export default class VerticalScroller extends PIXI.Container {
                     new_y = new_y <= 0 ? 0 : new_y
                     new_y = new_y >= this.parent.scroll_length ? this.parent.scroll_length : new_y
                     this.position.y = new_y
-                    let ratio = (this.parent.controlled.height - this.parent.container.height) / this.parent.scroll_length
+                    let ratio = this.parent.scroll_length > 0 ? (this.parent.controlled.height - this.parent.container.height) / this.parent.scroll_length : 0
                     this.parent.controlled.position.y = this.parent.controlled_init_y - new_y * ratio
                 }
             },
@@ -72,5 +73,11 @@ export default class VerticalScroller extends PIXI.Container {
         thumb.drawRoundedRect(2, 2, width, height, radius)
         thumb.endFill()
         return thumb
+    }
+
+    refresh() {
+        this.thumb.clear()
+        this.track.clear()
+        this.doVerticalScroller(this.radius, this.controlled, this.container)
     }
 }
