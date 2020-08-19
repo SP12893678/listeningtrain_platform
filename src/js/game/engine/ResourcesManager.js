@@ -38,6 +38,8 @@ import question from '@/assets/images/icon/question.png'
 
 import goBack from '@/assets/images/icon/goBack.png'
 import help from '@/assets/images/icon/help.png'
+import clock from '@/assets/images/icon/clock.png'
+import start from '@/assets/images/icon/start.png'
 
 
 const resources = {
@@ -77,7 +79,9 @@ const resources = {
     newPlayer: newPlayer,
     question: question,
     goBack: goBack,
-    help: help
+    help: help,
+    clock: clock,
+    start: start
 }
 
 export default resources
