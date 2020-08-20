@@ -41,7 +41,7 @@ export default class GameStartScene extends Scene {
     }
 
     async gotoNextScene() {
-        await apiManageRoleClothes({ type: 'get', name: 'el' })
+        await apiManageRoleClothes({ type: 'get', name: 'Mary' })
             .then((res) => {
                 console.log('clothing_data', res.data)
                 let scene = res.data.length != 0 ? 'game_main' : 'create_role'

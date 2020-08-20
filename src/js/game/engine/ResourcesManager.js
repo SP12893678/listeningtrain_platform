@@ -28,6 +28,19 @@ import edit from '@/assets/images/icon/edit.png'
 import save from '@/assets/images/icon/save.png'
 import profileBg from '@/assets/images/profileBg.png'
 import background001 from '@/assets/images/background/background001.jpg'
+import id from '@/assets/images/icon/id.png'
+import name from '@/assets/images/icon/name.png'
+import gender from '@/assets/images/icon/gender.png'
+import birthday from '@/assets/images/icon/birthday.png'
+import title from '@/assets/images/icon/title.png'
+import money from '@/assets/images/icon/money.png'
+import newPlayer from '@/assets/images/newPlayer.png'
+import question from '@/assets/images/icon/question.png'
+
+import goBack from '@/assets/images/icon/goBack.png'
+import help from '@/assets/images/icon/help.png'
+import clock from '@/assets/images/icon/clock.png'
+import start from '@/assets/images/icon/start.png'
 
 const resources = {
     loading_bg: loadingBackground,
@@ -58,6 +71,18 @@ const resources = {
     save: save,
     profileBg: profileBg,
     background001: background001,
+    id: id,
+    name: name,
+    gender: gender,
+    birthday: birthday,
+    title: title,
+    money: money,
+    newPlayer: newPlayer,
+    question: question,
+    goBack: goBack,
+    help: help,
+    clock: clock,
+    start: start,
 }
 
 export default resources

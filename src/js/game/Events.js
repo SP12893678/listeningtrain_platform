@@ -5,6 +5,9 @@ import GameStartScene from 'Scene/GameStartScene'
 import CreateRoleScene from 'Scene/CreateRoleScene'
 import GameMainScene from 'Scene/GameMainScene'
 import EnviromentSelectScene from 'Scene/EnviromentSelectScene'
+import TrainModeScene from 'Scene/TrainModeScene'
+import PracticeModeScene from 'Scene/PracticeModeScene'
+import TestModeScene from 'Scene/TestModeScene'
 
 import { gsap } from 'gsap'
 import { PixiPlugin } from 'gsap/PixiPlugin'
@@ -33,6 +36,15 @@ events.on('goto', (val) => {
                 break
             case 'enviro_select':
                 ScenesManager.createScene(val.id, new EnviromentSelectScene())
+                break
+            case 'train_mode':
+                ScenesManager.createScene(val.id, new TrainModeScene())
+                break
+            case 'practice_mode':
+                ScenesManager.createScene(val.id, new PracticeModeScene())
+                break
+            case 'test_mode':
+                ScenesManager.createScene(val.id, new TestModeScene())
                 break
             default:
                 break
