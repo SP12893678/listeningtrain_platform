@@ -28,6 +28,8 @@ import edit from '@/assets/images/icon/edit.png'
 import save from '@/assets/images/icon/save.png'
 import profileBg from '@/assets/images/profileBg.png'
 import background001 from '@/assets/images/background/background001.jpg'
+import slash001 from '@/assets/images/slash001.png'
+
 import id from '@/assets/images/icon/id.png'
 import name from '@/assets/images/icon/name.png'
 import gender from '@/assets/images/icon/gender.png'
@@ -71,6 +73,7 @@ const resources = {
     save: save,
     profileBg: profileBg,
     background001: background001,
+    slash001: slash001,
     id: id,
     name: name,
     gender: gender,

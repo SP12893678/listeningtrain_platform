@@ -39,7 +39,16 @@ PixiPlugin.registerPIXI(PIXI)
             extensions: ['*.gif', '*.jpg', '*.png'],
         })
             .then((res) => {
-                console.log(res.data)
+                data.push(...res.data)
+            })
+            .catch((error) => {
+                console.error(error)
+            })
+        await apiGetFolderFileList({
+            path: 'images-enviro-object',
+            extensions: ['*.png'],
+        })
+            .then((res) => {
                 data.push(...res.data)
             })
             .catch((error) => {

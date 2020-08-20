@@ -91,7 +91,6 @@ export default class EnviromentSelectScene extends Scene {
             item.click = () => {
                 listboard.getListItems().forEach((i) => i.drawBackground(0x29d4ff))
                 item.drawBackground(0x4b70fa)
-
                 current_environments = environments.filter((environment) => {
                     return environment.category.indexOf(item.type) != -1
                 })
@@ -205,10 +204,6 @@ class EnviromentListBoard extends Container {
         remove_arr.push(...list.content.children)
         remove_arr.forEach((children) => list.content.removeChild(children))
         current_environments.forEach((enviroment) => list.addListitem(enviroment))
-        if (current_environments.length >= 1)
-            for (let index = 0; index < Math.round(Math.random() * 5); index++) {
-                list.addListitem(current_environments[0])
-            }
     }
 }
 
@@ -239,7 +234,6 @@ class EnviromentList extends Container {
 class EnviromentListItem extends Container {
     constructor(data) {
         super()
-        console.log(data)
         this.data = data
         this.background = new Graphics()
         this.thumbnail = new Sprite()
