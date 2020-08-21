@@ -200,9 +200,7 @@ class EnviromentListBoard extends Container {
 
     showCurrentLists(current_environments) {
         let list = this.list
-        let remove_arr = []
-        remove_arr.push(...list.content.children)
-        remove_arr.forEach((children) => list.content.removeChild(children))
+        list.content.removeChild(...list.content.children)
         current_environments.forEach((enviroment) => list.addListitem(enviroment))
     }
 }
