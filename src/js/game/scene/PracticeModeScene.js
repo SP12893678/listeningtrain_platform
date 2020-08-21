@@ -44,8 +44,9 @@ export default class PracticeModeScene extends Scene {
         let title = this.title
         /* titlePanel */
         let titlePanel = new PIXI.Graphics()
+        let titleHeight = Config.screen.height*0.08
         titlePanel.beginFill(0xF8BA00)
-        titlePanel.drawRect(0,0,Config.screen.width,Config.screen.height*0.1)
+        titlePanel.drawRect(0,0,Config.screen.width,titleHeight)
         titlePanel.drawCircle(60,60,60)
         title.addChild(titlePanel)
         /* goBack Button */
@@ -71,12 +72,12 @@ export default class PracticeModeScene extends Scene {
         /* goBack Text */
         let goBackText = new PIXI.Text('返回',style15)
         goBackText.anchor.set(0.5)
-        goBackText.position.set(160,Config.screen.height*0.1/2)
+        goBackText.position.set(160,titleHeight/2)
         title.addChild(goBackText)
         /* title Text */
         let titleText = new PIXI.Text('練習模式',style14)
         titleText.anchor.set(0.5)
-        titleText.position.set(Config.screen.width/2,Config.screen.height*0.1/2)
+        titleText.position.set(Config.screen.width/2,titleHeight/2)
         title.addChild(titleText)
         /* QuestionTotal */
         let questionTotalBg = new PIXI.Graphics()
@@ -95,9 +96,9 @@ export default class PracticeModeScene extends Scene {
         questionTotalNo.position.set(titleText.x+titleText.width/2+80+55/2,titleText.y-titleText.height/2+50/2)
         title.addChild(questionTotalNo)
         /* help */   
-        let btn_help = new Button2(150,Config.screen.height*0.1,ResourcesManager.help,'說明')
-        btn_help.pivot.set(150/2,Config.screen.height*0.1/2)
-        btn_help.position.set(Config.screen.width-90,Config.screen.height*0.1/2)
+        let btn_help = new Button2(150,titleHeight*0.8,ResourcesManager.help,'說明')
+        btn_help.pivot.set(150/2,titleHeight/2)
+        btn_help.position.set(Config.screen.width-70,titleHeight/2+titleHeight*0.1)
         btn_help.setBorder(0)
         btn_help.setBackgroundColor('',0)
         btn_help.setText(style15)
@@ -121,48 +122,51 @@ export default class PracticeModeScene extends Scene {
         let character = this.character
         let factory = character.factory
         let armatureDisplay = character.armatureDisplay
-        armatureDisplay.position.set(300,600)
-        armatureDisplay.scale.set(0.5)
+        armatureDisplay.position.set(250,670)
+        armatureDisplay.scale.set(0.4)
         this.addChild(armatureDisplay)
         //this.armatureDisplay.animation.play('shakeHand',1);
     }
     setScreenUp(){
         let screenUp = this.screenUp
-        screenUp.position.set(600,110)
+        screenUp.position.set(480,Config.screen.height*0.095)
         screenUp.visible = false
         this.addChild(screenUp)
         /* question No */
         let questionNoBg = new PIXI.Graphics()
         questionNoBg.beginFill(0xFF5336)
-        questionNoBg.drawRoundedRect(0,0,150,50,10)
+        questionNoBg.drawRoundedRect(0,0,130,50,10)
         questionNoBg.beginFill()
         screenUp.addChild(questionNoBg)
         
         let questionNoText = '第    題'
         let questionNoLabel = new PIXI.Text(questionNoText,style15)
         questionNoLabel.anchor.set(0.5)
-        questionNoLabel.position.set(75,25)
+        questionNoLabel.position.set(65,25)
         screenUp.addChild(questionNoLabel)
 
         let questionNo = new PIXI.Text(this.questionNo,style15)
         questionNo.anchor.set(0.5)
-        questionNo.position.set(75,25)
+        questionNo.position.set(65,25)
         screenUp.addChild(questionNo)
     }
     setScreen(){
         let screen = this.screen
-        screen.position.set(600,180)
+        screen.position.set(480,this.screenUp.y+65)
         this.addChild(screen)
 
         let screenCover = new PIXI.Graphics()
+        let screenLength = 1100
+        let screenHeight = 660
         screenCover.beginFill(0xffffff,0.8)
-        screenCover.drawRoundedRect(0,0,950,580,10)
+        screenCover.drawRoundedRect(0,0,screenLength,screenHeight,10)
         screenCover.endFill()
         screen.addChild(screenCover)
 
         /* start button */
         let startBtn = this.startBtn
-        startBtn.position.set(375,260)
+        startBtn.pivot.set(startBtn.btnWidth/2,startBtn.btnHeight/2)
+        startBtn.position.set(screenLength/2,screenHeight/2)
         startBtn.setBorder(0)
         startBtn.setBackgroundColor(0xF8F9EA)
         startBtn.setText(style15)

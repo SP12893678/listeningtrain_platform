@@ -44,6 +44,7 @@ export default class Timer extends PIXI.Container {
         let text = this.text
         text.text = ''
         text.style = style6
+        text.style.fontSize = 28
         text.position.set(0,0)
         this.addChild(text)
     }

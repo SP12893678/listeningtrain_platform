@@ -119,7 +119,7 @@ const style14 = new TextStyle({
 })//Mode Title
 const style15 = new TextStyle({
     fontFamily: 'jf-openhuninn',
-    fontSize: 36,
+    fontSize: 30,
     fill: '#000000',
 })//goBack Text
 const style16 = new TextStyle({
