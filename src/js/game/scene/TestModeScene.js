@@ -69,7 +69,10 @@ export default class TestModeScene extends Scene {
         btn_goback.buttonMode = true
         btn_goback.position.set(60,60)
         btn_goback.click = () => {
-            Events.emit('goto', { id: 'game_main', animate: 'fadeIn' })
+            if(!this.startBtn.visible)
+                this.leaveDialog.visible = true
+            else
+                Events.emit('goto', { id: 'game_main', animate: 'fadeIn' })
         }
         btn_goback.mouseover = function(mouseData) {
             btn_goback.scale.set(scale*1.1)
@@ -222,11 +225,11 @@ export default class TestModeScene extends Scene {
             /* yesBtn action */
             this.reset()
             Events.emit('goto', { id: 'game_main', animate: 'fadeIn' })
-            leaveDialog.visible = !leaveDialog.visible;
+            leaveDialog.visible = false
         }
         leaveDialog.cancelBtn.click = () =>{
             /* cancelBtn action */
-            leaveDialog.visible = !leaveDialog.visible;
+            leaveDialog.visible = false
             this.timer.start()
         }
         /* leave button */
@@ -237,7 +240,7 @@ export default class TestModeScene extends Scene {
         leaveBtn .setBackgroundColor(0xF8F9EA)
         leaveBtn .setText(style15)
         leaveBtn.click = () =>{
-            leaveDialog.visible = !leaveDialog.visible
+            leaveDialog.visible = true
             this.timer.stop() 
         }
         screenDown.addChild(leaveBtn)
@@ -246,10 +249,10 @@ export default class TestModeScene extends Scene {
         this.questionNo = 1
         this.questionNoShow.text = this.questionNo
 
-        this.screenUp.visible = !this.screenUp.visible
-        this.startBtn.visible = !this.startBtn.visible
-        this.screenCover.visible = !this.screenCover.visible
-        this.screenDown.visible = !this.screenDown.visible
+        this.screenUp.visible = false
+        this.startBtn.visible = true
+        this.screenCover.visible = true
+        this.screenDown.visible = false
         this.timer.reset()
     }
 }

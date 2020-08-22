@@ -29,12 +29,14 @@ export default class PracticeModeScene extends Scene {
         this.questionNoShow = new PIXI.Text(this.questionNo, style15)
         this.starCheck = new Container()
         this.screen = new Container()
+        this.screenCover = new PIXI.Graphics()
         this.startBtn = new Button2(200, 60, ResourcesManager.start, ' 開始   ')
         this.environment = new Environment()
         this.screenDown = new Container()
         this.nextBtn = new Button2(160, 50, ResourcesManager.nextQuestion, '下一題')
         this.listenBtn = new Button2(180, 50, ResourcesManager.listen, '再聽一次')
         this.replayBtn = new Button2(180, 50, ResourcesManager.reload, '重新開始')
+        this.replayDialog = new Dialog('確定要重新開始嗎？')
         this.leaveBtn = new Button2(180, 50, ResourcesManager.leave, '結束練習')
         this.leaveDialog = new Dialog('確定要離開練習嗎？')
 
@@ -72,7 +74,10 @@ export default class PracticeModeScene extends Scene {
         btn_goback.buttonMode = true
         btn_goback.position.set(60, 60)
         btn_goback.click = () => {
-            Events.emit('goto', { id: 'game_main', animate: 'fadeIn' })
+            if(!this.startBtn.visible)
+                this.leaveDialog.visible = true
+            else
+                Events.emit('goto', { id: 'game_main', animate: 'fadeIn' })
         }
         btn_goback.mouseover = function(mouseData) {
             btn_goback.scale.set(scale * 1.1)
@@ -188,7 +193,7 @@ export default class PracticeModeScene extends Scene {
         screen.height = environment.height
         screen.addChild(environment)
 
-        let screenCover = new PIXI.Graphics()
+        let screenCover = this.screenCover
         screenCover.beginFill(0xffffff,0.8)
         screenCover.drawRoundedRect(0,0,screen.length,environment.height,10)
         screenCover.endFill()
@@ -202,10 +207,10 @@ export default class PracticeModeScene extends Scene {
         startBtn.setBackgroundColor(0xf8f9ea)
         startBtn.setText(style15)
         startBtn.click = () => {
-            this.screenUp.visible = !this.screenUp.visible
-            startBtn.visible = !startBtn.visible
-            screenCover.visible = !screenCover.visible
-            this.screenDown.visible = !this.screenDown.visible
+            this.screenUp.visible = true
+            startBtn.visible = false
+            screenCover.visible = false
+            this.screenDown.visible = true
 
         }
         screen.addChild(startBtn)
@@ -239,6 +244,20 @@ export default class PracticeModeScene extends Scene {
         listenBtn.setBackgroundColor(0xF8F9EA)
         listenBtn.setText(style15)
         screenDown.addChild(listenBtn)
+        /* replay dialog */
+        let replayDialog = this.replayDialog
+        replayDialog.visible = false
+        this.addChild(replayDialog)
+
+        replayDialog.yesBtn.click = () => {
+            /* yesBtn action */
+            this.reset()
+            replayDialog.visible = false
+        }
+        replayDialog.cancelBtn.click = () => {
+            /* cancelBtn action */
+            replayDialog.visible = false
+        }
         /* replay button */
         let replayBtn = this.replayBtn
         replayBtn.position.set(this.screen.length-replayBtn.btnWidth*2-10,0)
@@ -247,13 +266,7 @@ export default class PracticeModeScene extends Scene {
         replayBtn.setBackgroundColor(0xF8F9EA)
         replayBtn.setText(style15)
         replayBtn.click = () =>{
-            // For test
-            let starCheck = this.starCheck.children
-            starCheck.forEach( star => {
-                star.tint = 0xffffff
-            })
-            this.questionNo = 1
-            this.questionNoShow.text = this.questionNo
+            replayDialog.visible = true
         }
         screenDown.addChild(replayBtn)
         /* leave dialog */
@@ -261,15 +274,15 @@ export default class PracticeModeScene extends Scene {
         leaveDialog.visible = false
         this.addChild(leaveDialog)
 
-        leaveDialog.click = () => {
-            leaveDialog.visible = !leaveDialog.visible;
-        }
-        leaveDialog.yesBtn.click = function() {
+        leaveDialog.yesBtn.click = () => {
             /* yesBtn action */
+            this.reset()
             Events.emit('goto', { id: 'game_main', animate: 'fadeIn' })
+            leaveDialog.visible = false
         }
-        leaveDialog.cancelBtn.click = function() {
+        leaveDialog.cancelBtn.click = () => {
             /* cancelBtn action */
+            leaveDialog.visible = false
         }
         /* leave button */
         let leaveBtn = this.leaveBtn
@@ -279,9 +292,25 @@ export default class PracticeModeScene extends Scene {
         leaveBtn .setBackgroundColor(0xF8F9EA)
         leaveBtn .setText(style15)
         leaveBtn.click = () =>{
-            leaveDialog.visible = !leaveDialog.visible
+            leaveDialog.visible = true
         }
         screenDown.addChild(leaveBtn)
 
+    }
+    reset(){
+        this.questionTotalNo = this.questionTotal
+
+        this.questionNo = 1
+        this.questionNoShow.text = this.questionNo
+
+        let starCheck = this.starCheck.children
+            starCheck.forEach( star => {
+                star.tint = 0xffffff
+        })
+
+        this.screenUp.visible = false
+        this.startBtn.visible = true
+        this.screenCover.visible = true
+        this.screenDown.visible = false
     }
 }
