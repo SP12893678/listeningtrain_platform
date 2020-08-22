@@ -12,7 +12,7 @@ export default class Timer extends PIXI.Container {
         super()
         this.min = 0
         this.sec = -1
-        this.state = 0 //stop
+        this.state = false //stop
         this.text = new PIXI.Text()
 
         this.startTime()
@@ -54,23 +54,27 @@ export default class Timer extends PIXI.Container {
         text.text = this.time
     }
     reset(){
-        this.state = 0
+        this.state = false
+        clearInterval(this.timer); 
         let text = this.text
         this.min = 0
         this.sec = 0
         this.startTime()
         text.text = this.time
+        console.log('reset')
     }
     start(){
-        this.state = 1
+        this.state = true
         let text = this.text
         this.timer = setInterval(() => {
             this.startTime()
             text.text = this.time
         }, 1000)
+        console.log('start')
     }
     stop(){
-        this.state = 0
+        this.state = false
         clearInterval(this.timer); 
+        console.log('stop')
     }
 }

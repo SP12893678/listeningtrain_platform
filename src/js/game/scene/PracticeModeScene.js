@@ -8,6 +8,7 @@ import { style14, style15, style16 } from '@/js/game/engine/TextStyleManager'
 import character from '@/js/game/character'
 import Button2 from 'Component/button2'
 import Environment from '@/js/game/Environment'
+import Dialog from 'Component/dialog'
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -24,16 +25,27 @@ export default class PracticeModeScene extends Scene {
         this.character = new character('Mary')
         this.questionTotal = 10
         this.questionNo = 1
-        this.screen = new Container()
         this.screenUp = new Container()
+        this.questionNoShow = new PIXI.Text(this.questionNo, style15)
+        this.starCheck = new Container()
+        this.screen = new Container()
         this.startBtn = new Button2(200, 60, ResourcesManager.start, ' 開始   ')
         this.environment = new Environment()
+        this.screenDown = new Container()
+        this.nextBtn = new Button2(160, 50, ResourcesManager.nextQuestion, '下一題')
+        this.listenBtn = new Button2(180, 50, ResourcesManager.listen, '再聽一次')
+        this.replayBtn = new Button2(180, 50, ResourcesManager.reload, '重新開始')
+        this.leaveBtn = new Button2(180, 50, ResourcesManager.leave, '結束練習')
+        this.leaveDialog = new Dialog('確定要離開練習嗎？')
+
+
 
         this.setBackground()
         this.setTitle()
         this.setCharacter()
         this.setScreenUp()
         this.setScreen()
+        this.setScreenDown()
     }
     setBackground() {
         let background = this.background
@@ -139,48 +151,137 @@ export default class PracticeModeScene extends Scene {
         questionNoBg.beginFill()
         screenUp.addChild(questionNoBg)
 
-        let questionNoText = '第    題'
+        let questionNoText = '第     題'
         let questionNoLabel = new PIXI.Text(questionNoText, style15)
         questionNoLabel.anchor.set(0.5)
         questionNoLabel.position.set(65,25)
         screenUp.addChild(questionNoLabel)
 
-        let questionNo = new PIXI.Text(this.questionNo, style15)
-        questionNo.anchor.set(0.5)
-        questionNo.position.set(65,25)
-        screenUp.addChild(questionNo)
+        let questionNoShow = this.questionNoShow 
+        questionNoShow.anchor.set(0.5)
+        questionNoShow.position.set(65,25)
+        screenUp.addChild(questionNoShow)
+        /* star */
+        let starCheck = this.starCheck
+        starCheck.position.set(170,0)
+        screenUp.addChild(starCheck)
+        for(let i = 0 ; i < this.questionTotal ; i++ ){
+            let star = new PIXI.Graphics()
+            star.beginFill(0xffffff)
+            star.drawStar(0+i*60, 25, 5, 25, 9)
+            star.endFill()
+            starCheck.addChild(star)
+        }
+        console.log(this.starCheck)
     }
     async setScreen() {
         let screen = this.screen
+        screen.length = 1050
+        screen.height = 630
         screen.position.set(480,this.screenUp.y+65)
         this.addChild(screen)
 
         let environment = this.environment
         await environment.init('1')
-        let scale = 950 / environment.width
+        let scale =  screen.length / environment.width
         environment.scale.set(scale, scale)
+        screen.height = environment.height
         screen.addChild(environment)
 
         let screenCover = new PIXI.Graphics()
-        let screenLength = 1100
-        let screenHeight = 660
         screenCover.beginFill(0xffffff,0.8)
-        screenCover.drawRoundedRect(0,0,screenLength,screenHeight,10)
+        screenCover.drawRoundedRect(0,0,screen.length,environment.height,10)
         screenCover.endFill()
         screen.addChild(screenCover)
 
         /* start button */
         let startBtn = this.startBtn
         startBtn.pivot.set(startBtn.btnWidth/2,startBtn.btnHeight/2)
-        startBtn.position.set(screenLength/2,screenHeight/2)
+        startBtn.position.set(screen.length/2,screen.height/2)
         startBtn.setBorder(0)
         startBtn.setBackgroundColor(0xf8f9ea)
         startBtn.setText(style15)
         startBtn.click = () => {
-            this.screenUp.visible = true
+            this.screenUp.visible = !this.screenUp.visible
             startBtn.visible = !startBtn.visible
             screenCover.visible = !screenCover.visible
+            this.screenDown.visible = !this.screenDown.visible
+
         }
         screen.addChild(startBtn)
+    }
+    setScreenDown(){
+        let screenDown = this.screenDown
+        screenDown.position.set(480,Config.screen.height*0.92)
+        screenDown.visible = false
+        this.addChild(screenDown)
+        /* next button */
+        let nextBtn = this.nextBtn
+        nextBtn.position.set(0,0)
+        nextBtn.setBorder(0)
+        nextBtn.setCornerRadius(15)
+        nextBtn.setBackgroundColor(0xF8F9EA)
+        nextBtn.setText(style15)
+        nextBtn.click = () =>{
+            // For test
+            this.starCheck.getChildAt(this.questionNo-1).tint = 0xff0000
+            this.questionNo++
+            if(this.questionNo > this.questionTotal)
+                this.questionNo = this.questionTotal
+            this.questionNoShow.text = this.questionNo
+        }
+        screenDown.addChild(nextBtn)
+        /* reload button */
+        let listenBtn = this.listenBtn
+        listenBtn.position.set(nextBtn.x+nextBtn.btnWidth+10,0)
+        listenBtn.setBorder(0)
+        listenBtn.setCornerRadius(15)
+        listenBtn.setBackgroundColor(0xF8F9EA)
+        listenBtn.setText(style15)
+        screenDown.addChild(listenBtn)
+        /* replay button */
+        let replayBtn = this.replayBtn
+        replayBtn.position.set(this.screen.length-replayBtn.btnWidth*2-10,0)
+        replayBtn.setBorder(0)
+        replayBtn.setCornerRadius(15)
+        replayBtn.setBackgroundColor(0xF8F9EA)
+        replayBtn.setText(style15)
+        replayBtn.click = () =>{
+            // For test
+            let starCheck = this.starCheck.children
+            starCheck.forEach( star => {
+                star.tint = 0xffffff
+            })
+            this.questionNo = 1
+            this.questionNoShow.text = this.questionNo
+        }
+        screenDown.addChild(replayBtn)
+        /* leave dialog */
+        let leaveDialog = this.leaveDialog
+        leaveDialog.visible = false
+        this.addChild(leaveDialog)
+
+        leaveDialog.click = () => {
+            leaveDialog.visible = !leaveDialog.visible;
+        }
+        leaveDialog.yesBtn.click = function() {
+            /* yesBtn action */
+            Events.emit('goto', { id: 'game_main', animate: 'fadeIn' })
+        }
+        leaveDialog.cancelBtn.click = function() {
+            /* cancelBtn action */
+        }
+        /* leave button */
+        let leaveBtn = this.leaveBtn
+        leaveBtn .position.set(this.screen.length-leaveBtn.btnWidth,0)
+        leaveBtn .setBorder(0)
+        leaveBtn .setCornerRadius(15)
+        leaveBtn .setBackgroundColor(0xF8F9EA)
+        leaveBtn .setText(style15)
+        leaveBtn.click = () =>{
+            leaveDialog.visible = !leaveDialog.visible
+        }
+        screenDown.addChild(leaveBtn)
+
     }
 }

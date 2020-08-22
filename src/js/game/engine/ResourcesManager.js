@@ -43,6 +43,11 @@ import goBack from '@/assets/images/icon/goBack.png'
 import help from '@/assets/images/icon/help.png'
 import clock from '@/assets/images/icon/clock.png'
 import start from '@/assets/images/icon/start.png'
+import nextQuestion from '@/assets/images/icon/nextQuestion.png'
+import reload from '@/assets/images/icon/reload.png'
+import leave from '@/assets/images/icon/leave.png'
+import listen from '@/assets/images/icon/listen.png'
+
 
 const resources = {
     loading_bg: loadingBackground,
@@ -86,6 +91,10 @@ const resources = {
     help: help,
     clock: clock,
     start: start,
+    nextQuestion: nextQuestion,
+    reload: reload,
+    leave: leave,
+    listen: listen,
 }
 
 export default resources

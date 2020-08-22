@@ -40,7 +40,7 @@ export default class GameMainScene extends Scene {
         // background.scale.set(scale, scale)
 
         let background = new PIXI.Graphics()
-        background.beginFill(0x000000)
+        background.beginFill(0xF8F9EA)
         background.drawRect(0, 0, Config.screen.width, Config.screen.height)
         background.endFill()
         this.addChild(background)

@@ -8,6 +8,8 @@ import { style14, style15, style16 } from '@/js/game/engine/TextStyleManager'
 import character from '@/js/game/character'
 import Button2 from 'Component/button2'
 import Timer from 'Component/timer'
+import Environment from '@/js/game/Environment'
+import Dialog from 'Component/dialog'
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -25,15 +27,22 @@ export default class TestModeScene extends Scene {
         this.questionTotal = 10
         this.questionNo = 1
         this.screenUp = new Container()
+        this.questionNoShow = new PIXI.Text(this.questionNo, style15)
         this.timer = new Timer()
         this.screen = new Container()
+        this.screenCover = new PIXI.Graphics()
         this.startBtn = new Button2(200,60,ResourcesManager.start,' 開始   ')
+        this.environment = new Environment()
+        this.screenDown = new Container()
+        this.leaveBtn = new Button2(180, 50, ResourcesManager.leave, '結束測驗')
+        this.leaveDialog = new Dialog('確定要離開測驗嗎？')
 
         this.setBackground()
         this.setTitle()
         this.setCharacter()
         this.setScreenUp()
         this.setScreen()
+        this.setScreenDown()
     }
     setBackground() {
         let background = this.background
@@ -149,44 +158,98 @@ export default class TestModeScene extends Scene {
         questionNoLabel.position.set(65,25)
         screenUp.addChild(questionNoLabel)
 
-        let questionNo = new PIXI.Text(this.questionNo,style15)
-        questionNo.anchor.set(0.5)
-        questionNo.position.set(65,25)
-        screenUp.addChild(questionNo)
+        let questionNoShow = this.questionNoShow 
+        questionNoShow.anchor.set(0.5)
+        questionNoShow.position.set(65,25)
+        screenUp.addChild(questionNoShow)
         /* timer icon */
         let timerIcon = new Sprite(resources[ResourcesManager.clock].texture)
         timerIcon.scale.set(40/timerIcon.width)
-        timerIcon.position.set(960,8)
+        timerIcon.position.set(920,8)
         screenUp.addChild(timerIcon)
         /* timer */
         let timer = this.timer
         timer.position.set(timerIcon.x+timerIcon.width+10,timerIcon.y+(timerIcon.height-timer.height)/2)
         screenUp.addChild(timer)
     }
-    setScreen(){
+    async setScreen() {
         let screen = this.screen
+        screen.length = 1050
+        screen.height = 630
         screen.position.set(480,this.screenUp.y+65)
         this.addChild(screen)
-        /* screen cover */
-        let screenCover = new PIXI.Graphics()
-        let screenLength = 1100
-        let screenHeight = 660
+
+        let environment = this.environment
+        await environment.init('1')
+        let scale =  screen.length / environment.width
+        environment.scale.set(scale, scale)
+        screen.height = environment.height
+        screen.addChild(environment)
+
+        let screenCover = this.screenCover
         screenCover.beginFill(0xffffff,0.8)
-        screenCover.drawRoundedRect(0,0,screenLength,screenHeight,10)
+        screenCover.drawRoundedRect(0,0,screen.length,environment.height,10)
         screenCover.endFill()
         screen.addChild(screenCover)
+
         /* start button */
         let startBtn = this.startBtn
         startBtn.pivot.set(startBtn.btnWidth/2,startBtn.btnHeight/2)
-        startBtn.position.set(screenLength/2,screenHeight/2)
+        startBtn.position.set(screen.length/2,screen.height/2)
         startBtn.setBorder(0)
-        startBtn.setBackgroundColor(0xF8F9EA)
+        startBtn.setBackgroundColor(0xf8f9ea)
         startBtn.setText(style15)
-        startBtn.click = () =>{
-            this.screenUp.visible = true
+        startBtn.click = () => {
+            this.screenUp.visible = !this.screenUp.visible
             startBtn.visible = !startBtn.visible
+            screenCover.visible = !screenCover.visible
+            this.screenDown.visible = !this.screenDown.visible
             this.timer.start()
         }
         screen.addChild(startBtn)
+    }
+    setScreenDown(){
+        let screenDown = this.screenDown
+        screenDown.position.set(480,Config.screen.height*0.92)
+        screenDown.visible = false
+        this.addChild(screenDown)
+        /* leave dialog */
+        let leaveDialog = this.leaveDialog
+        leaveDialog.visible = false
+        this.addChild(leaveDialog)
+
+        leaveDialog.yesBtn.click = () => {
+            /* yesBtn action */
+            this.reset()
+            Events.emit('goto', { id: 'game_main', animate: 'fadeIn' })
+            leaveDialog.visible = !leaveDialog.visible;
+        }
+        leaveDialog.cancelBtn.click = () =>{
+            /* cancelBtn action */
+            leaveDialog.visible = !leaveDialog.visible;
+            this.timer.start()
+        }
+        /* leave button */
+        let leaveBtn = this.leaveBtn
+        leaveBtn .position.set(this.screen.length-leaveBtn.btnWidth,0)
+        leaveBtn .setBorder(0)
+        leaveBtn .setCornerRadius(15)
+        leaveBtn .setBackgroundColor(0xF8F9EA)
+        leaveBtn .setText(style15)
+        leaveBtn.click = () =>{
+            leaveDialog.visible = !leaveDialog.visible
+            this.timer.stop() 
+        }
+        screenDown.addChild(leaveBtn)
+    }
+    reset(){
+        this.questionNo = 1
+        this.questionNoShow.text = this.questionNo
+
+        this.screenUp.visible = !this.screenUp.visible
+        this.startBtn.visible = !this.startBtn.visible
+        this.screenCover.visible = !this.screenCover.visible
+        this.screenDown.visible = !this.screenDown.visible
+        this.timer.reset()
     }
 }
