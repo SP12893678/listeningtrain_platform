@@ -4,16 +4,20 @@ import Config from '@/js/game/Config'
 import { Graphics, Container } from 'pixi.js/lib/core'
 import VerticalScroller from 'Component/VerticalScroller'
 import Events from '@/js/game/Events'
-import Button from 'Component/button'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
 import GraphicsTool from 'Component/GraphicsTool'
 import RoundedButton from 'Component/RoundedButton'
 import { apiManageEnviroment } from '@/js/api'
 import Text from 'pixi.js/lib/core/text/Text'
 import Sprite from 'pixi.js/lib/core/sprites/Sprite'
-import { Rectangle } from 'pixi.js/lib/core/math'
 import ScenesManager from '@/js/game/engine/ScenesManager'
 import EnviromentDetailScene from 'Scene/EnviromentDetailScene'
+import { style6 } from '@/js/game/engine/TextStyleManager'
+import { gsap } from 'gsap'
+import { PixiPlugin } from 'gsap/PixiPlugin'
+
+gsap.registerPlugin(PixiPlugin)
+PixiPlugin.registerPIXI(PIXI)
 
 let resources = PIXI.loader.resources
 
@@ -22,17 +26,19 @@ export default class EnviromentSelectScene extends Scene {
         super()
         this.environments = []
         this.current_environments = []
-        this.background = new PIXI.Sprite()
-        this.title = new Container()
-        this.btn_goback = new RoundedButton('返回')
+        this.background = new Graphics()
+        this.background.beginFill(0xffffff, 1)
+        this.background.drawRect(0, 0, Config.screen.width, Config.screen.height)
+        this.background.endFill()
+        this.addChild(this.background)
+
         this.environmentlist = new EnviromentListBoard()
 
-        // this.init()
-        this.setBackground()
-        // this.setTitle()
         this.setCategoryList()
         this.setEnviromentList()
-        this.setGoback()
+
+        this.goBackArea = new Container()
+        this.setgoBackArea()
     }
 
     async init() {
@@ -43,37 +49,32 @@ export default class EnviromentSelectScene extends Scene {
         })
     }
 
-    // getEnvironments(data) {
-    //     apiManageEnviroment({ type: 'get', amount: 'all' }).then((res) => {
-    //         data = res.data
-    //     })
-    // }
+    setgoBackArea() {
+        let goBackArea = this.goBackArea
+        let background = new Sprite()
+        background.texture = resources[ResourcesManager.fluid_shape002].texture
 
-    setBackground() {
-        let background = this.background
-        background.texture = resources[ResourcesManager.create_role_bg].texture
-        let scale = Config.screen.width / background.width
-        background.scale.set(scale, scale)
-        this.addChild(background)
-    }
+        let icon = new Sprite()
+        icon.texture = resources[ResourcesManager.undo001].texture
+        let scale = 56 / icon.width
+        icon.scale.set(scale, scale)
+        icon.position.set(152, 140)
 
-    setGoback() {
-        let button = this.btn_goback
-        button.text.text = '返回'
-        button.click = () => Events.emit('goto', { id: 'game_main', animate: 'fadeIn' })
-        button.position.set(0, 50)
-        this.addChild(button)
-    }
+        let text = new Text('返回', style6)
+        text.position.set(152, 197)
 
-    setTitle() {
-        let title = this.title
-        let background = new Graphics()
-        background.beginFill(0x000000, 0.7)
-        background.drawRoundedRect(0, 0, 500, 120, 12)
-        background.endFill()
+        goBackArea.addChild(background)
+        goBackArea.addChild(icon)
+        goBackArea.addChild(text)
+        goBackArea.position.set(-113, -113)
 
-        title.addChild(background)
-        this.addChild(title)
+        goBackArea.interactive = true
+        goBackArea.buttonMode = true
+
+        goBackArea.mouseover = () => gsap.to(goBackArea, { pixi: { scale: 1.2 }, duration: 0.5 })
+        goBackArea.mouseout = () => gsap.to(goBackArea, { pixi: { scale: 1 }, duration: 0.5 })
+        goBackArea.click = () => ScenesManager.goToScene('game_main')
+        this.addChild(goBackArea)
     }
 
     async setCategoryList() {
@@ -99,13 +100,13 @@ export default class EnviromentSelectScene extends Scene {
             }
         })
 
-        listboard.position.set(100, 100)
+        listboard.position.set(240, 50)
         this.addChild(listboard)
     }
 
     setEnviromentList() {
         let listboard = this.environmentlist
-        listboard.position.set(600, 100)
+        listboard.position.set(240 + 350, 50)
         this.addChild(listboard)
     }
 }
@@ -113,25 +114,44 @@ export default class EnviromentSelectScene extends Scene {
 class ListBoard extends Container {
     constructor() {
         super()
-        this.background = this.setBackground()
+        this.background = new Graphics()
+        this.title = new Text('情境類別選單')
         this.list = new List()
         this.scroller = new VerticalScroller(10, this.list.content, this.list.content_mask)
 
-        this.background.position.set(0, 0)
-        this.list.position.set(50, 50)
-        this.scroller.position.set(350, 50)
+        this.setBackground()
+        this.setTitle()
 
-        this.addChild(this.background)
+        this.list.position.set(0, 150)
+        this.scroller.position.set(315, 150)
+
         this.addChild(this.list)
         this.addChild(this.scroller)
     }
 
     setBackground() {
         let background = new Graphics()
-        background.beginFill(0xff9191, 1)
-        background.drawRoundedRect(0, 0, 400, 700, 12)
+        background.beginFill(0xc8d5ff, 1)
+        GraphicsTool.setPaintingContainer(background)
+        GraphicsTool.drawRoundedRect(350, 800, 12, 0, 12, 0)
         background.endFill()
-        return background
+
+        background.lineStyle(2, 0xa7b8ff, 1)
+        background.moveTo(0, 100)
+        background.lineTo(350, 100)
+        background.endFill()
+        this.addChild(background)
+    }
+
+    setTitle() {
+        let title = this.title
+        let style = {}
+        Object.assign(style, style6)
+        style.fill = 0x4d53ff
+        title.style = style
+        title.anchor.set(0.5, 0.5)
+        title.position.set(350 / 2, 50)
+        this.addChild(title)
     }
 
     getListItems() {
@@ -150,7 +170,7 @@ class List extends Container {
         this.content = new Container()
         this.content_mask = new Graphics()
         this.content_mask.beginFill(0x000000, 1)
-        this.content_mask.drawRoundedRect(0, 0, 300, 500, 12)
+        this.content_mask.drawRoundedRect(0, 0, 300, 600, 12)
         this.content_mask.endFill()
 
         this.setItems()
@@ -177,25 +197,26 @@ class List extends Container {
 class EnviromentListBoard extends Container {
     constructor() {
         super()
-        this.background = this.setBackground()
+        this.background = new Graphics()
         this.list = new EnviromentList()
         this.scroller = new VerticalScroller(10, this.list.content, this.list.content_mask)
 
-        this.background.position.set(0, 0)
-        this.list.position.set(50, 50)
-        this.scroller.position.set(750, 50)
+        this.setBackground()
 
-        this.addChild(this.background)
+        this.list.position.set(30, 30)
+        this.scroller.position.set(750, 30)
+
         this.addChild(this.list)
         this.addChild(this.scroller)
     }
 
     setBackground() {
         let background = new Graphics()
-        background.beginFill(0xff9191, 1)
-        background.drawRoundedRect(0, 0, 800, 700, 12)
+        background.beginFill(0x8898ff, 1)
+        GraphicsTool.setPaintingContainer(background)
+        GraphicsTool.drawRoundedRect(800, 800, 0, 12, 0, 12)
         background.endFill()
-        return background
+        this.addChild(background)
     }
 
     showCurrentLists(current_environments) {
@@ -211,7 +232,7 @@ class EnviromentList extends Container {
         this.content = new Container()
         this.content_mask = new Graphics()
         this.content_mask.beginFill(0x000000, 1)
-        this.content_mask.drawRoundedRect(0, 0, 600, 600, 12)
+        this.content_mask.drawRoundedRect(0, 0, 700, 750, 12)
         this.content_mask.endFill()
 
         this.content.mask = this.content_mask
@@ -224,7 +245,7 @@ class EnviromentList extends Container {
         let content_mask = this.content_mask
 
         let item = new EnviromentListItem(data)
-        item.position.set((content_mask.width - item.width) / 2, content.children.length * 150)
+        item.position.set(0, 0)
         content.addChild(item)
     }
 }
@@ -234,55 +255,100 @@ class EnviromentListItem extends Container {
         super()
         this.data = data
         this.background = new Graphics()
-        this.thumbnail = new Sprite()
-        this.text_title = new Text()
-        this.text_depiction = new Text()
-        this.btn_Goto = new Container()
-        this.setGotoButton()
+        this.thumbnail_container = new Container()
+        this.profile_container = new Container()
 
         let background = this.background
-        background.beginFill(0xffffff, 1)
-        background.drawRoundedRect(0, 0, 600, 100, 16)
+        background.beginFill(0xffffff, 0.5)
+        background.drawRoundedRect(0, 0, 340, 340, 16)
         background.endFill()
-
-        let thumbnail = this.thumbnail
-        thumbnail.texture = resources[data.background_src].texture
-        let scale = 80 / thumbnail.height
-        thumbnail.scale.set(scale, scale)
-
-        let text_title = this.text_title
-        text_title.text = data.name
-
-        thumbnail.position.set(10, 10)
-        text_title.position.set(150, 10)
-        this.btn_Goto.position.set(450, 0)
-
         this.addChild(background)
-        this.addChild(thumbnail)
-        this.addChild(text_title)
-        this.addChild(this.btn_Goto)
+
+        this.setThumbnail()
+        this.setProfile()
     }
 
-    setGotoButton() {
-        let button = this.btn_Goto
-        let background = new Graphics()
-        background.beginFill(0xc9c9c9, 1)
-        GraphicsTool.setPaintingContainer(background)
-        GraphicsTool.drawRoundedRect(150, 100, 0, 16, 0, 16)
-        background.endFill()
+    setThumbnail() {
+        let data = this.data
+        let thumbnail_container = this.thumbnail_container
 
-        let text = new Text('前往')
-        text.anchor.set(0.5, 0.5)
-        text.position.set(background.width / 2, background.height / 2)
+        let thumbnail_mask = new Graphics()
+        thumbnail_mask.beginFill(0x000000, 1)
+        thumbnail_mask.drawRoundedRect(0, 0, 320, 200, 16)
+        thumbnail_mask.endFill()
 
-        button.addChild(background)
-        button.addChild(text)
-        button.interactive = true
-        button.buttonMode = true
-        button.click = () => {
+        let thumbnail = new Sprite()
+        thumbnail.texture = resources[data.background_src].texture
+        let scale = Math.max(320 / thumbnail.width, 200 / thumbnail.height)
+        thumbnail.scale.set(scale, scale)
+        thumbnail.mask = thumbnail_mask
+
+        thumbnail_container.addChild(thumbnail)
+        thumbnail_container.addChild(thumbnail_mask)
+        thumbnail_container.position.set(10, 10)
+        this.addChild(thumbnail_container)
+    }
+
+    setProfile() {
+        let data = this.data
+        let profile_container = this.profile_container
+        let border = new Graphics()
+        border.lineStyle(2, 0xae5eff, 1)
+        GraphicsTool.setPaintingContainer(border)
+        GraphicsTool.drawRoundedRect(320, 100, 12, 50, 12, 50)
+        border.endFill()
+
+        border.lineStyle(2, 0xbd7dfe, 0.3)
+        border.moveTo(8, 56)
+        border.lineTo(200, 56)
+        border.endFill()
+
+        let style = {}
+        Object.assign(style, style6)
+        style.fontSize = 40
+        style.fill = 0xbd7dfe
+        let title = new Text(data.name, style)
+        title.position.set(8, 8)
+
+        let btn_go = new Sprite()
+        btn_go.texture = resources[ResourcesManager.circle_go001].texture
+        btn_go.anchor.set(0.5, 0.5)
+        btn_go.position.set(320 - 105 + btn_go.width / 2, btn_go.height / 2 - 5)
+        btn_go.interactive = true
+        btn_go.buttonMode = true
+        btn_go.mouseover = () => gsap.to(btn_go, { pixi: { rotation: 360 }, duration: 0.5 })
+        btn_go.mouseout = () => gsap.to(btn_go, { pixi: { rotation: -360 }, duration: 0.5 })
+        btn_go.click = async () => {
             ScenesManager.createScene('environment_detail', new EnviromentDetailScene())
-            ScenesManager.scenes['environment_detail'].init(this.data.id)
+            await ScenesManager.scenes['environment_detail'].init(data.id)
             ScenesManager.goToScene('environment_detail')
+            ScenesManager.scenes['environment_detail'].alpha = 0
+            gsap.to(ScenesManager.scenes['environment_detail'], { pixi: { alpha: 1 }, duration: 1 })
         }
+
+        let style2 = {}
+        Object.assign(style2, style6)
+        style2.fontSize = 24
+        style2.fill = 0xbd7dfe
+        let title_complete = new Text('完成度', style2)
+        title_complete.position.set(8, 65)
+
+        let box_complete = new Graphics()
+        box_complete.lineStyle(2, 0xbd7dfe, 1)
+        box_complete.drawRect(0, 0, 100, 20)
+        box_complete.endFill()
+        box_complete.beginFill(0xbd7dfe, 1)
+        box_complete.drawRect(0, 0, 20, 20)
+        box_complete.endFill()
+        box_complete.position.set(title_complete.position.x + title_complete.width + 10, 68)
+
+        profile_container.addChild(border)
+        profile_container.addChild(title)
+        profile_container.addChild(btn_go)
+        profile_container.addChild(title_complete)
+        profile_container.addChild(box_complete)
+
+        profile_container.position.set(10, 225)
+        this.addChild(profile_container)
     }
 }

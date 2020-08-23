@@ -5,6 +5,7 @@ import GameStartScene from 'Scene/GameStartScene'
 import CreateRoleScene from 'Scene/CreateRoleScene'
 import GameMainScene from 'Scene/GameMainScene'
 import EnviromentSelectScene from 'Scene/EnviromentSelectScene'
+import EnviromentDetailScene from 'Scene/EnviromentDetailScene'
 import TrainModeScene from 'Scene/TrainModeScene'
 import PracticeModeScene from 'Scene/PracticeModeScene'
 import TestModeScene from 'Scene/TestModeScene'
@@ -37,8 +38,12 @@ events.on('goto', (val) => {
             case 'enviro_select':
                 ScenesManager.createScene(val.id, new EnviromentSelectScene())
                 break
+            case 'enviro_detail':
+                ScenesManager.createScene(val.id, new EnviromentDetailScene())
+                break
             case 'train_mode':
                 ScenesManager.createScene(val.id, new TrainModeScene())
+                ScenesManager.scenes[val.id].init(val.environmentId)
                 break
             case 'practice_mode':
                 ScenesManager.createScene(val.id, new PracticeModeScene())

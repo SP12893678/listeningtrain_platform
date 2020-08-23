@@ -48,6 +48,17 @@ import reload from '@/assets/images/icon/reload.png'
 import leave from '@/assets/images/icon/leave.png'
 import listen from '@/assets/images/icon/listen.png'
 
+import slime_green from '@/assets/images/slime-green.png'
+import slime_tooth_green from '@/assets/images/slime-tooth-green.png'
+import slime_red from '@/assets/images/slime-red.png'
+import slime_tooth_red from '@/assets/images/slime-tooth-red.png'
+import slime_blue from '@/assets/images/slime-blue.png'
+import slime_tooth_blue from '@/assets/images/slime-tooth-blue.png'
+import fluid_shape001 from '@/assets/images/fluid-shape001.png'
+import fluid_shape002 from '@/assets/images/fluid-shape002.png'
+import fluid_shape003 from '@/assets/images/fluid-shape003.png'
+import undo001 from '@/assets/images/undo001.png'
+import circle_go001 from '@/assets/images/circle_go001.png'
 
 const resources = {
     loading_bg: loadingBackground,
@@ -95,6 +106,17 @@ const resources = {
     reload: reload,
     leave: leave,
     listen: listen,
+    slime_green: slime_green,
+    slime_tooth_green: slime_tooth_green,
+    slime_red: slime_red,
+    slime_tooth_red: slime_tooth_red,
+    slime_blue: slime_blue,
+    slime_tooth_blue: slime_tooth_blue,
+    fluid_shape001: fluid_shape001,
+    fluid_shape002: fluid_shape002,
+    fluid_shape003: fluid_shape003,
+    undo001: undo001,
+    circle_go001: circle_go001,
 }
 
 export default resources
