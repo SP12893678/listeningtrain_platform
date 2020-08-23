@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js'
 import { Container, Sprite } from 'pixi.js/lib/core'
 import { apiManageEnviroment, apiManageObject } from '@/js/api'
+import { OutlineFilter } from 'pixi-filters'
 
 export default class Environment extends Container {
     constructor() {
@@ -36,7 +37,10 @@ export default class Environment extends Container {
         object.scale.set(scale, scale)
         let [x, y] = data.coordinate.split(',')
         object.position.set(x, y)
+
+        object.filters = [new OutlineFilter(3, 0xf0aaee)]
         this.addChild(object)
+        object.data = data
         this.objects.push(object)
     }
 }

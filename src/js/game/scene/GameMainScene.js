@@ -3,7 +3,7 @@ import ResourcesManager from '@/js/game/engine/ResourcesManager'
 import Config from '@/js/game/Config'
 import Scene from '@/js/game/engine/Scene'
 import Events from '@/js/game/Events'
-import Button from 'Component/button'
+import RoundedButton from 'Component/RoundedButton'
 
 import character from '@/js/game/character'
 import profile from '@/js/game/profile'
@@ -21,16 +21,12 @@ export default class GameMainScene extends Scene {
         this.background = new Sprite()
         this.character = new character('Mary')
         this.profile = new profile()
-        this.trainModeButton = new Button(150, 50, 20)
-        this.practiceModeButton = new Button(150, 50, 20)
-        this.testModeButton = new Button(150, 50, 20)
-        this.button = new Button(150, 50, 20)
+        this.button = new RoundedButton()
+        this.btn_profile = new RoundedButton('個人資訊')
 
         this.setBackground()
-        this.setTrainModeButton()
-        this.setPracticeModeButton()
-        this.setTestModeButton()
         this.setButton()
+        this.setProfileButton()
         this.setCharacter()
         this.setProfile()
     }
@@ -40,7 +36,7 @@ export default class GameMainScene extends Scene {
         // background.scale.set(scale, scale)
 
         let background = new PIXI.Graphics()
-        background.beginFill(0xF8F9EA)
+        background.beginFill(0xf8f9ea)
         background.drawRect(0, 0, Config.screen.width, Config.screen.height)
         background.endFill()
         this.addChild(background)
@@ -52,26 +48,11 @@ export default class GameMainScene extends Scene {
         button.click = () => Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
         this.addChild(button)
     }
-    setTrainModeButton() {
-        let trainModeButton = this.trainModeButton
-        trainModeButton.text.text = '訓練模式'
-        trainModeButton.position.set(100, 0)
-        trainModeButton.click = () => Events.emit('goto', { id: 'train_mode', animate: 'fadeIn' })
-        this.addChild(trainModeButton)
-    }
-    setPracticeModeButton() {
-        let practiceModeButton = this.practiceModeButton
-        practiceModeButton.text.text = '練習模式'
-        practiceModeButton.position.set(this.trainModeButton.x + this.trainModeButton.width, 0)
-        practiceModeButton.click = () => Events.emit('goto', { id: 'practice_mode', animate: 'fadeIn' })
-        this.addChild(practiceModeButton)
-    }
-    setTestModeButton() {
-        let testModeButton = this.testModeButton
-        testModeButton.text.text = '測驗模式'
-        testModeButton.position.set(this.practiceModeButton.x + this.practiceModeButton.width, 0)
-        testModeButton.click = () => Events.emit('goto', { id: 'test_mode', animate: 'fadeIn' })
-        this.addChild(testModeButton)
+    setProfileButton() {
+        let btn_profile = this.btn_profile
+        btn_profile.position.set(700, 300)
+        btn_profile.click = () => (this.profile.dialog.visible = !this.profile.dialog.visible)
+        this.addChild(btn_profile)
     }
     /* 建立角色 */
     setCharacter() {
