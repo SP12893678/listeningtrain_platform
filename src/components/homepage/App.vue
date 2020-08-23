@@ -1,6 +1,6 @@
 <template>
     <v-app>
-        <v-navigation-drawer v-model="nav_drawer" absolute temporary width="280">
+        <!-- <v-navigation-drawer v-model="nav_drawer" absolute temporary width="280">
             <v-list nav class="py-0">
                 <v-list-item class="mb-0" two-line>
                     <v-list-item-avatar>
@@ -46,11 +46,11 @@
                     </v-list-item>
                 </v-list-item-group>
             </v-list>
-        </v-navigation-drawer>
+        </v-navigation-drawer>-->
 
         <v-app-bar dark app>
             <v-col md="1">
-                <v-avatar tile @click="nav_drawer = true">
+                <v-avatar tile @click="value=0">
                     <v-img :src="require('@/assets/images/headphones.png')"></v-img>
                 </v-avatar>
             </v-col>
@@ -58,8 +58,8 @@
 
             <v-spacer></v-spacer>
 
-            <v-btn text large color="blue">首頁</v-btn>
-            <v-btn text large color="amber">介紹</v-btn>
+            <v-btn text large color="blue" @click="value=0">首頁</v-btn>
+            <v-btn text large color="amber" @click="value=1">介紹</v-btn>
             <v-btn text large color="error" @click="gotoManage">幫助我們</v-btn>
             <v-btn text large color="green" @click="gotoGame">遊戲</v-btn>
 
@@ -69,11 +69,28 @@
                         <v-icon large>mdi-format-list-bulleted-square</v-icon>
                     </v-btn>
                 </template>
-                <v-list>
-                    <v-list-item v-for="(item, index) in itemss" :key="index">
-                        <v-list-item-title>{{ item.title }}</v-list-item-title>
-                    </v-list-item>
-                </v-list>
+                <v-card>
+                    <v-list>
+                        <v-list-item>
+                            <v-list-item-content>
+                                <v-list-item-title v-model="showUsername">{{showUsername}}</v-list-item-title>
+                                <v-list-item-subtitle v-model="showId">{{showId}}</v-list-item-subtitle>
+                            </v-list-item-content>
+                        </v-list-item>
+                    </v-list>
+
+                    <v-divider></v-divider>
+
+                    <v-list>
+                        <v-list-item>
+                            <v-btn text>阿災</v-btn>
+                        </v-list-item>
+
+                        <v-list-item>
+                            <v-btn color="primary" text @click="logout">登出</v-btn>
+                        </v-list-item>
+                    </v-list>
+                </v-card>
             </v-menu>
 
             <!-- spacer  -->
@@ -191,7 +208,7 @@
                                     </v-col>
                                     <v-col cols="12" sm="6">
                                         <v-select
-                                            v-model="items"
+                                            v-model="identity"
                                             :items="['學生', '教師']"
                                             :rules="[v => !!v || 'Item is required']"
                                             label="身分"
@@ -264,7 +281,11 @@ export default {
             acr: null,
             pwr: null,
             pwr2: null,
-            items: null,
+            identity: null,
+            showUsername: null,
+            showId: null,
+            logindata: null,
+
             colors: [
                 "indigo",
                 "warning",
@@ -272,14 +293,9 @@ export default {
                 "red lighten-1",
                 "deep-purple accent-4",
             ],
-            itemss: [
-                { title: "Click Me" },
-                { title: "Click Me" },
-                { title: "Click Me" },
-                { title: "Click Me 2" },
-            ],
+
             slides: [
-                "index",
+                "index1",
                 "Introduction1",
                 "Introduction2",
                 "Introduction3",
@@ -307,6 +323,7 @@ export default {
     mounted() {
         document.querySelector(".v-carousel__controls").style.right = 0;
         this.setCarouselEvent();
+        this.checklogin();
     },
     methods: {
         login() {
@@ -317,12 +334,16 @@ export default {
             })
                 .then((res) => {
                     console.log(res.data);
-                    if (res.data == 1) {
+                    this.logindata = res.data;
+                    if (this.logindata[2] == 1) {
                         // alert("登入成功！");
                         this.islogin = 1;
-
                         this.msg = true;
+                        this.showUsername = this.logindata[0];
+                        this.showId = this.logindata[1];
                     } else {
+                        this.ac = null;
+                        this.pw = null;
                         alert("查無此人！");
                     }
                 })
@@ -337,10 +358,36 @@ export default {
             })
                 .then((res) => {
                     console.log(res.data);
-                    if (res.data == 1) {
-                        alert("登入成功！");
+                    this.logindata = res.data;
+                    if (this.logindata[2] == 1) {
+                        alert(this.logindata[0] + " 歡迎回來！");
+                        this.islogin = 1;
+                        //this.msg = true;
+                        this.showUsername = this.logindata[0];
+                        this.showId = this.logindata[1];
                     } else {
-                        alert("查無此人！");
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        },
+
+        logout() {
+            return apiManageLogin({
+                type: "logout",
+            })
+                .then((res) => {
+                    console.log(res.data);
+                    if (res.data == 1) {
+                        alert("登出成功！");
+                        this.islogin = 0;
+                        this.showUsername = null;
+                        this.showId = null;
+                        this.ac = null;
+                        this.pw = null;
+                    } else {
+                        alert("登出失敗！");
                     }
                 })
                 .catch((error) => {
@@ -355,7 +402,7 @@ export default {
                     mail: this.mail,
                     acr: this.acr,
                     pwr: this.pwr,
-                    id: this.items,
+                    identity: this.identity,
                 })
                     .then((res) => {
                         console.log(res.data);
@@ -401,6 +448,7 @@ export default {
                     this.scrollable = true;
             });
         },
+
         revalidate() {
             if (this.$refs.form2.validate()) {
                 this.dialog2 = false;
