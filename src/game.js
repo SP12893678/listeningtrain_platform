@@ -6,7 +6,7 @@ import ScenesManager from '@/js/game/engine/ScenesManager'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
 import Events from '@/js/game/Events'
 import Config from '@/js/game/Config'
-import { apiGetFolderFileList } from '@/js/api'
+import { apiGetFolderFileList, apiManageEnviroment, apiManageObject, apiManageAudio } from '@/js/api'
 
 import { gsap } from 'gsap'
 import { PixiPlugin } from 'gsap/PixiPlugin'
@@ -33,27 +33,44 @@ PixiPlugin.registerPIXI(PIXI)
     }
 
     async function init() {
+        let object_arr = []
+        let audio_arr = []
         let data = []
-        await apiGetFolderFileList({
-            path: 'images-enviro-background',
-            extensions: ['*.gif', '*.jpg', '*.png'],
+
+        await apiManageEnviroment({ type: 'get', amount: 'all' }).then((res) => {
+            data.push(...res.data.map((item) => item.background_src))
+            res.data.forEach((item) => object_arr.push(...item.object.split(',')))
         })
-            .then((res) => {
-                data.push(...res.data)
-            })
-            .catch((error) => {
-                console.error(error)
-            })
-        await apiGetFolderFileList({
-            path: 'images-enviro-object',
-            extensions: ['*.png'],
+
+        await apiManageObject({ type: 'get', amount: 'part', items: object_arr }).then((res) => {
+            data.push(...res.data.map((item) => item.pic_src))
+            audio_arr = res.data.map((item) => item.sound_src)
         })
-            .then((res) => {
-                data.push(...res.data)
-            })
-            .catch((error) => {
-                console.error(error)
-            })
+
+        await apiManageAudio({ type: 'get', amount: 'part', items: audio_arr }).then((res) => {
+            data.push(...res.data.map((item) => item.sound_src))
+        })
+
+        // await apiGetFolderFileList({
+        //     path: 'images-enviro-background',
+        //     extensions: ['*.gif', '*.jpg', '*.png'],
+        // })
+        //     .then((res) => {
+        //         data.push(...res.data)
+        //     })
+        //     .catch((error) => {
+        //         console.error(error)
+        //     })
+        // await apiGetFolderFileList({
+        //     path: 'images-enviro-object',
+        //     extensions: ['*.png'],
+        // })
+        //     .then((res) => {
+        //         data.push(...res.data)
+        //     })
+        //     .catch((error) => {
+        //         console.error(error)
+        //     })
 
         loader
             .add(getloadResources(ResourcesManager))

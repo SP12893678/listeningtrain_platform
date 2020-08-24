@@ -8,14 +8,20 @@ import { style14, style15 } from '@/js/game/engine/TextStyleManager'
 import character from '@/js/game/character'
 import Button2 from 'Component/button2'
 import Environment from '@/js/game/Environment'
-import { OutlineFilter } from 'pixi-filters'
+import { OutlineFilter, ShockwaveFilter, GlowFilter } from 'pixi-filters'
+import { Graphics, Container, Sprite, Text } from 'pixi.js/lib/core'
+import HorizontalScroller from 'Component/HorizontalScroller'
+import { apiManageAudio } from '@/js/api'
+import Sound from 'pixi-sound'
+import { gsap } from 'gsap'
+import { PixiPlugin } from 'gsap/PixiPlugin'
 
-let Application = PIXI.Application,
-    Container = PIXI.Container,
-    loader = PIXI.loader,
-    resources = PIXI.loader.resources,
-    TextureCache = PIXI.utils.TextureCache,
-    Sprite = PIXI.Sprite
+import * as dat from 'dat.gui'
+
+gsap.registerPlugin(PixiPlugin)
+PixiPlugin.registerPIXI(PIXI)
+
+let resources = PIXI.loader.resources
 
 export default class TrainModeScene extends Scene {
     constructor() {
@@ -23,7 +29,9 @@ export default class TrainModeScene extends Scene {
         this.background = new PIXI.Graphics()
         this.title = new Container()
         this.character = new character('Mary')
-        this.environment = new TrainModeEnvironment()
+        this.environmentArea = new Container()
+        this.objectList = new ObjectList()
+        this.gearlocking = new GearLocking()
 
         this.setBackground()
         this.setTitle()
@@ -31,12 +39,58 @@ export default class TrainModeScene extends Scene {
     }
 
     async init(id) {
-        let environment = this.environment
+        let environmentArea = this.environmentArea
+
+        let environmentArea_mask = new Graphics()
+        environmentArea_mask.beginFill(0x000000, 1)
+        environmentArea_mask.drawRect(0, 0, 1000, 625)
+        environmentArea_mask.endFill()
+
+        let environment = new TrainModeEnvironment()
         await environment.init(id)
         let scale = 1000 / environment.width
         environment.scale.set(scale, scale)
-        environment.position.set(500, 100)
-        this.addChild(environment)
+        environmentArea.mask = environmentArea_mask
+
+        let objectList = this.objectList
+        objectList.objects = []
+        environment.data.objects.forEach((object) => objectList.addListItem(object))
+        objectList.position.set(500, 750)
+
+        let scroller = new HorizontalScroller(10, objectList.list_content, objectList.list_mask)
+        scroller.position.set(500, 860)
+
+        let gearlocking = this.gearlocking
+        gearlocking.filters = [new GlowFilter(30, 2.5, 20)]
+        gearlocking.position.set(0, 0)
+
+        environment.objects.forEach((object) => {
+            object.update = () => {
+                let { x, y } = object.position
+                gearlocking.position.set(x - gearlocking.xxx / 2, y - gearlocking.yyy / 2)
+                let objectList_object = objectList.objects.filter((o) => o.id == object.data.id)[0]
+                objectList.selectListItem(objectList_object)
+            }
+        })
+
+        objectList.objects.forEach((object) => {
+            object.interactive = true
+            object.buttonMode = true
+            object.click = () => {
+                let obj = environment.objects.filter((o) => o.data.id == object.id)[0]
+                environment.objectClick(obj)
+            }
+        })
+
+        environmentArea_mask.position.set(500, 100)
+        environmentArea.position.set(500, 100)
+
+        environmentArea.addChild(environment)
+        environmentArea.addChild(gearlocking)
+        this.addChild(environmentArea)
+        this.addChild(environmentArea_mask)
+        this.addChild(objectList)
+        this.addChild(scroller)
     }
 
     setBackground() {
@@ -120,12 +174,118 @@ export default class TrainModeScene extends Scene {
 class TrainModeEnvironment extends Environment {
     async init(id) {
         await super.init(id)
+        let audio_arr = this.data.objects.map((item) => item.sound_src)
+        await apiManageAudio({ type: 'get', amount: 'part', items: audio_arr }).then((res) => {
+            this.data.objects.forEach((object) => {
+                object.audio = res.data.filter((audio) => audio.id == object.sound_src)[0]
+            })
+        })
         this.objects.forEach((object) => {
             object.interactive = true
             object.buttonMode = true
             object.mouseover = () => (object.filters = [new OutlineFilter(3, 0x99ff99)])
             object.mouseout = () => (object.filters = [new OutlineFilter(3, 0xf0aaee)])
-            object.click = () => (object.filters = [new OutlineFilter(3, 0xf0aaee)])
+            object.update = () => {}
+            object.click = () => this.objectClick(object)
         })
+    }
+
+    objectClick(object) {
+        Sound.stopAll()
+        Sound.add(object.data.audio.audio_id, resources[object.data.audio.sound_src])
+        Sound.play(object.data.audio.audio_id)
+        object.update()
+    }
+}
+
+class GearLocking extends Container {
+    constructor() {
+        super()
+        this.circle_inside = new Sprite()
+        this.circle_center = new Sprite()
+        this.circle_outside = new Sprite()
+
+        this.circle_inside.texture = resources[ResourcesManager.gear_inside].texture
+        this.circle_center.texture = resources[ResourcesManager.gear_center].texture
+        this.circle_outside.texture = resources[ResourcesManager.gear_outside].texture
+
+        this.xxx = this.circle_outside.width
+        this.yyy = this.circle_outside.height
+
+        this.circle_inside.anchor.set(0.5, 0.5)
+        this.circle_center.anchor.set(0.5, 0.5)
+        this.circle_outside.anchor.set(0.5, 0.5)
+
+        this.circle_inside.position.set(this.circle_outside.width / 2, this.circle_outside.height / 2)
+        this.circle_center.position.set(this.circle_outside.width / 2, this.circle_outside.height / 2)
+        this.circle_outside.position.set(this.circle_outside.width / 2, this.circle_outside.height / 2)
+
+        this.addChild(this.circle_inside)
+        this.addChild(this.circle_center)
+        this.addChild(this.circle_outside)
+
+        gsap.to(this.circle_inside, { pixi: { rotation: -360 }, duration: 4, repeat: -1, ease: 'Power2.easeOut' })
+        gsap.to(this.circle_center, { pixi: { rotation: -360 }, duration: 4, repeat: -1, ease: 'Power2.easeOut' })
+        gsap.to(this.circle_outside, { pixi: { rotation: 360 }, duration: 4, repeat: -1, ease: 'Power2.easeOut' })
+    }
+}
+
+class ObjectList extends Container {
+    constructor() {
+        super()
+        this.objects = []
+        this.list_content = new Container()
+        this.list_mask = new Graphics()
+        this.list_mask.beginFill(0x000000, 1)
+        this.list_mask.drawRoundedRect(0, 0, 1000, 120, 16)
+        this.list_mask.endFill()
+
+        this.list_content.mask = this.list_mask
+
+        this.addChild(this.list_mask)
+    }
+
+    addListItem(data) {
+        let list_content = this.list_content
+        let list_item = new Container()
+
+        let background = new Graphics()
+        background.beginFill(0xffffff, 0.5)
+        background.drawRoundedRect(0, 0, 100, 100, 12)
+        background.endFill()
+
+        let image = new Sprite()
+        image.texture = resources[data.pic_src].texture
+        let scale = Math.min(100 / image.width, 100 / image.height)
+        image.scale.set(scale, scale)
+        image.position.set((100 - image.width) / 2, (100 - image.height) / 2)
+
+        list_item.addChild(background)
+        list_item.addChild(image)
+        list_item.position.set(this.objects.length * 120, 0)
+
+        list_item.id = data.id
+        list_item.background = background
+
+        list_content.addChild(list_item)
+        this.addChild(list_content)
+        this.objects.push(list_item)
+        console.log(this.objects)
+    }
+
+    selectListItem(object) {
+        this.objects.forEach((o) => {
+            let background = o.background
+            background.clear()
+            background.beginFill(0xffffff, 0.5)
+            background.drawRoundedRect(0, 0, 100, 100, 12)
+            background.endFill()
+        })
+
+        let background = object.background
+        background.clear()
+        background.beginFill(0x1976d2, 1)
+        background.drawRoundedRect(0, 0, 100, 100, 12)
+        background.endFill()
     }
 }

@@ -59,6 +59,9 @@ import fluid_shape002 from '@/assets/images/fluid-shape002.png'
 import fluid_shape003 from '@/assets/images/fluid-shape003.png'
 import undo001 from '@/assets/images/undo001.png'
 import circle_go001 from '@/assets/images/circle_go001.png'
+import gear_inside from '@/assets/images/gear-inside.png'
+import gear_center from '@/assets/images/gear-center.png'
+import gear_outside from '@/assets/images/gear-outside.png'
 
 const resources = {
     loading_bg: loadingBackground,
@@ -117,6 +120,9 @@ const resources = {
     fluid_shape003: fluid_shape003,
     undo001: undo001,
     circle_go001: circle_go001,
+    gear_inside: gear_inside,
+    gear_center: gear_center,
+    gear_outside: gear_outside,
 }
 
 export default resources
