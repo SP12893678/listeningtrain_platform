@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js'
+import {style12} from '@/js/game/engine/TextStyleManager'
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -20,16 +21,23 @@ let Application = PIXI.Application,
 export default class Button3 extends PIXI.Container {
     constructor(btnWidth, btnHeight, label) {
         super();
+        this.btn = new PIXI.Graphics();
         this.btnWidth = btnWidth;
         this.btnHeight = btnHeight;
         this.btnBorder = 4;
-        this.btnBorderColor = 0xFFFFFF;
-        this.cornerRadius = this.btnHeight/2;
+        this.btnBorderColor = 0xffffff;
+        this.cornerRadius = 10;
         this.btnBgColor = 0x000000;
         this.btnBgColorAlpha = 0.8;
         this.btnLabel = label;
+        this.fontFamily = style12
+        this.text = new PIXI.Text()
+        this.textColor = 0xffffff
+
         this.setButton();
-        this.setText(this.textColor);
+        this.setText(this.fontFamily)
+        // this.setTextColor(this.textColor);
+
         this.interactive = true;
         this.buttonMode = true;
         this.mouseover = function(mouseData) {
@@ -42,12 +50,12 @@ export default class Button3 extends PIXI.Container {
 
     setButton(){
        /* Draws a button */
-       this.btn = new PIXI.Graphics();
-       this.btn.lineStyle(this.btnBorder,this.btnBorderColor);
-       this.btn.beginFill(this.btnBgColor,this.btnBgColorAlpha);//填充
-       this.btn.drawRoundedRect(0,0,this.btnWidth,this.btnHeight,this.cornerRadius);
-       this.btn.endFill();
-       this.addChild(this.btn);
+       let btn = this.btn
+       btn.lineStyle(this.btnBorder,this.btnBorderColor);
+       btn.beginFill(this.btnBgColor,this.btnBgColorAlpha);//填充
+       btn.drawRoundedRect(0,0,this.btnWidth,this.btnHeight,this.cornerRadius);
+       btn.endFill();
+       this.addChild(btn);
     }
     setBorder(border){
         this.btnBorder = border;
@@ -67,23 +75,20 @@ export default class Button3 extends PIXI.Container {
         this.reDraw();
     }
     reDraw(){
-        this.btn.clear();
-        this.btn.lineStyle(this.btnBorder,this.btnBorderColor);
-        this.btn.beginFill(this.btnBgColor,this.btnBgColorAlpha);//填充
-        this.btn.drawRoundedRect(0,0,this.btnWidth,this.btnHeight,this.cornerRadius);
-        this.btn.endFill();
+        let btn = this.btn
+        btn.clear();
+        btn.lineStyle(this.btnBorder,this.btnBorderColor);
+        btn.beginFill(this.btnBgColor,this.btnBgColorAlpha);//填充
+        btn.drawRoundedRect(0,0,this.btnWidth,this.btnHeight,this.cornerRadius);
+        btn.endFill();
     }
-    setText(){
-        let text = new PIXI.Text(this.btnLabel, {
-            fontFamily: 'Noto Sans TC',
-            fontSize: this.btnHeight*0.5,
-            fill: 0xf1f1f1,
-            align: 'center',
-            fontWeight: '400',
-        })
-        text.position.set((this.btnWidth - text.width) / 2, (this.btnHeight - text.height) / 2);
-        this.text = text;
-        this.addChild(this.text);
+    setText(fontStyle){
+        let text = this.text
+        text.text = this.btnLabel
+        text.style = fontStyle
+        text.anchor.set(0.5)
+        text.position.set(this.btnWidth/2,this.btnHeight/2);
+        this.addChild(text);
     }
     setTextColor(color){
         this.text.tint = color;

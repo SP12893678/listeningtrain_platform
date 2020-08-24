@@ -127,5 +127,12 @@ const style16 = new TextStyle({
     fontSize: 40,
     fill: '#004D7F',
 })//questionTotal Text
+const style17 = new TextStyle({
+    fontFamily: 'jf-openhuninn',
+    fontSize: 28,
+    fill: '#000000',
+    lineHeight: 45,
+    letterSpacing: 5,
+})//result
 export { style1, style2, style3, style4, style5, style6, style7, style8, style9, style10, 
-    style11, style12, style13, style14, style15, style16}
+    style11, style12, style13, style14, style15, style16, style17}
