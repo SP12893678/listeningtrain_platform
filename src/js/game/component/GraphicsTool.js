@@ -16,6 +16,8 @@ const GraphicsTool = {
         this.graphics.lineTo(0, top_left)
         this.graphics.quadraticCurveTo(0, 0, top_left, 0)
     },
+
+    drawDashLine(linestyle, direction, length, radius) {},
 }
 
 export default GraphicsTool

@@ -188,7 +188,12 @@ export default class EnviromentDetailScene extends Scene {
         }
         let btn_practice_mode = new SlimeButton('練習模式', 'red')
         btn_practice_mode.scale.set(0.7, 0.7)
-        btn_practice_mode.click = () => Events.emit('goto', { id: 'practice_mode', animate: 'fadeIn', environmentId: this.data.environment.id })
+        btn_practice_mode.click = () => {
+            ScenesManager.scenes['practice_mode'] = null
+            ScenesManager.createScene('practice_mode', new PracticeModeScene())
+            ScenesManager.scenes['practice_mode'].init(this.data.environment.id)
+            ScenesManager.goToScene('practice_mode')
+        }
 
         let btn_test_mode = new SlimeButton('測驗模式', 'blue')
         btn_test_mode.scale.set(0.7, 0.7)
