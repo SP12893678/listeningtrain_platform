@@ -47,6 +47,9 @@ import nextQuestion from '@/assets/images/icon/nextQuestion.png'
 import reload from '@/assets/images/icon/reload.png'
 import leave from '@/assets/images/icon/leave.png'
 import listen from '@/assets/images/icon/listen.png'
+import correctAnswer from '@/assets/images/icon/correctAnswer.png'
+import yourAnswer from '@/assets/images/icon/yourAnswer.png'
+import check from '@/assets/images/icon/check.png'
 
 import slime_green from '@/assets/images/slime-green.png'
 import slime_tooth_green from '@/assets/images/slime-tooth-green.png'
@@ -123,6 +126,9 @@ const resources = {
     gear_inside: gear_inside,
     gear_center: gear_center,
     gear_outside: gear_outside,
+    correctAnswer: correctAnswer,
+    yourAnswer: yourAnswer,
+    check: check,
 }
 
 export default resources

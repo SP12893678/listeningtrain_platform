@@ -52,6 +52,11 @@ export default class profile extends PIXI.Container{
         dialog.setSize(1000,530)
         dialog.setBackgroundColor(0xFF9300,0.95)
         dialog.setCloseBtnBackgroundColor(0xF8BA00,0.95)
+        dialog.closeBtn.click = () => {
+            dialog.visible = false;
+            this.personInfoContainer.visible = true
+            this.standardContainer.visible = false
+        }
         this.addChild(dialog)
     }
     /* 建立一個textfield */

@@ -3,7 +3,8 @@ import ResourcesManager from '@/js/game/engine/ResourcesManager'
 import Config from '@/js/game/Config'
 import Scene from '@/js/game/engine/Scene'
 import Events from '@/js/game/Events'
-import RoundedButton from 'Component/RoundedButton'
+import RoundedButton from 'Component/button3'
+import { style7 } from '@/js/game/engine/TextStyleManager'
 
 import character from '@/js/game/character'
 import profile from '@/js/game/profile'
@@ -21,8 +22,8 @@ export default class GameMainScene extends Scene {
         this.background = new Sprite()
         this.character = new character('Mary')
         this.profile = new profile()
-        this.button = new RoundedButton()
-        this.btn_profile = new RoundedButton('個人資訊')
+        this.button = new RoundedButton(150, 60, '出征')
+        this.btn_profile = new RoundedButton(150, 60, '個人資訊')
 
         this.setBackground()
         this.setButton()
@@ -43,13 +44,18 @@ export default class GameMainScene extends Scene {
     }
     setButton() {
         let button = this.button
-        button.text.text = '出征'
+        button.setBorder(0)
+        button.setBackgroundColor(0x29d4ff)
+        button.setText(style7)
         button.position.set(700, 400)
         button.click = () => Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
         this.addChild(button)
     }
     setProfileButton() {
         let btn_profile = this.btn_profile
+        btn_profile.setBorder(0)
+        btn_profile.setBackgroundColor(0x29d4ff)
+        btn_profile.setText(style7)
         btn_profile.position.set(700, 300)
         btn_profile.click = () => (this.profile.dialog.visible = !this.profile.dialog.visible)
         this.addChild(btn_profile)
@@ -67,7 +73,13 @@ export default class GameMainScene extends Scene {
         armatureDisplay.interactive = true
         armatureDisplay.buttonMode = true
         armatureDisplay.mouseover = function(mouseData) {
-            armatureDisplay.animation.play('shakeHand', 1)
+            // armatureDisplay.animation.play('shakeHand', 1)
+            // armatureDisplay.animation.fadeIn('shakeHand',0,1,1)
+            // armatureDisplay.animation.fadeIn('fighting',0,1,2)
+
+            let handAnimation = armatureDisplay.animation.fadeIn('shakeHand', 0, 1, 1, 'hand')
+            let emojiAnimation = armatureDisplay.animation.fadeIn('fighting', 0, 1, 0, 'emoji')
+            emojiAnimation.addBoneMask('emoji') //只顯示表情這部分
         }
         armatureDisplay.mouseout = function(mouseData) {}
         armatureDisplay.click = function() {

@@ -1,13 +1,14 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.2
+-- version 4.8.5
 -- https://www.phpmyadmin.net/
 --
 -- 主機： 127.0.0.1
--- 產生時間： 2020-07-30 07:00:15
--- 伺服器版本： 10.4.13-MariaDB
--- PHP 版本： 7.2.32
+-- 產生時間： 
+-- 伺服器版本： 10.1.38-MariaDB
+-- PHP 版本： 7.3.2
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -53,7 +54,7 @@ CREATE TABLE `data` (
   `name` varchar(10) NOT NULL,
   `frequency` varchar(35) NOT NULL,
   `waveform` varchar(15) NOT NULL,
-  `created_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `audio_id` varchar(20) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -152,7 +153,7 @@ CREATE TABLE `enviro` (
   `background_src` text CHARACTER SET utf8 NOT NULL,
   `category` text CHARACTER SET utf8 NOT NULL,
   `name` varchar(10) CHARACTER SET utf8 NOT NULL,
-  `created_time` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `object` varchar(50) CHARACTER SET utf8 NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
@@ -251,8 +252,8 @@ CREATE TABLE `exam` (
   `name` varchar(10) NOT NULL,
   `question` varchar(50) NOT NULL,
   `creator` varchar(30) NOT NULL,
-  `create_time` datetime NOT NULL DEFAULT current_timestamp(),
-  `recent_edit_time` datetime NOT NULL DEFAULT current_timestamp()
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `recent_edit_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
@@ -333,29 +334,6 @@ INSERT INTO `history` (`id`, `name`, `data`, `correct`, `time`) VALUES
 -- --------------------------------------------------------
 
 --
--- 資料表結構 `login`
---
-
-CREATE TABLE `login` (
-  `username` varchar(8) COLLATE utf8_unicode_ci NOT NULL,
-  `mail` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  `account` varchar(12) COLLATE utf8_unicode_ci NOT NULL,
-  `password` varchar(12) COLLATE utf8_unicode_ci NOT NULL,
-  `id` varchar(3) COLLATE utf8_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- 傾印資料表的資料 `login`
---
-
-INSERT INTO `login` (`username`, `mail`, `account`, `password`, `id`) VALUES
-('', '', '', '', ''),
-('123', '123@g.con', '123', '1234', '學生'),
-('test1', 'test1@gmail.com', '1234', '12345', '學生');
-
--- --------------------------------------------------------
-
---
 -- 資料表結構 `object`
 --
 
@@ -365,7 +343,7 @@ CREATE TABLE `object` (
   `sound_src` text CHARACTER SET utf8 NOT NULL,
   `name` varchar(10) CHARACTER SET utf8 NOT NULL,
   `coordinate` varchar(100) CHARACTER SET utf8 NOT NULL,
-  `size` int(11) DEFAULT 5
+  `size` int(11) DEFAULT '5'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
@@ -401,31 +379,6 @@ INSERT INTO `object` (`id`, `pic_src`, `sound_src`, `name`, `coordinate`, `size`
 -- --------------------------------------------------------
 
 --
--- 資料表結構 `role_clothing`
---
-
-CREATE TABLE `role_clothing` (
-  `id` int(11) NOT NULL,
-  `name` text COLLATE utf8_unicode_ci NOT NULL,
-  `gender` char(2) COLLATE utf8_unicode_ci NOT NULL,
-  `hair` int(11) NOT NULL,
-  `clothes` int(11) NOT NULL,
-  `bottoms` int(11) NOT NULL,
-  `shoe` int(11) NOT NULL,
-  `h_deco` int(11) NOT NULL,
-  `wrist_deco` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- 傾印資料表的資料 `role_clothing`
---
-
-INSERT INTO `role_clothing` (`id`, `name`, `gender`, `hair`, `clothes`, `bottoms`, `shoe`, `h_deco`, `wrist_deco`) VALUES
-(1, 'emily', 'mm', 2, 5, 1, 1, 2, 1);
-
--- --------------------------------------------------------
-
---
 -- 資料表結構 `train`
 --
 
@@ -434,8 +387,8 @@ CREATE TABLE `train` (
   `name` varchar(10) NOT NULL,
   `question` varchar(50) NOT NULL,
   `creator` varchar(30) NOT NULL,
-  `create_time` datetime NOT NULL DEFAULT current_timestamp(),
-  `recent_edit_time` datetime NOT NULL DEFAULT current_timestamp()
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `recent_edit_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
@@ -459,7 +412,7 @@ CREATE TABLE `trainhistory` (
   `id` int(11) NOT NULL,
   `name` text CHARACTER SET utf8 NOT NULL,
   `data` text CHARACTER SET utf8 NOT NULL,
-  `time` timestamp NOT NULL DEFAULT current_timestamp()
+  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
@@ -523,6 +476,32 @@ INSERT INTO `trainhistory` (`id`, `name`, `data`, `time`) VALUES
 (129, '訪客', '菜刀/0;沸水/0;洗碗/0;烤麵包機/0;瓶子/0;掃地/0;吊扇/0;吸塵器/0;果汁機/0;剪刀/0', '2020-03-26 06:27:01'),
 (130, '訪客', '菜刀/0;沸水/0;洗碗/1;烤麵包機/0;瓶子/0;掃地/0;吊扇/0;吸塵器/0;果汁機/0;剪刀/0', '2020-03-26 06:59:44');
 
+-- --------------------------------------------------------
+
+--
+-- 資料表結構 `user`
+--
+
+CREATE TABLE `user` (
+  `account` varchar(12) NOT NULL,
+  `password` varchar(16) NOT NULL,
+  `name` varchar(12) NOT NULL,
+  `mail` varchar(30) NOT NULL,
+  `creator` varchar(12) NOT NULL,
+  `identity` varchar(3) NOT NULL,
+  `tags` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- 傾印資料表的資料 `user`
+--
+
+INSERT INTO `user` (`account`, `password`, `name`, `mail`, `creator`, `identity`, `tags`) VALUES
+('106110', '11', 'jack', 'we@gmail.com', '', '學生', ''),
+('33', '44', 'dog', 'd@gmail.com', '', '教師', ''),
+('55', '66', 'cat', 'c@gmail.com', '', '學生', ''),
+('test', '1234', 'test', '123@hello.com', '', '學生', '');
+
 --
 -- 已傾印資料表的索引
 --
@@ -558,21 +537,9 @@ ALTER TABLE `history`
   ADD PRIMARY KEY (`id`);
 
 --
--- 資料表索引 `login`
---
-ALTER TABLE `login`
-  ADD PRIMARY KEY (`username`);
-
---
 -- 資料表索引 `object`
 --
 ALTER TABLE `object`
-  ADD PRIMARY KEY (`id`);
-
---
--- 資料表索引 `role_clothing`
---
-ALTER TABLE `role_clothing`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -588,59 +555,59 @@ ALTER TABLE `trainhistory`
   ADD PRIMARY KEY (`id`);
 
 --
--- 在傾印的資料表使用自動遞增(AUTO_INCREMENT)
+-- 資料表索引 `user`
+--
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`account`);
+
+--
+-- 在傾印的資料表使用自動增長(AUTO_INCREMENT)
 --
 
 --
--- 使用資料表自動遞增(AUTO_INCREMENT) `data`
+-- 使用資料表自動增長(AUTO_INCREMENT) `data`
 --
 ALTER TABLE `data`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
 
 --
--- 使用資料表自動遞增(AUTO_INCREMENT) `enviro`
+-- 使用資料表自動增長(AUTO_INCREMENT) `enviro`
 --
 ALTER TABLE `enviro`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
--- 使用資料表自動遞增(AUTO_INCREMENT) `envirohistory`
+-- 使用資料表自動增長(AUTO_INCREMENT) `envirohistory`
 --
 ALTER TABLE `envirohistory`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
--- 使用資料表自動遞增(AUTO_INCREMENT) `exam`
+-- 使用資料表自動增長(AUTO_INCREMENT) `exam`
 --
 ALTER TABLE `exam`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
--- 使用資料表自動遞增(AUTO_INCREMENT) `history`
+-- 使用資料表自動增長(AUTO_INCREMENT) `history`
 --
 ALTER TABLE `history`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
--- 使用資料表自動遞增(AUTO_INCREMENT) `object`
+-- 使用資料表自動增長(AUTO_INCREMENT) `object`
 --
 ALTER TABLE `object`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
--- 使用資料表自動遞增(AUTO_INCREMENT) `role_clothing`
---
-ALTER TABLE `role_clothing`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- 使用資料表自動遞增(AUTO_INCREMENT) `train`
+-- 使用資料表自動增長(AUTO_INCREMENT) `train`
 --
 ALTER TABLE `train`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
--- 使用資料表自動遞增(AUTO_INCREMENT) `trainhistory`
+-- 使用資料表自動增長(AUTO_INCREMENT) `trainhistory`
 --
 ALTER TABLE `trainhistory`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=131;

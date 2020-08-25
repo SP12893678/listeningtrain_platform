@@ -4,12 +4,14 @@ import Config from '@/js/game/Config'
 import VerticalScroller from 'Component/VerticalScroller'
 import Events from '@/js/game/Events'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
-import { style14, style15, style16 } from '@/js/game/engine/TextStyleManager'
+import { style6, style8, style14, style15, style16, style17} from '@/js/game/engine/TextStyleManager'
 import character from '@/js/game/character'
 import Button2 from 'Component/button2'
 import Timer from 'Component/timer'
 import Environment from '@/js/game/Environment'
 import Dialog from 'Component/dialog'
+import { Graphics } from 'pixi.js/lib/core'
+import RadarChart from 'Component/RadarChart'
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -36,6 +38,11 @@ export default class TestModeScene extends Scene {
         this.screenDown = new Container()
         this.leaveBtn = new Button2(180, 50, ResourcesManager.leave, '結束測驗')
         this.leaveDialog = new Dialog('確定要離開測驗嗎？')
+        this.answerCheck = [{correctAnswer:'1',yourAnswer:'2'},{correctAnswer:'2',yourAnswer:'2'},
+                            {correctAnswer:'1',yourAnswer:'3'},{correctAnswer:'4',yourAnswer:'4'}]
+        this.result = new Container()
+        this.resultText = new PIXI.Text()
+        this.answerBoard = new AnswerBoard(this.answerCheck)
 
         this.setBackground()
         this.setTitle()
@@ -43,6 +50,7 @@ export default class TestModeScene extends Scene {
         this.setScreenUp()
         this.setScreen()
         this.setScreenDown()
+        this.setResultPanel()
     }
     setBackground() {
         let background = this.background
@@ -140,6 +148,13 @@ export default class TestModeScene extends Scene {
         let armatureDisplay = character.armatureDisplay
         armatureDisplay.position.set(250,670)
         armatureDisplay.scale.set(0.4)
+        // For testing
+        armatureDisplay.interactive = true
+        armatureDisplay.buttonMode = true
+        armatureDisplay.click = () =>{
+            this.showResult()
+            this.result.visible = !this.result.visible
+        }
         this.addChild(armatureDisplay)
         //this.armatureDisplay.animation.play('shakeHand',1);
     }
@@ -234,11 +249,11 @@ export default class TestModeScene extends Scene {
         }
         /* leave button */
         let leaveBtn = this.leaveBtn
-        leaveBtn .position.set(this.screen.length-leaveBtn.btnWidth,0)
-        leaveBtn .setBorder(0)
-        leaveBtn .setCornerRadius(15)
-        leaveBtn .setBackgroundColor(0xF8F9EA)
-        leaveBtn .setText(style15)
+        leaveBtn.position.set(this.screen.length-leaveBtn.btnWidth,0)
+        leaveBtn.setBorder(0)
+        leaveBtn.setCornerRadius(15)
+        leaveBtn.setBackgroundColor(0xF8F9EA)
+        leaveBtn.setText(style15)
         leaveBtn.click = () =>{
             leaveDialog.visible = true
             this.timer.stop() 
@@ -254,5 +269,208 @@ export default class TestModeScene extends Scene {
         this.screenCover.visible = true
         this.screenDown.visible = false
         this.timer.reset()
+    }
+    setResultPanel(){
+        let result = this.result
+        result.visible = false
+        result.position.set(this.screenUp.x,this.screenUp.y)
+        this.addChild(result)
+
+        let resultPanel = new PIXI.Graphics()
+        let panelLength = Config.screen.width-this.screenUp.x-20
+        let panelHeight = Config.screen.height-this.screenUp.y-20
+        resultPanel.beginFill(0xFBFFE0)
+        resultPanel.drawRoundedRect(0,0,panelLength,panelHeight,10)
+        resultPanel.endFill()
+        result.addChild(resultPanel)
+        /* title */
+        let title = new PIXI.Graphics()
+        title.beginFill(0xFF644E)
+        title.drawRoundedRect(panelLength-200,0,200,60,10)
+        title.endFill()
+        result.addChild(title)
+        let titleText = new PIXI.Text('測驗結果',style6)
+        titleText.anchor.set(0.5)
+        titleText.position.set(panelLength-100,30)
+        result.addChild(titleText)
+        /* environment pic */
+        let EnvironmentPic = new PIXI.Graphics()
+        EnvironmentPic.beginFill(0xffffff)
+        EnvironmentPic.drawRoundedRect(0,0,450,280,10)
+        EnvironmentPic.endFill()
+        EnvironmentPic.position.set(50,50)
+        result.addChild(EnvironmentPic)
+        /* result text */
+        let resultText = this.resultText
+        resultText.position.set(600,125)
+        result.addChild(resultText)
+        /* answerCheck*/
+        let no = new PIXI.Text('題數',style15)
+        no.position.set(50,380)
+        result.addChild(no)
+
+        let correctAnswer = new Sprite(resources[ResourcesManager.correctAnswer].texture)
+        correctAnswer.width = 40
+        correctAnswer.height = 40
+        correctAnswer.position.set(no.x+no.width+5,no.y)
+        result.addChild(correctAnswer)
+        
+        let correctAnswerTitle = new PIXI.Text('正確答案',style15)
+        correctAnswerTitle.position.set(correctAnswer.x+correctAnswer.width+5,correctAnswer.y)
+        result.addChild(correctAnswerTitle)
+
+        let yourAnswer = new Sprite(resources[ResourcesManager.yourAnswer].texture)
+        yourAnswer.width = 40
+        yourAnswer.height = 40
+        yourAnswer.position.set(correctAnswerTitle.x+correctAnswerTitle.width+5,correctAnswerTitle.y)
+        result.addChild(yourAnswer)
+
+        let yourAnswerTitle = new PIXI.Text('你的答案',style15)
+        yourAnswerTitle.position.set(yourAnswer.x+yourAnswer.width+5,correctAnswer.y)
+        result.addChild(yourAnswerTitle)
+
+        let check = new Sprite(resources[ResourcesManager.check].texture)
+        check.width = 40
+        check.height = 40
+        check.position.set(yourAnswerTitle.x+yourAnswerTitle.width+10,yourAnswerTitle.y)
+        result.addChild(check)
+
+        let answerBoard = this.answerBoard
+        answerBoard.position.set(no.x,no.y+no.height+10)
+        result.addChild(answerBoard)
+
+        /* 雷達圖 */
+        let labels = ['正確率', '反應\n速度', '  低頻\n辨識率', '  高頻\n辨識率','完成度']
+        let datasets = [
+            { name: '最近一次測驗', data: [50, 10, 75, 150, 100] },
+            { name: '個人學習平均值', data: [100, 70, 150, 80, 30] },
+        ]
+        let chart = new RadarChart(labels, datasets)
+        chart.position.set(resultText.x+225,no.y+170)
+        chart.barLabel.position.set(-390,340)
+        chart.scale.set(380/chart.width)
+        result.addChild(chart)
+        /* button:各能力計算標準 */
+        let standardBtn = new Button2(180,40, ResourcesManager.question, '能力計算標準')
+        standardBtn.position.set(resultText.x+270,no.y+350)
+        standardBtn.setText(style8)
+        standardBtn.setBorder(0)
+        standardBtn.setCornerRadius(10)
+        standardBtn.setBackgroundColor(0xFFA050)
+        standardBtn.interactive = true
+        standardBtn.buttonMode = true
+        result.addChild(standardBtn)
+
+        let line = new PIXI.Graphics()
+        line.lineStyle(2,0x000000)
+        line.drawRect(resultText.x,no.y,450,320)
+        result.addChild(line)
+
+    }
+    showResult(){
+        //test
+        this.answerCheck[0]['yourAnswer'] = 1
+        this.answerCheck[2]['yourAnswer'] = 1
+
+        let correct = this.answerCheck.filter( check =>{
+            return (check.correctAnswer == check.yourAnswer)
+        });
+        let correctTotle = correct.length
+        let resultText = this.resultText
+        resultText.text = '作答情境: 廚房'+
+                        '\n作答題數: ' + this.questionTotal + ' 題'+
+                        '\n答對題數: ' + correctTotle + ' 題' +
+                        '\n作答時間: ' + this.timer.text.text
+        resultText.style = style17
+
+        this.answerBoard.data = this.answerCheck
+        this.answerBoard.update()
+    }
+}
+
+class AnswerBoard extends Container {
+    constructor(data) {
+        super()
+        this.data = data
+
+        this.background = new Graphics()
+        this.list = new Container()
+        this.listColor =[0xffffff,0xEFEFEF]
+
+        this.setBackground()
+        this.setList()
+    }
+
+    setBackground() {
+        let background = this.background
+        background.beginFill(0xffffff)
+        background.drawRoundedRect(0,0,450,350,10)
+        background.endFill()
+        this.addChild(background)
+    }
+    setList(){
+        let list = this.list
+        this.addChild(list)
+
+        let listContainer =  new Container()
+        list.addChild(listContainer)
+
+        let listMask = new Graphics()
+        listMask.beginFill(0x000000)
+        listMask.drawRoundedRect(0,0,450,350,10)
+        listMask.endFill()
+        list.addChild(listMask)
+
+        let data = this.data
+        let listColor = this.listColor
+
+        for(let i = 0 ; i < data.length ; i++){
+            let bg = new Graphics()
+            bg.beginFill(listColor[i%2])
+            bg.drawRect(0,120*i,450,120)
+            bg.endFill()
+            bg.lineStyle(1,0x000000)
+            bg.moveTo(60,120*i)
+            bg.lineTo(60,120*(i+1))
+            bg.moveTo(230,120*i)
+            bg.lineTo(230,120*(i+1))
+            bg.moveTo(400,120*i)
+            bg.lineTo(400,120*(i+1))
+            listContainer.addChild(bg)
+
+            let no = new PIXI.Text((i+1),style15)
+            no.anchor.set(0.5)
+            no.position.set(30,60*(i*2+1))//width 60
+            listContainer.addChild(no)
+
+            let correctAnswer = data[i].correctAnswer
+            let correct = new PIXI.Text(correctAnswer,style15)
+            correct.anchor.set(0.5)
+            correct.position.set(145,60*(i*2+1))//width 170
+            listContainer.addChild(correct)
+
+            let yourAnswer = data[i].yourAnswer
+            let your = new PIXI.Text(yourAnswer,style15)
+            your.anchor.set(0.5)
+            your.position.set(315,60*(i*2+1))//width 170
+            listContainer.addChild(your)
+
+            let checkAnswer = (correctAnswer == yourAnswer) ? 'O' : 'X'
+            let style =  style15.clone()
+            let check = new PIXI.Text(checkAnswer,style)
+            check.style.fill = (checkAnswer == 'O') ? 0x017100 : 0xEE220C 
+            check.anchor.set(0.5)
+            check.position.set(425,60*(i*2+1))//width 50
+            listContainer.addChild(check)
+        }
+
+        listContainer.mask = listMask
+        let scroller = new VerticalScroller(10,listContainer,listMask)
+        scroller.position.set(450,0)
+        list.addChild(scroller)
+    }
+    update(){
+        this.list.removeChildren()
+        this.setList()
     }
 }

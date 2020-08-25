@@ -4,7 +4,7 @@
     $mail = $_GET['mail'];
     $acr = $_GET['acr'];
     $pwr = $_GET['pwr'];
-    $id = $_GET['id'];
+    $id = $_GET['identity'];
 
   
     $sql = "SELECT * FROM user WHERE account='$acr'";
