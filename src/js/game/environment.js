@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js'
-import { Container, Sprite } from 'pixi.js/lib/core'
+import { Container, Sprite, Graphics } from 'pixi.js/lib/core'
 import { apiManageEnviroment, apiManageObject } from '@/js/api'
 import { OutlineFilter } from 'pixi-filters'
 
@@ -9,6 +9,14 @@ export default class Environment extends Container {
         this.data = {}
         this.background = new Sprite()
         this.objects = []
+
+        let environment_mask = new Graphics()
+        environment_mask.beginFill(0x000000, 1)
+        environment_mask.drawRect(0, 0, 1000, 625)
+        environment_mask.endFill()
+
+        this.mask = environment_mask
+        this.addChild(environment_mask)
     }
 
     async init(id) {

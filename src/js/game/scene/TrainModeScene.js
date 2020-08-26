@@ -39,18 +39,10 @@ export default class TrainModeScene extends Scene {
     }
 
     async init(id) {
-        let environmentArea = this.environmentArea
-
-        let environmentArea_mask = new Graphics()
-        environmentArea_mask.beginFill(0x000000, 1)
-        environmentArea_mask.drawRect(0, 0, 1000, 625)
-        environmentArea_mask.endFill()
-
         let environment = new TrainModeEnvironment()
         await environment.init(id)
         let scale = 1000 / environment.width
         environment.scale.set(scale, scale)
-        environmentArea.mask = environmentArea_mask
 
         let objectList = this.objectList
         objectList.objects = []
@@ -82,13 +74,10 @@ export default class TrainModeScene extends Scene {
             }
         })
 
-        environmentArea_mask.position.set(500, 100)
-        environmentArea.position.set(500, 100)
+        environment.position.set(500, 100)
 
-        environmentArea.addChild(environment)
-        environmentArea.addChild(gearlocking)
-        this.addChild(environmentArea)
-        this.addChild(environmentArea_mask)
+        environment.addChild(gearlocking)
+        this.addChild(environment)
         this.addChild(objectList)
         this.addChild(scroller)
     }

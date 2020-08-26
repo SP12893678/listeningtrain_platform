@@ -60,7 +60,6 @@ export default class PracticeModeScene extends Scene {
         await environment.init(id)
         let scale = screen.length / environment.width
         environment.scale.set(scale, scale)
-        screen.height = environment.height
         screen.addChild(environment)
 
         let questionSystem = this.questionSystem
@@ -68,7 +67,7 @@ export default class PracticeModeScene extends Scene {
 
         let screenCover = this.screenCover
         screenCover.beginFill(0xffffff, 0.8)
-        screenCover.drawRoundedRect(0, 0, screen.length, environment.height, 10)
+        screenCover.drawRoundedRect(0, 0, screen.length, screen.height, 10)
         screenCover.endFill()
         screen.addChild(screenCover)
 

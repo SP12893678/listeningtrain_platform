@@ -8,7 +8,7 @@ import { BlurFilter } from 'pixi.js/lib/filters'
 import HorizontalScroller from '../component/HorizontalScroller'
 import RadarChart from 'Component/RadarChart'
 import RoundedButton from '../component/RoundedButton'
-import { style6 } from '@/js/game/engine/TextStyleManager'
+import { style18 } from '@/js/game/engine/TextStyleManager'
 import ScenesManager from '@/js/game/engine/ScenesManager'
 import { gsap } from 'gsap'
 import { PixiPlugin } from 'gsap/PixiPlugin'
@@ -80,7 +80,7 @@ export default class EnviromentDetailScene extends Scene {
         icon.scale.set(scale, scale)
         icon.position.set(152, 140)
 
-        let text = new Text('返回', style6)
+        let text = new Text('返回', style18)
         text.position.set(152, 197)
 
         goBackArea.addChild(background)
@@ -197,7 +197,12 @@ export default class EnviromentDetailScene extends Scene {
 
         let btn_test_mode = new SlimeButton('測驗模式', 'blue')
         btn_test_mode.scale.set(0.7, 0.7)
-        btn_test_mode.click = () => Events.emit('goto', { id: 'test_mode', animate: 'fadeIn', environmentId: this.data.environment.id })
+        btn_test_mode.click = () => {
+            ScenesManager.scenes['test_mode'] = null
+            ScenesManager.createScene('test_mode', new TestModeScene())
+            ScenesManager.scenes['test_mode'].init(this.data.environment.id)
+            ScenesManager.goToScene('test_mode')
+        }
 
         btn_train_mode.position.set(0, 0)
         btn_practice_mode.position.set(btn_train_mode.position.x + btn_train_mode.width, 0)
@@ -231,7 +236,9 @@ class SlimeButton extends Container {
         }
         this.background = new Sprite()
         this.background.texture = resources[image[color].background].texture
-        this.text = new Text(text, style6)
+        let style = {}
+        Object.assign(style, style18)
+        this.text = new Text(text, style)
         this.tooth = new Sprite()
         this.tooth.texture = resources[image[color].tooth].texture
         this.tooth.alpha = 0
