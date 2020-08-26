@@ -302,11 +302,11 @@ export default class TestModeScene extends Scene {
         result.addChild(EnvironmentPic)
         /* result text */
         let resultText = this.resultText
-        resultText.position.set(600,125)
+        resultText.position.set(600,115)
         result.addChild(resultText)
         /* answerCheck*/
         let no = new PIXI.Text('題數',style15)
-        no.position.set(50,380)
+        no.position.set(50,350)
         result.addChild(no)
 
         let correctAnswer = new Sprite(resources[ResourcesManager.correctAnswer].texture)

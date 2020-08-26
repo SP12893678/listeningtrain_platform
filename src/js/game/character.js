@@ -42,6 +42,7 @@ export default class Character{
         .then((res) => {
             console.log('clothing_data',res.data);
             this.clothing.clothing_data = res.data;
+            this.gender = res.data[2]
         })
         .catch((error) => {
             console.error(error);
@@ -50,7 +51,7 @@ export default class Character{
     async check_if_has_clothing(name){
         await this.get_character_clothing_data(name);
         if(this.clothing.clothing_data.length != 0){
-            this.clothing.changeClothes();
+            await this.clothing.changeClothes();
             this.clothing.initialClothing();
         }
     }

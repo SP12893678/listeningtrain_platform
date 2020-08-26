@@ -4,7 +4,9 @@ import Config from '@/js/game/Config'
 import Scene from '@/js/game/engine/Scene'
 import Events from '@/js/game/Events'
 import Button from 'Component/button'
+import Dialog from 'Component/dialog'
 import { apiManageRoleClothes } from '@/js/api'
+import { apiManageLogin } from "@/js/api";
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -18,11 +20,15 @@ export default class GameStartScene extends Scene {
         super()
         this.background = new Sprite()
         this.button = new Button(150, 50, 20)
+        this.dialog = new Dialog('請先登入',2)
         this.interactive = true
         this.buttonMode = true
         this.click = () => this.gotoNextScene()
         this.setBackground()
         this.setButton()
+        this.setDialog()
+
+        this.logindata = null
     }
 
     setBackground() {
@@ -39,16 +45,52 @@ export default class GameStartScene extends Scene {
         button.click = () => this.gotoNextScene()
         this.addChild(button)
     }
+    setDialog(){
+        let dialog = this.dialog
+        dialog.visible = false
+        dialog.setSize(Config.screen.width*0.3,Config.screen.height*0.3)
+        dialog.yesBtn.setBorder(0)
+        dialog.yesBtn.setCornerRadius(10)
+        dialog.yesBtn.click = () =>{
+            window.location.href = "./index.html";
+        }
+        this.addChild(dialog)
+    }
 
     async gotoNextScene() {
-        await apiManageRoleClothes({ type: 'get', name: 'Mary' })
+        await apiManageLogin({type: "checklogin",})
+        .then((res) => {
+            console.log('checkLogin',res.data);
+            this.logindata = res.data;
+            
+            if(this.logindata[0] == "0"){
+                this.dialog.visible = true
+                this.interactive = false
+                this.buttonMode = false
+            }
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+        
+        window.sessionStorage.setItem('account', this.logindata[0]);//儲存帳號
+
+        if(this.logindata[0] != "0"){
+            await apiManageRoleClothes({ type: 'get', name: this.logindata[0] })
             .then((res) => {
                 console.log('clothing_data', res.data)
-                let scene = res.data.length != 0 ? 'game_main' : 'create_role'
-                Events.emit('goto', { id: scene, animate: 'fadeIn' })
+                let scene = ''
+                if(res.data.length != 0){
+                    scene = 'create_role'
+                    // window.sessionStorage.setItem('gender', res.data[2]);
+                }else{
+                    scene = 'game_main'
+                }
+                Events.emit('goto', { id: scene, animate: 'fadeIn'})
             })
             .catch((error) => {
                 console.error(error)
             })
+        }
     }
 }

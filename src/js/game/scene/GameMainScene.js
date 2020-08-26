@@ -19,9 +19,10 @@ let Application = PIXI.Application,
 export default class GameMainScene extends Scene {
     constructor() {
         super()
+        this.account = window.sessionStorage.getItem('account')
         this.background = new Sprite()
-        this.character = new character('Mary')
-        this.profile = new profile()
+        this.character = new character(this.account)
+        this.profile = new profile(this.account)
         this.button = new RoundedButton(150, 60, '出征')
         this.btn_profile = new RoundedButton(150, 60, '個人資訊')
 

@@ -15,9 +15,11 @@ let Application = PIXI.Application,
     Sprite = PIXI.Sprite
 
 export default class profile extends PIXI.Container{
-    constructor() {
+    constructor(account) {
         super()
-        this.nickname = 'Mary'
+        this.account = account
+        this.nickname = account
+        this.gender = ''
         this.dialog = new Dialog('',1)
         this.input = new TextInput({
             input: {
@@ -141,7 +143,8 @@ export default class profile extends PIXI.Container{
         showtitle.position.set(115,50)
         personInfoContainer.addChild(showtitle)
         /* character */
-        let person = new character('Mary').armatureDisplay
+        let c = new character(this.account)
+        let person = c.armatureDisplay
         person.scale.set(0.35)
         person.position.set(164,310)
         person.interactive = false
@@ -155,19 +158,20 @@ export default class profile extends PIXI.Container{
         this.personInfoItemContainer = new Container()
         personInfoContainer.addChild(this.personInfoItemContainer)
         this.personInfoItemContainer.position.set(307,150)
-        let id = '123'
+        let id = this.account
         this.create_item(' I D',id,ResourcesManager.id)
         let temp = new Container()
         this.setTextField()
         temp.addChild(this.input)
-        let name = 'Mary'
+        let name = this.nickname
         this.input.text = name
         this.input.placeholder = '輸入你的暱稱...'
         this.setEditSaveBtn()
         temp.addChild(this.editBtn)
         temp.addChild(this.saveBtn)
         this.create_item('姓名',temp,ResourcesManager.name)
-        let gender = '男'
+        let gender = c.clothing.gender
+        console.log(c.clothing.gender)
         this.create_item('性別',gender,ResourcesManager.gender)
         let birthday = '2020.20.20'
         this.create_item('生日',birthday,ResourcesManager.birthday)

@@ -358,8 +358,9 @@ export default class PracticeModeScene extends Scene {
 
         Sound.stopAll()
         this.showAnserDialog.showAnser(this.questionSystem.question[this.questionNo - 1], this.environment.selected)
+        let checkColor = (this.environment.selected.data.pic_src == this.questionSystem.question[this.questionNo - 1].pic_src) ? 0xFFFB00 : 0xDD9000
         this.showAnserDialog.confirmButton.update = () => {
-            this.starCheck.getChildAt(this.questionNo - 1).tint = 0xff0000
+            this.starCheck.getChildAt(this.questionNo - 1).tint = checkColor
             this.questionNo++
             if (this.questionNo > this.questionTotal) this.questionNo = this.questionTotal
             this.questionNoShow.text = this.questionNo

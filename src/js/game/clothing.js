@@ -61,7 +61,6 @@ export default class Clothing{
                this.clothingData[item] = armature.getSlot(item)._textureData.name;
             }
         });
-
     }
     change_character_clothing(armatureDisplay,factory,gender){
         this.armatureDisplay = armatureDisplay;
@@ -286,6 +285,7 @@ export default class Clothing{
     /* 根據資料庫內容進行換裝 */
     changeClothes(){
         let temp = this.clothing_data[0];
+        this.gender = temp.gender
         let itemName = ['hair','clothes','cleft','cright','bottoms','shoe','sright','h_deco','wrist_deco'];
         itemName.forEach(item=>{
             let str = temp[item];
@@ -298,7 +298,6 @@ export default class Clothing{
     }
     /* 將服裝info上傳至資料庫  */
     saveClothes(){
-        console.log('here',this.clothingData)
         return apiManageRoleClothes({
             type: 'save',
             name: this.name,

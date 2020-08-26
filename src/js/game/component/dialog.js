@@ -11,14 +11,10 @@ let Application = PIXI.Application,
     Sprite = PIXI.Sprite
 
 export default class Dialog extends Overlay {
-    constructor(label,type){
+    constructor(label='',type = 0){
         super();
         this.dialogLabel = label;
-        if(typeof(type) != 'undefined'){
-            this.type = type
-        }
-        else 
-            this.type = 0 //default
+        this.type = type
         this.settingDialog(Config.screen.width,Config.screen.height);
         // this.click = () => {
         //         this.visible = false;
@@ -32,36 +28,49 @@ export default class Dialog extends Overlay {
         this.dialogBgColor = 0x000000;
         this.dialogBgColorAlpha = 0.8;
         this.draw();
-        let t = this;
         switch(this.type){
             case 0:
                 this.setLabel();
-                this.setButton();
+                this.setYesButton();
+                this.setCancelButton();
                 break;
             case 1:
                 this.setCloseButton();
                 break;
+            case 2:
+                this.setLabel();
+                this.setYesButton();
+                break;
             default:
                 this.setLabel();
-                this.setButton();
+                this.setYesButton();
+                this.setCancelButton();
                 break;
         }
         // this.setLabel();
         // this.setButton();
     }
-    setButton(){
-        this.cancelBtn = new Button3(this.dialogWidth*0.75/2,this.dialogHeight*0.20,'取消');
-        this.cancelBtn.position.set(this.dialog.x+(this.dialogWidth-this.dialogWidth*0.8)/2,this.dialog.y+this.dialogHeight*0.6);
-        this.cancelBtn.setCornerRadius(this.dialogHeight*0.20/(2.1));
+    setYesButton(){
+        let yesBtn = new Button3(this.dialogWidth*0.75/2,this.dialogHeight*0.20,'確認');
+        yesBtn.position.set(this.dialog.x+(this.dialogWidth-this.dialogWidth*0.8)/2+yesBtn.btnWidth+this.dialogWidth*0.05,this.dialog.y+this.dialogHeight*0.6);
+        if(this.type == 2)
+            yesBtn.position.set(this.dialog.x+(this.dialogWidth-yesBtn.btnWidth)/2,this.dialog.y+this.dialogHeight*0.6);
+        yesBtn.setCornerRadius(this.dialogHeight*0.20/(2.1));
+        yesBtn.setBackgroundColor(0xffd700,0.95);
+        yesBtn.setTextColor(0x000000);
+        this.addChild(yesBtn);
+
+        this.yesBtn = yesBtn
+    }
+    setCancelButton(){
+        let cancelBtn = new Button3(this.dialogWidth*0.75/2,this.dialogHeight*0.20,'取消');
+        cancelBtn.position.set(this.dialog.x+(this.dialogWidth-this.dialogWidth*0.8)/2,this.dialog.y+this.dialogHeight*0.6);
+        cancelBtn.setCornerRadius(this.dialogHeight*0.20/(2.1));
         // this.cancelBtn.setBackgroundColor(0xffff00,0.6);
         // this.cancelBtn.setTextColor(0x000000);
-        this.yesBtn = new Button3(this.dialogWidth*0.75/2,this.dialogHeight*0.20,'確認');
-        this.yesBtn.position.set(this.cancelBtn.x+this.cancelBtn.width+this.dialogWidth*0.05,this.cancelBtn.y);
-        this.yesBtn.setCornerRadius(this.dialogHeight*0.20/(2.1));
-        this.yesBtn.setBackgroundColor(0xffd700,0.95);
-        this.yesBtn.setTextColor(0x000000);
-        this.addChild(this.cancelBtn);
-        this.addChild(this.yesBtn);
+        this.addChild(cancelBtn);
+
+        this.cancelBtn = cancelBtn
     }
     setLabel(){
         let text = new PIXI.Text(this.dialogLabel, {
@@ -71,7 +80,8 @@ export default class Dialog extends Overlay {
             align: 'center',
             fontWeight: '400',
         })
-        text.position.set(this.dialog.x+(this.dialogWidth-36*this.dialogLabel.length)/2 ,this.dialog.y+this.dialogHeight*0.3);
+        text.anchor.set(0.5)
+        text.position.set(this.dialog.x+this.dialogWidth/2,this.dialog.y+this.dialogHeight*0.4);
         this.text = text;
         this.addChild(this.text);
     }
