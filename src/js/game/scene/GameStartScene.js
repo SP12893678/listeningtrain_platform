@@ -81,10 +81,10 @@ export default class GameStartScene extends Scene {
                 console.log('clothing_data', res.data)
                 let scene = ''
                 if(res.data.length != 0){
-                    scene = 'create_role'
+                    scene = 'game_main'
                     // window.sessionStorage.setItem('gender', res.data[2]);
                 }else{
-                    scene = 'game_main'
+                    scene = 'create_role'
                 }
                 Events.emit('goto', { id: scene, animate: 'fadeIn'})
             })
