@@ -4,7 +4,7 @@
     $name = $_GET['name'];
     switch ($type) {
         case 'get':
-            $sql = "SELECT * FROM `role_clothing` WHERE name IN ('$name')";
+            $sql = "SELECT * FROM `role-clothing` WHERE name IN ('$name')";
             $result = mysqli_query($con, $sql);
             if (!$result) {
                 printf("Error: %s\n", mysqli_error($con));
@@ -32,11 +32,11 @@
             $result = mysqli_query($con, $sql);
             $row=mysqli_fetch_assoc($result);
             if ($row == null) {
-                $save = "INSERT IGNORE INTO `role_clothing`(`name`, `gender`, `hair`, `clothes`, `cleft`, `cright`, `bottoms`, `shoe`, `sright`, `h_deco`, `wrist_deco`) VALUES ('$name','$gender','$hair','$clothes','$cleft','$cright','$bottoms','$shoe','$sright','$h_deco','$wrist_deco')";
+                $save = "INSERT IGNORE INTO `role-clothing`(`name`, `gender`, `hair`, `clothes`, `cleft`, `cright`, `bottoms`, `shoe`, `sright`, `h_deco`, `wrist_deco`) VALUES ('$name','$gender','$hair','$clothes','$cleft','$cright','$bottoms','$shoe','$sright','$h_deco','$wrist_deco')";
             }
             else{
                 //更新clothing data
-                $save = "UPDATE `role_clothing` SET `gender`='$gender',`hair`='$hair',`clothes`='$clothes',`cleft`='$cleft',`cright`='$cright',`bottoms`='$bottoms',`shoe`='$shoe',`sright`='$sright',`h_deco`='$h_deco',`wrist_deco`='$wrist_deco' WHERE name='$name'";
+                $save = "UPDATE `role-clothing` SET `gender`='$gender',`hair`='$hair',`clothes`='$clothes',`cleft`='$cleft',`cright`='$cright',`bottoms`='$bottoms',`shoe`='$shoe',`sright`='$sright',`h_deco`='$h_deco',`wrist_deco`='$wrist_deco' WHERE name='$name'";
             }
             $result = mysqli_query($con, $save);
             if (!$result) {
