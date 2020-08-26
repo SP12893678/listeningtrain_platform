@@ -80,8 +80,8 @@
                         </v-list-item-avatar>
 
                         <v-list-item-content>
-                            <v-list-item-title>User Name</v-list-item-title>
-                            <v-list-item-subtitle>Identity</v-list-item-subtitle>
+                            <v-list-item-title>{{ user.name }}</v-list-item-title>
+                            <v-list-item-subtitle>{{ user.identity }}</v-list-item-subtitle>
                         </v-list-item-content>
                     </v-list-item>
 
@@ -130,10 +130,22 @@
         <router-view :passdata="passdata" @passdata="passdata = $event"></router-view>
         <v-description-manual :dialog.sync="dialog" v-on:getDialog="changeDialog"></v-description-manual>
         <v-tour name="homepage" :steps="steps"></v-tour>
+        <v-dialog v-model="alert_dialog.dialog" max-width="400" persistent>
+            <v-card>
+                <v-card-title>{{alert_dialog.title}}</v-card-title>
+                <v-card-text>{{alert_dialog.text}}</v-card-text>
+                <v-card-actions>
+                    <v-btn @click="goToIndexPage" text block>
+                        <v-icon left>mdi-checkbox-marked-circle-outline</v-icon>確定
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-app>
 </template>
 
 <script>
+import { apiManageLogin } from '@/js/api'
 import vDescriptionManual from './Description-manual.vue'
 
 export default {
@@ -142,6 +154,15 @@ export default {
     },
     data() {
         return {
+            user: {
+                name: 'User Name',
+                identity: 'Identity',
+            },
+            alert_dialog: {
+                dialog: false,
+                title: 'Title',
+                text: 'text',
+            },
             nav_drawer: false,
             passdata: {},
             dialog: false,
@@ -165,8 +186,29 @@ export default {
             ],
         }
     },
-    mounted() {
+    async mounted() {
         console.log(this.$route.name)
+        apiManageLogin({ type: 'checklogin' })
+            .then((res) => {
+                if (res.data[2] == 0)
+                    this.showDialog({
+                        title: '尚未登入',
+                        text: '如欲使用管理功能需先進行登入',
+                    })
+                else if (res.data[1] == '學生')
+                    this.showDialog({
+                        title: '身份不符',
+                        text: '學生身份無權限使用管理功能',
+                    })
+                else {
+                    let [name, identity] = res.data
+                    this.user.name = name
+                    this.user.identity = identity
+                }
+            })
+            .catch((error) => {
+                console.error(error)
+            })
         /**Todo
          * requset personal data and update name and identity
          * else router push to Website Index
@@ -182,6 +224,14 @@ export default {
         callGuideTour() {
             if (this.$tours[this.$route.name])
                 this.$tours[this.$route.name].start()
+        },
+        showDialog(data) {
+            this.alert_dialog.title = data.title
+            this.alert_dialog.text = data.text
+            this.alert_dialog.dialog = true
+        },
+        goToIndexPage() {
+            window.location.href = './index.html'
         },
     },
 }
