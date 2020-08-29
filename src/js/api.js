@@ -12,4 +12,4 @@ export const apiManageExcel = (file, data) => userRequest.post('/excel.php', fil
 export const apiGetFolderFileList = (data) => userRequest.get('/dir.php', { params: data })
 export const apiManageLogin = (data) => userRequest.get('/login.php', { params: data })
 export const apiManageRegister = (data) => userRequest.get('/register.php', { params: data })
-export const apiManageRoleClothes = (data) => userRequest.get('/role-clothes.php', { params: data })
+export const apiManageRoleData = (data) => userRequest.get('/roleData.php', { params: data })

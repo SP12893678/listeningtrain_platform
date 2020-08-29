@@ -22,9 +22,10 @@ let resources = PIXI.loader.resources
 export default class PracticeModeScene extends Scene {
     constructor() {
         super()
+        this.account = window.sessionStorage.getItem('account')
         this.background = new PIXI.Graphics()
         this.title = new Container()
-        this.character = new character('Mary')
+        this.character = new character(this.account)
         this.questionTotal = 10
         this.questionNo = 1
         this.screenUp = new Container()
@@ -117,7 +118,7 @@ export default class PracticeModeScene extends Scene {
         btn_goback.position.set(60, 60)
         btn_goback.click = () => {
             if (!this.startBtn.visible) this.leaveDialog.visible = true
-            else Events.emit('goto', { id: 'game_main', animate: 'fadeIn' })
+            else Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
         }
         btn_goback.mouseover = function(mouseData) {
             btn_goback.scale.set(scale * 1.1)
@@ -222,8 +223,8 @@ export default class PracticeModeScene extends Scene {
     }
     async setScreen() {
         let screen = this.screen
-        screen.length = 1000
-        screen.height = 625
+        screen.length = 1050
+        screen.height = 630
         screen.position.set(480, this.screenUp.y + 65)
         this.addChild(screen)
 
@@ -312,7 +313,7 @@ export default class PracticeModeScene extends Scene {
         leaveDialog.yesBtn.click = () => {
             /* yesBtn action */
             this.reset()
-            Events.emit('goto', { id: 'game_main', animate: 'fadeIn' })
+            Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
             leaveDialog.visible = false
         }
         leaveDialog.cancelBtn.click = () => {
@@ -435,15 +436,59 @@ class showAnserDialog extends Overlay {
         this.visible = false
         this.board = new Container()
         this.background = new Graphics()
+        this.correctAnswerIcon = new Sprite()
+        this.correctAnswerLabel = new PIXI.Text()
         this.correctAnser = new Sprite()
+        this.yourAnswerIcon = new Sprite()
+        this.yourAnswerLabel = new PIXI.Text()
         this.yourAnser = new Sprite()
         this.confirmButton = new RoundedButton('確認')
 
         let background = this.background
         background.beginFill(0xffffff, 0.8)
-        background.drawRoundedRect(0, 0, 600, 400, 20)
+        background.drawRoundedRect(0, 0, 700, 300, 20)
         background.endFill()
         this.board.addChild(background)
+
+        let correctAnswerIcon = this.correctAnswerIcon
+        correctAnswerIcon.texture = resources[ResourcesManager.correctAnswer].texture
+        correctAnswerIcon.width = 40
+        correctAnswerIcon.height = 40
+        correctAnswerIcon.anchor.set(0.5)
+        correctAnswerIcon.position.set(80,50)
+        this.board.addChild(correctAnswerIcon)
+
+        let correctAnswerLabel = this.correctAnswerLabel
+        correctAnswerLabel.text = '正確答案'
+        correctAnswerLabel.style = style15
+        correctAnswerLabel.anchor.set(0.5)
+        correctAnswerLabel.position.set(160,50)
+        this.board.addChild(correctAnswerLabel)
+
+        let dottedLine = new Graphics()
+        dottedLine.lineStyle(2,0x000000)
+        let length = 150
+        for(let i = 0; (i+1)*20 < length ;i++){
+            dottedLine.moveTo(0,i*20+5);
+            dottedLine.lineTo(0,(i+1)*20);
+        }
+        dottedLine.position.set(350,30)
+        this.board.addChild(dottedLine)
+
+        let yourAnswerIcon = this.yourAnswerIcon
+        yourAnswerIcon.texture = resources[ResourcesManager.yourAnswer].texture
+        yourAnswerIcon.width = 40
+        yourAnswerIcon.height = 40
+        yourAnswerIcon.anchor.set(0.5)
+        yourAnswerIcon.position.set(480,50)
+        this.board.addChild(yourAnswerIcon)
+
+        let yourAnswerLabel = this.yourAnswerLabel
+        yourAnswerLabel.text = '你的答案'
+        yourAnswerLabel.style = style15
+        yourAnswerLabel.anchor.set(0.5)
+        yourAnswerLabel.position.set(560,50)
+        this.board.addChild(yourAnswerLabel)
 
         this.confirmButton.interactive = true
         this.confirmButton.buttonMode = true
@@ -452,10 +497,10 @@ class showAnserDialog extends Overlay {
             this.visible = false
             this.confirmButton.update()
         }
-        this.confirmButton.position.set((600 - this.confirmButton.width) / 2, 300)
+        this.confirmButton.position.set((700 - this.confirmButton.width) / 2, 200)
         this.board.addChild(this.confirmButton)
 
-        this.board.position.set(690, 270)
+        this.board.position.set(640, 270)
         this.addChild(this.board)
     }
 
@@ -476,8 +521,8 @@ class showAnserDialog extends Overlay {
         yourAnser.scale.set(scale, scale)
         yourAnser.anchor.set(0.5, 0.5)
 
-        correctAnser.position.set(150, 200)
-        yourAnser.position.set(450, 200)
+        correctAnser.position.set(150, 170)
+        yourAnser.position.set(550, 170)
 
         board.addChild(correctAnser)
         board.addChild(yourAnser)
