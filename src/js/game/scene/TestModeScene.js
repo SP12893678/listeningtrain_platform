@@ -26,9 +26,10 @@ let Application = PIXI.Application,
 export default class TestModeScene extends Scene {
     constructor() {
         super()
+        this.account = window.sessionStorage.getItem('account')
         this.background = new PIXI.Graphics()
         this.title = new Container()
-        this.character = new character('Mary')
+        this.character = new character(this.account)
         this.questionTotal = 10
         this.questionNo = 1
         this.screenUp = new Container()
@@ -48,6 +49,7 @@ export default class TestModeScene extends Scene {
             { correctAnswer: '4', yourAnswer: '4' },
         ]
         this.result = new Container()
+        this.resultEnvironmentPic = new Sprite()
         this.resultText = new PIXI.Text()
         this.answerBoard = new AnswerBoard(this.answerCheck)
         this.questionSystem = new QuestionSystem()
@@ -66,7 +68,7 @@ export default class TestModeScene extends Scene {
         let environment = this.environment
         await environment.init(id)
         let scale = screen.length / environment.width
-        environment.scale.set(scale, scale)
+        environment.scale.set(scale)
         screen.addChild(environment)
 
         environment.objects.forEach(
@@ -110,6 +112,8 @@ export default class TestModeScene extends Scene {
         Sound.stopAll()
 
         if (this.questionNo == this.questionTotal) {
+            if(this.timer.state)
+                this.timer.stop()
             this.showResult()
             this.result.visible = true
             return
@@ -146,8 +150,12 @@ export default class TestModeScene extends Scene {
         btn_goback.buttonMode = true
         btn_goback.position.set(60, 60)
         btn_goback.click = () => {
-            if (!this.startBtn.visible) this.leaveDialog.visible = true
-            else Events.emit('goto', { id: 'game_main', animate: 'fadeIn' })
+            if (!this.startBtn.visible) {
+                if(this.timer.state)
+                    this.timer.stop()
+                this.leaveDialog.visible = true
+            }
+            else Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
         }
         btn_goback.mouseover = function(mouseData) {
             btn_goback.scale.set(scale * 1.1)
@@ -215,8 +223,8 @@ export default class TestModeScene extends Scene {
         armatureDisplay.position.set(250, 670)
         armatureDisplay.scale.set(0.4)
         // For testing
-        armatureDisplay.interactive = true
-        armatureDisplay.buttonMode = true
+        // armatureDisplay.interactive = true
+        // armatureDisplay.buttonMode = true
         // armatureDisplay.click = () => {
         //     this.showResult()
         //     this.result.visible = !this.result.visible
@@ -258,8 +266,8 @@ export default class TestModeScene extends Scene {
     }
     async setScreen() {
         let screen = this.screen
-        screen.length = 1000
-        screen.height = 625
+        screen.length = 1050
+        screen.height = 630
         screen.position.set(480, this.screenUp.y + 65)
         this.addChild(screen)
 
@@ -305,7 +313,7 @@ export default class TestModeScene extends Scene {
         leaveDialog.yesBtn.click = () => {
             /* yesBtn action */
             this.reset()
-            Events.emit('goto', { id: 'game_main', animate: 'fadeIn' })
+            Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
             leaveDialog.visible = false
         }
         leaveDialog.cancelBtn.click = () => {
@@ -322,7 +330,7 @@ export default class TestModeScene extends Scene {
         leaveBtn.setText(style15)
         leaveBtn.click = () => {
             leaveDialog.visible = true
-            this.timer.stop()
+            if(this.timer.state)this.timer.stop()
         }
         screenDown.addChild(leaveBtn)
     }
@@ -360,11 +368,16 @@ export default class TestModeScene extends Scene {
         titleText.position.set(panelLength - 100, 30)
         result.addChild(titleText)
         /* environment pic */
-        let EnvironmentPic = new PIXI.Graphics()
-        EnvironmentPic.beginFill(0xffffff)
-        EnvironmentPic.drawRoundedRect(0, 0, 450, 280, 10)
-        EnvironmentPic.endFill()
-        EnvironmentPic.position.set(50, 50)
+        let EnvironmentPicMask = new PIXI.Graphics()
+        EnvironmentPicMask.beginFill(0xffffff)
+        EnvironmentPicMask.drawRoundedRect(0, 0, 450, 280, 10)
+        EnvironmentPicMask.endFill()
+        EnvironmentPicMask.position.set(50, 50)
+        result.addChild(EnvironmentPicMask)
+
+        let EnvironmentPic = this.resultEnvironmentPic
+        EnvironmentPic.mask = EnvironmentPicMask
+        EnvironmentPic.position.set(50,50)
         result.addChild(EnvironmentPic)
         /* result text */
         let resultText = this.resultText
@@ -441,14 +454,21 @@ export default class TestModeScene extends Scene {
             this.answerBoard.data.push({ correctAnswer: item, yourAnswer: this.questionSystem.myAnswer[index] })
         })
 
+        let environmentName = this.environment.data.environment.name
         let correct = this.answerCheck.filter((check) => {
             return check.correctAnswer.id == check.yourAnswer.data.id
         })
-        let correctTotle = correct.length
+        let correctTotal = correct.length
         let resultText = this.resultText
+    
         resultText.text =
-            '作答情境: 廚房' + '\n作答題數: ' + this.questionTotal + ' 題' + '\n答對題數: ' + correctTotle + ' 題' + '\n作答時間: ' + this.timer.text.text
+            '作答情境: '+environmentName + '\n作答題數: ' + this.questionTotal + ' 題' + '\n答對題數: ' + correctTotal + ' 題' + '\n作答時間: ' + this.timer.text.text
         resultText.style = style17
+
+        let envionmentPicTexture = this.environment.background._texture
+        let scale = Math.max(450 / envionmentPicTexture.width, 280 / envionmentPicTexture.height)
+        this.resultEnvironmentPic.texture = envionmentPicTexture
+        this.resultEnvironmentPic.scale.set(scale)
 
         this.answerBoard.update()
     }

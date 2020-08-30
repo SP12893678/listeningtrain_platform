@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js'
 import dragonBones from 'pixi-dragonbones';
-import { apiManageRoleClothes } from '@/js/api'
+import { apiManageRoleData } from '@/js/api'
 import axios from 'axios'
 import { GlowFilter} from 'pixi-filters'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
@@ -15,14 +15,15 @@ let Application = PIXI.Application,
     Sprite = PIXI.Sprite
 
 export default class Clothing{
-    constructor(armatureDisplay,factory,gender,name) {
+    constructor(armatureDisplay,factory,gender,account) {
         this.armatureDisplay = armatureDisplay;
         this.factory = factory;
         this.gender = gender;
-        this.name = name;
+        this.account = account;
         this.loadData(character_tex_json);
     }
     loadData(itemPath){
+        this.initialClothing()
         this.item_data = itemPath;
         this.item_classifier(this.item_data);
     }
@@ -298,9 +299,9 @@ export default class Clothing{
     }
     /* 將服裝info上傳至資料庫  */
     saveClothes(){
-        return apiManageRoleClothes({
-            type: 'save',
-            name: this.name,
+        return apiManageRoleData({
+            type: 'saveClothing',
+            account: this.account,
             gender: this.gender,
             hair: this.clothingData.hair,
             clothes: this.clothingData.clothes,
@@ -330,7 +331,6 @@ export default class Clothing{
                     let random_no = Math.floor(Math.random() * number) + 1;
                     this.factory.replaceSlotDisplay("Character",(this.gender == 'gg')?'Girl':'Boy',item,temp[this.gender][item][random_no].name,this.armatureDisplay._armature.getSlot(item));//局部換裝
                     this.clothingData[item] = temp[this.gender][item][random_no].name;
-                    // console.log(item,temp[this.gender][item][random_no].name);
                     if(item == 'clothes'){
                         this.factory.replaceSlotDisplay("Character",(this.gender == 'gg')?'Girl':'Boy','cleft',temp[this.gender]['cleft'][random_no].name,this.armatureDisplay._armature.getSlot('cleft'));//局部換裝
                         this.factory.replaceSlotDisplay("Character",(this.gender == 'gg')?'Girl':'Boy','cright',temp[this.gender]['cright'][random_no].name,this.armatureDisplay._armature.getSlot('cright'));//局部換裝

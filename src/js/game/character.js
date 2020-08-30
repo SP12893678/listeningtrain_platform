@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js'
 import dragonBones from 'pixi-dragonbones';
-import { apiManageRoleClothes } from '@/js/api'
+import { apiManageRoleData } from '@/js/api'
 import clothing from './clothing'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
 import character_tex_json from '@/assets/json/Character_tex.json'
@@ -15,12 +15,17 @@ let Application = PIXI.Application,
     Sprite = PIXI.Sprite
 
 export default class Character{
-    constructor(name) {
-        this.name = name
+    constructor(account) {
+        this.account = account
+        this.nickname = account
         this.gender ='gg';
+        this.birthday = '2020-20-20'
+        this.title = 'newPlayer'
+        this.money = 0
+
         this.show_character(this.gender);
-        this.clothing = new clothing(this.armatureDisplay,this.factory,this.gender,name);
-        this.check_if_has_clothing(name);
+        this.clothing = new clothing(this.armatureDisplay,this.factory,this.gender,account);
+        this.check_if_has_data(account);
     }
     show_character(gender){
         /* Character */
@@ -37,22 +42,52 @@ export default class Character{
         if(this.clothing != null)
             this.clothing.change_character_clothing(this.armatureDisplay,this.factory,gender);
     }
-    get_character_clothing_data(name) {
-        return apiManageRoleClothes({ type: 'get',name: name })
+    get_character_data(account) {
+        return apiManageRoleData({ type: 'getData', account: account })
         .then((res) => {
-            console.log('clothing_data',res.data);
-            this.clothing.clothing_data = res.data;
-            this.gender = res.data[2]
+            console.log('data',res.data)
+            if(res.data.length != 0){
+                this.gender = res.data[0].gender
+                this.nickname = res.data[0].nickname
+                this.birthday = res.data[0].birthday
+                this.title = res.data[0].title
+                this.money = res.data[0].money
+                this.clothing.clothing_data = res.data;
+            }
         })
         .catch((error) => {
             console.error(error);
         })
     } 
-    async check_if_has_clothing(name){
-        await this.get_character_clothing_data(name);
+    async check_if_has_data(account){
+        await this.get_character_data(account);
         if(this.clothing.clothing_data.length != 0){
             await this.clothing.changeClothes();
             this.clothing.initialClothing();
         }
+    }
+    save_character_data(){
+        let account = this.account //帳號
+        let gender = this.gender
+        let nickname = this.nickname //暱稱
+        let today = new Date();
+        let birthday = today.getFullYear()+ "-" + (today.getMonth()+1) + "-" + today.getDate()//生日
+        let title = this.title//稱號
+        let money = this.money //金錢
+        return apiManageRoleData({
+            type: 'saveData',
+            account: account,
+            gender: gender,
+            nickname: nickname,
+            birthday: birthday,
+            title: title,
+            money: money,
+        })
+        .then((res) => {
+            console.log('saving data',res.data);
+        })
+        .catch((error) => {
+            console.error(error)
+        })
     }
 }

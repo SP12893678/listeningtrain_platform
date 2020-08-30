@@ -5,7 +5,7 @@ import Scene from '@/js/game/engine/Scene'
 import Events from '@/js/game/Events'
 import Button from 'Component/button'
 import Dialog from 'Component/dialog'
-import { apiManageRoleClothes } from '@/js/api'
+import { apiManageRoleData } from '@/js/api'
 import { apiManageLogin } from "@/js/api";
 
 let Application = PIXI.Application,
@@ -76,9 +76,9 @@ export default class GameStartScene extends Scene {
         window.sessionStorage.setItem('account', this.logindata[0]);//儲存帳號
 
         if(this.logindata[0] != "0"){
-            await apiManageRoleClothes({ type: 'get', name: this.logindata[0] })
+            await apiManageRoleData({ type: 'getData', account: this.logindata[0] })
             .then((res) => {
-                console.log('clothing_data', res.data)
+                console.log('character_data', res.data)
                 let scene = ''
                 if(res.data.length != 0){
                     scene = 'game_main'

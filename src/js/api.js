@@ -14,3 +14,4 @@ export const apiManageLogin = (data) => userRequest.get('/login.php', { params: 
 export const apiManageRegister = (data) => userRequest.get('/register.php', { params: data })
 export const apiManageRoleClothes = (data) => userRequest.get('/role-clothes.php', { params: data })
 export const apiManageUser = (data) => userRequest.get('/user.php', { params: data })
+export const apiManageRoleData = (data) => userRequest.get('/roleData.php', { params: data })

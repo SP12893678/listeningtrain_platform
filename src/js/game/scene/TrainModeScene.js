@@ -26,9 +26,10 @@ let resources = PIXI.loader.resources
 export default class TrainModeScene extends Scene {
     constructor() {
         super()
+        this.account = window.sessionStorage.getItem('account')
         this.background = new PIXI.Graphics()
         this.title = new Container()
-        this.character = new character('Mary')
+        this.character = new character(this.account)
         this.environmentArea = new Container()
         this.objectList = new ObjectList()
         this.gearlocking = new GearLocking()
@@ -107,7 +108,7 @@ export default class TrainModeScene extends Scene {
         btn_goback.buttonMode = true
         btn_goback.position.set(60, 60)
         btn_goback.click = () => {
-            Events.emit('goto', { id: 'game_main', animate: 'fadeIn' })
+            Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
         }
         btn_goback.mouseover = function(mouseData) {
             btn_goback.scale.set(scale * 1.1)

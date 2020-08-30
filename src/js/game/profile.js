@@ -18,9 +18,13 @@ export default class profile extends PIXI.Container {
     constructor(account) {
         super()
         this.account = account
+<<<<<<< HEAD
         this.nickname = account
         this.gender = ''
         this.dialog = new Dialog('', 1)
+=======
+        this.dialog = new Dialog('',1)
+>>>>>>> 707608d93b5bbd23ec4b4535d4da24f8d5fec8a4
         this.input = new TextInput({
             input: {
                 fontFamily: 'jf-openhuninn',
@@ -37,16 +41,25 @@ export default class profile extends PIXI.Container {
         })
         this.editBtn = new Sprite()
         this.saveBtn = new Sprite()
+        this.person = new character(this.account)
         this.personInfoContainer = new Container()
         this.learningContainer = new Container()
         this.standardContainer = new Container()
 
+        this.init()
+    }
+    async init(){
+        await this.checkData()
         this.setDialog()
         this.setTextField()
         this.setEditSaveBtn()
         this.setPersonInfoPanel()
         this.setLearningPanel()
         this.setStandardPanel()
+    }
+    async checkData(){
+        await this.person.get_character_data(this.account)
+        console.log(this.person.gender)
     }
     setDialog() {
         let dialog = this.dialog
@@ -97,27 +110,38 @@ export default class profile extends PIXI.Container {
         saveBtn.visible = false
         saveBtn.interactive = true // 設定可以互動
         saveBtn.buttonMode = true // 當滑鼠滑過時顯示為手指圖示
-        saveBtn.click = function() {
+        saveBtn.click = async function() {
             editBtn.visible = true
             saveBtn.visible = false
             t.input.disabled = true
+            t.person.nickname = await t.input.text
+            await t.person.save_character_data()
             console.log('You have entered', t.input.text)
             console.log('now is editBtn')
-            t.nickname = t.input.text
+            
         }
         /*All events are dispatched via the default pixi EventEmitter.*/
-        this.input.on('keydown', (keycode) => {
+        this.input.on('keydown', async(keycode) => {
             //搭配著input focus的部分
             if (keycode == 13) {
                 editBtn.visible = true
                 saveBtn.visible = false
                 t.input.disabled = true
+                t.person.nickname = await t.input.text
+                await t.person.save_character_data()
                 console.log('enter')
+<<<<<<< HEAD
                 t.nickname = t.input.text
             }
         })
     }
     setPersonInfoPanel() {
+=======
+            }   
+        })
+    }
+    async setPersonInfoPanel(){
+>>>>>>> 707608d93b5bbd23ec4b4535d4da24f8d5fec8a4
         let personInfoContainer = this.personInfoContainer
         personInfoContainer.position.set(this.dialog.dialog.x, this.dialog.dialog.y)
         /* panel */
@@ -141,8 +165,8 @@ export default class profile extends PIXI.Container {
         showtitle.position.set(115, 50)
         personInfoContainer.addChild(showtitle)
         /* character */
-        let c = new character(this.account)
-        let person = c.armatureDisplay
+        let c = this.person
+        let person = this.person.armatureDisplay
         person.scale.set(0.35)
         person.position.set(164, 310)
         person.interactive = false
@@ -155,18 +179,27 @@ export default class profile extends PIXI.Container {
         /* profile item */
         this.personInfoItemContainer = new Container()
         personInfoContainer.addChild(this.personInfoItemContainer)
+<<<<<<< HEAD
         this.personInfoItemContainer.position.set(307, 150)
         let id = this.account
         this.create_item(' I D', id, ResourcesManager.id)
+=======
+        this.personInfoItemContainer.position.set(307,150)
+        //ID
+        let id = this.account
+        this.create_item(' I D',id,ResourcesManager.id)
+        //姓名
+>>>>>>> 707608d93b5bbd23ec4b4535d4da24f8d5fec8a4
         let temp = new Container()
         this.setTextField()
         temp.addChild(this.input)
-        let name = this.nickname
+        let name = this.person.nickname
         this.input.text = name
         this.input.placeholder = '輸入你的暱稱...'
         this.setEditSaveBtn()
         temp.addChild(this.editBtn)
         temp.addChild(this.saveBtn)
+<<<<<<< HEAD
         this.create_item('姓名', temp, ResourcesManager.name)
         let gender = c.clothing.gender
         console.log(c.clothing.gender)
@@ -178,6 +211,23 @@ export default class profile extends PIXI.Container {
         this.create_item('稱號', title, ResourcesManager.title)
         let money = '$' + 500
         this.create_item('金幣', money, ResourcesManager.money)
+=======
+        this.create_item('姓名',temp,ResourcesManager.name)
+        //性別
+        let gender = this.person.gender
+        this.create_item('性別',gender,ResourcesManager.gender)
+        //生日
+        let birthday = this.person.birthday
+        this.create_item('生日',birthday,ResourcesManager.birthday)
+        //稱號
+        let title = new Sprite(PIXI.loader.resources[ResourcesManager[this.person.title]].texture)
+        title.scale.set(30/title.height)
+        this.create_item('稱號',title,ResourcesManager.title)
+        //金錢
+        let money = '$'+ this.person.money
+        this.create_item('金幣',money,ResourcesManager.money)
+        
+>>>>>>> 707608d93b5bbd23ec4b4535d4da24f8d5fec8a4
 
         this.dialog.addChild(personInfoContainer)
     }
