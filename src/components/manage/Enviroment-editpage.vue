@@ -391,7 +391,7 @@ export default {
         test() {
             // console.log(this.selected);
             // console.log(this.object_img_profile.local_img);
-            console.log(this.model)
+            console.log(this.objects)
         },
         creatEnvrioment() {
             PIXI.settings.RESOLUTION = window.devicePixelRatio || 1

@@ -93,14 +93,7 @@
         <v-dialog v-model="progress.dialog" max-width="600" persistent>
             <v-card>
                 <v-card-title>執行進度</v-card-title>
-                <v-progress-linear
-                    :value="progress.value"
-                    :buffer-value="progress.value"
-                    color="deep-purple accent-4"
-                    stream
-                    rounded
-                    height="6"
-                ></v-progress-linear>
+                <v-progress-linear :value="progress.value" :buffer-value="progress.value" color="deep-purple accent-4" stream rounded height="6"></v-progress-linear>
             </v-card>
         </v-dialog>
     </v-container>
@@ -114,27 +107,27 @@ export default {
         return {
             progress: {
                 dialog: false,
-                value: 0
+                value: 0,
             },
             search: null,
             file: null,
             setting: {
                 dialog: false,
-                firstline: true
+                firstline: true,
             },
             users: [],
             user_header: [
                 {
                     text: '名稱',
                     align: 'start',
-                    value: 'name'
+                    value: 'name',
                 },
                 { text: '帳號', value: 'account' },
                 { text: '密碼', value: 'password', sortable: false },
                 { text: '信箱', value: 'email' },
                 { text: '標籤', value: 'tags' },
-                { text: '刪除', value: 'delete', sortable: false }
-            ]
+                { text: '刪除', value: 'delete', sortable: false },
+            ],
         }
     },
     mounted() {
@@ -150,16 +143,33 @@ export default {
             if (this.file != undefined && this.file != null)
                 this.getExcelFileData()
         },
-        getExcelFileData: async function(params) {
+        getExcelFileData: async function (params) {
             var formData = new FormData()
             formData.append('file', this.file)
             console.log(formData)
-            apiManageExcel(formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
+
+            let config = {
+                onUploadProgress: (ProgressEvent) => {
+                    console.log(
+                        (((ProgressEvent.loaded / ProgressEvent.total) * 100) |
+                            0) +
+                            '%'
+                    )
                 },
-                params: { type: 'upload_and_get_excel_data' }
-            }).then(res => {
+            }
+
+            apiManageExcel(
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                    params: {
+                        type: 'upload_and_get_excel_data',
+                    },
+                },
+                config.onUploadProgress
+            ).then((res) => {
                 console.log(res.data)
                 var app = this
                 res.data.forEach((item, index) => {
@@ -186,7 +196,7 @@ export default {
                 password: null,
                 email: null,
                 tags: [],
-                pwshow: false
+                pwshow: false,
             }
             this.users.push(user)
         },
@@ -200,8 +210,8 @@ export default {
                 app.progress.value += Math.random() * 20
                 if (app.progress.value >= 100) clearInterval(interval)
             }, 1000)
-        }
-    }
+        },
+    },
 }
 </script>
 

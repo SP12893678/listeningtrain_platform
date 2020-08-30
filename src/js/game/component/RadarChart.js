@@ -1,13 +1,16 @@
 import * as PIXI from 'pixi.js'
 import { GlowFilter } from 'pixi-filters'
-import { style1, style5 } from '@/js/game/engine/TextStyleManager'
+import { style1, style5, style19, style20 } from '@/js/game/engine/TextStyleManager'
+import { Container, Graphics, Text } from 'pixi.js/lib/core'
 
 export default class RadarChart extends PIXI.Container {
     constructor(labels, datasets) {
         super()
         this.labels = labels
         this.datasets = datasets
+        this.tabView = new Container()
         this.drawRadar()
+        this.setTabView()
         // this.dataview = this.setDataview()
 
         this.chart = {}
@@ -17,6 +20,43 @@ export default class RadarChart extends PIXI.Container {
         this.datasets.forEach((dataset) => {
             this.addChart(dataset.name, dataset.data)
         })
+    }
+
+    setTabView() {
+        let tabView = this.tabView
+        tabView.visible = false
+        let background = new Graphics()
+        background.beginFill(0x000000, 0.5)
+        background.drawRoundedRect(0, 0, 200, 70, 8)
+        background.endFill()
+        tabView.addChild(background)
+        let title = new Text('正確率')
+        title.style = style19
+        title.position.set(5, 5)
+
+        let box = new Graphics()
+        box.lineStyle(2, 0x4ec9f5, 1)
+        box.drawRect(0, 0, 20, 20)
+        box.endFill()
+        box.position.set(10, 40)
+
+        let text = new Text('最近一次測驗:50')
+        text.style = style20
+        text.position.set(40, 40)
+
+        tabView.addChild(title)
+        tabView.addChild(box)
+        tabView.addChild(text)
+        this.addChild(tabView)
+
+        tabView.update = (title_text, text_text, color) => {
+            title.text = title_text
+            text.text = text_text
+            box.clear()
+            box.lineStyle(2, color, 1)
+            box.drawRect(0, 0, 20, 20)
+            box.endFill()
+        }
     }
 
     setLabel() {}
@@ -99,13 +139,14 @@ export default class RadarChart extends PIXI.Container {
     }
 
     addChart(id, data) {
+        let labels = this.labels
         let color = this.colors[Object.keys(this.chart).length]
         let sides = this.labels.length
         let chart = new PIXI.Container()
         let path = this.getPath(150, sides)
         let polygon = new PIXI.Graphics()
         polygon.lineStyle(4, color, 1)
-        polygon.beginFill(color, 0.3)
+        // polygon.beginFill(color, 0.3)
         polygon.moveTo((path[0].x * data[0]) / 150, (path[0].y * data[0]) / 150)
 
         let dots = []
@@ -127,9 +168,11 @@ export default class RadarChart extends PIXI.Container {
                 dot.beginFill(0xffffff, 1)
                 dot.drawCircle((point.x * data[index]) / 150, (point.y * data[index]) / 150, 5)
                 dot.endFill()
-
-                // console.log((point.x * data[index]) / 150, (point.y * data[index]) / 150)
-                // this.dataview.container.position.set((point.x * data[index]) / 150, (point.y * data[index]) / 150 - this.dataview.container.height)
+                console.log(id)
+                this.tabView.update(labels[index], id, color)
+                this.tabView.position.set((point.x * data[index]) / 150 - this.tabView.width / 2, (point.y * data[index]) / 150 - this.tabView.height - 10)
+                this.tabView.visible = true
+                this.addChild(this.tabView)
             }
             dot.mouseout = () => {
                 dot.clear()
@@ -138,6 +181,7 @@ export default class RadarChart extends PIXI.Container {
                 dot.beginFill(color, 1)
                 dot.drawCircle((point.x * data[index]) / 150, (point.y * data[index]) / 150, 5)
                 dot.endFill()
+                this.tabView.visible = false
             }
 
             dots.push(dot)
