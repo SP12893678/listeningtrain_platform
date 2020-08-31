@@ -4,13 +4,7 @@
             <v-list-item-content>
                 <v-list-item-title class="jf-title pa-2">學生帳戶</v-list-item-title>
             </v-list-item-content>
-            <v-text-field
-                v-model="search"
-                append-icon="mdi-magnify"
-                label="Search"
-                single-line
-                hide-details
-            ></v-text-field>
+            <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details></v-text-field>
             <v-list-item-action class="ml-4 mb-0">
                 <v-btn to="/student-edit" text>
                     <v-icon left>mdi-account-plus</v-icon>新增
@@ -20,19 +14,15 @@
         <v-divider></v-divider>
         <v-list-item two-line class="mt-4">
             <v-list-item-content>
-                <v-data-table
-                    :headers="user_header"
-                    :items="users"
-                    :search="search"
-                    multi-sort
-                    class="elevation-1"
-                ></v-data-table>
+                <v-data-table :headers="user_header" :items="users" :search="search" multi-sort class="elevation-1"></v-data-table>
             </v-list-item-content>
         </v-list-item>
     </v-container>
 </template>
 
 <script>
+import { apiManageUser } from '@/js/api'
+
 export default {
     data() {
         return {
@@ -42,18 +32,22 @@ export default {
                 {
                     text: '名稱',
                     align: 'start',
-                    value: 'name'
+                    value: 'name',
                 },
                 { text: '帳號', value: 'account' },
-                { text: '信箱', value: 'email' },
+                { text: '信箱', value: 'mail' },
                 { text: '標籤', value: 'tags' },
-                { text: '創建者', value: 'creator' }
-            ]
+                { text: '創建者', value: 'creator' },
+            ],
         }
     },
     mounted() {
         console.log('Student dashboard Page run')
-    }
+        apiManageUser({ type: 'get' }).then((res) => {
+            console.log(res.data)
+            this.users = res.data
+        })
+    },
 }
 </script>
 

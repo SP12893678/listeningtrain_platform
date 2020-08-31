@@ -135,6 +135,17 @@ const style18 = new TextStyle({
     fontSize: 32,
     fill: '#ffffff',
 })
+const style19 = new TextStyle({
+    fontFamily: 'jf-openhuninn',
+    fontSize: 24,
+    fill: '#ffffff',
+    fontWeight: 'bold',
+})
+const style20 = new TextStyle({
+    fontFamily: 'jf-openhuninn',
+    fontSize: 20,
+    fill: '#ffffff',
+})
 export {
     style1,
     style2,
@@ -154,4 +165,6 @@ export {
     style16,
     style17,
     style18,
+    style19,
+    style20,
 }
