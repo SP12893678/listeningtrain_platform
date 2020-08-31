@@ -18,13 +18,7 @@ export default class profile extends PIXI.Container {
     constructor(account) {
         super()
         this.account = account
-<<<<<<< HEAD
-        this.nickname = account
-        this.gender = ''
         this.dialog = new Dialog('', 1)
-=======
-        this.dialog = new Dialog('',1)
->>>>>>> 707608d93b5bbd23ec4b4535d4da24f8d5fec8a4
         this.input = new TextInput({
             input: {
                 fontFamily: 'jf-openhuninn',
@@ -130,18 +124,10 @@ export default class profile extends PIXI.Container {
                 t.person.nickname = await t.input.text
                 await t.person.save_character_data()
                 console.log('enter')
-<<<<<<< HEAD
-                t.nickname = t.input.text
             }
         })
     }
     setPersonInfoPanel() {
-=======
-            }   
-        })
-    }
-    async setPersonInfoPanel(){
->>>>>>> 707608d93b5bbd23ec4b4535d4da24f8d5fec8a4
         let personInfoContainer = this.personInfoContainer
         personInfoContainer.position.set(this.dialog.dialog.x, this.dialog.dialog.y)
         /* panel */
@@ -179,17 +165,11 @@ export default class profile extends PIXI.Container {
         /* profile item */
         this.personInfoItemContainer = new Container()
         personInfoContainer.addChild(this.personInfoItemContainer)
-<<<<<<< HEAD
-        this.personInfoItemContainer.position.set(307, 150)
-        let id = this.account
-        this.create_item(' I D', id, ResourcesManager.id)
-=======
         this.personInfoItemContainer.position.set(307,150)
         //ID
         let id = this.account
         this.create_item(' I D',id,ResourcesManager.id)
         //姓名
->>>>>>> 707608d93b5bbd23ec4b4535d4da24f8d5fec8a4
         let temp = new Container()
         this.setTextField()
         temp.addChild(this.input)
@@ -199,19 +179,6 @@ export default class profile extends PIXI.Container {
         this.setEditSaveBtn()
         temp.addChild(this.editBtn)
         temp.addChild(this.saveBtn)
-<<<<<<< HEAD
-        this.create_item('姓名', temp, ResourcesManager.name)
-        let gender = c.clothing.gender
-        console.log(c.clothing.gender)
-        this.create_item('性別', gender, ResourcesManager.gender)
-        let birthday = '2020.20.20'
-        this.create_item('生日', birthday, ResourcesManager.birthday)
-        let title = new Sprite(PIXI.loader.resources[ResourcesManager.newPlayer].texture)
-        title.scale.set(30 / title.height)
-        this.create_item('稱號', title, ResourcesManager.title)
-        let money = '$' + 500
-        this.create_item('金幣', money, ResourcesManager.money)
-=======
         this.create_item('姓名',temp,ResourcesManager.name)
         //性別
         let gender = this.person.gender
@@ -227,7 +194,6 @@ export default class profile extends PIXI.Container {
         let money = '$'+ this.person.money
         this.create_item('金幣',money,ResourcesManager.money)
         
->>>>>>> 707608d93b5bbd23ec4b4535d4da24f8d5fec8a4
 
         this.dialog.addChild(personInfoContainer)
     }
