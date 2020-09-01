@@ -144,7 +144,7 @@ export default class profile extends PIXI.Container {
             }
         })
     }
-    async setPersonInfoPanel() {
+    setPersonInfoPanel() {
         let personInfoContainer = this.personInfoContainer
         personInfoContainer.position.set(
             this.dialog.dialog.x,
