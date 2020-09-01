@@ -3,7 +3,14 @@ import ResourcesManager from '@/js/game/engine/ResourcesManager'
 import character from '@/js/game/character'
 import TextInput from 'Component/TextInput'
 import Dialog from 'Component/dialog'
-import { style1, style8, style9, style10, style11, style13 } from '@/js/game/engine/TextStyleManager'
+import {
+    style1,
+    style8,
+    style9,
+    style10,
+    style11,
+    style13,
+} from '@/js/game/engine/TextStyleManager'
 import RadarChart from 'Component/RadarChart'
 import Button2 from 'Component/button2'
 
@@ -18,13 +25,7 @@ export default class profile extends PIXI.Container {
     constructor(account) {
         super()
         this.account = account
-<<<<<<< HEAD
-        this.nickname = account
-        this.gender = ''
         this.dialog = new Dialog('', 1)
-=======
-        this.dialog = new Dialog('',1)
->>>>>>> 707608d93b5bbd23ec4b4535d4da24f8d5fec8a4
         this.input = new TextInput({
             input: {
                 fontFamily: 'jf-openhuninn',
@@ -34,8 +35,16 @@ export default class profile extends PIXI.Container {
                 color: '#000000',
             },
             box: {
-                default: { fill: '', rounded: 1, stroke: { color: '', width: 0 } },
-                focused: { fill: '', rounded: 1, stroke: { color: 0xffffff, width: 2 } },
+                default: {
+                    fill: '',
+                    rounded: 1,
+                    stroke: { color: '', width: 0 },
+                },
+                focused: {
+                    fill: '',
+                    rounded: 1,
+                    stroke: { color: 0xffffff, width: 2 },
+                },
                 disabled: { fill: '', rounded: 1 },
             },
         })
@@ -48,7 +57,7 @@ export default class profile extends PIXI.Container {
 
         this.init()
     }
-    async init(){
+    async init() {
         await this.checkData()
         this.setDialog()
         this.setTextField()
@@ -57,7 +66,7 @@ export default class profile extends PIXI.Container {
         this.setLearningPanel()
         this.setStandardPanel()
     }
-    async checkData(){
+    async checkData() {
         await this.person.get_character_data(this.account)
         console.log(this.person.gender)
     }
@@ -91,7 +100,10 @@ export default class profile extends PIXI.Container {
         editBtn.width = 30
         editBtn.height = 30
         editBtn.anchor.set(0.5)
-        editBtn.position.set(this.input.x + this.input.width + 20, this.input.y + 13)
+        editBtn.position.set(
+            this.input.x + this.input.width + 20,
+            this.input.y + 13
+        )
         editBtn.visible = true
         editBtn.interactive = true // 設定可以互動
         editBtn.buttonMode = true // 當滑鼠滑過時顯示為手指圖示
@@ -118,10 +130,9 @@ export default class profile extends PIXI.Container {
             await t.person.save_character_data()
             console.log('You have entered', t.input.text)
             console.log('now is editBtn')
-            
         }
         /*All events are dispatched via the default pixi EventEmitter.*/
-        this.input.on('keydown', async(keycode) => {
+        this.input.on('keydown', async (keycode) => {
             //搭配著input focus的部分
             if (keycode == 13) {
                 editBtn.visible = true
@@ -130,20 +141,15 @@ export default class profile extends PIXI.Container {
                 t.person.nickname = await t.input.text
                 await t.person.save_character_data()
                 console.log('enter')
-<<<<<<< HEAD
-                t.nickname = t.input.text
             }
         })
     }
-    setPersonInfoPanel() {
-=======
-            }   
-        })
-    }
-    async setPersonInfoPanel(){
->>>>>>> 707608d93b5bbd23ec4b4535d4da24f8d5fec8a4
+    async setPersonInfoPanel() {
         let personInfoContainer = this.personInfoContainer
-        personInfoContainer.position.set(this.dialog.dialog.x, this.dialog.dialog.y)
+        personInfoContainer.position.set(
+            this.dialog.dialog.x,
+            this.dialog.dialog.y
+        )
         /* panel */
         let personInfoPanel = new PIXI.Graphics()
         personInfoPanel.beginFill(0xfbffe0)
@@ -154,13 +160,17 @@ export default class profile extends PIXI.Container {
         personInfoPanel.endFill()
         personInfoContainer.addChild(personInfoPanel)
         /* character background */
-        let characterBg = new Sprite(PIXI.loader.resources[ResourcesManager.profileBg].texture)
+        let characterBg = new Sprite(
+            PIXI.loader.resources[ResourcesManager.profileBg].texture
+        )
         let scale = 240 / characterBg.width
         characterBg.scale.set(scale)
         characterBg.position.set(44, 76)
         personInfoContainer.addChild(characterBg)
         /* rank or title */
-        let showtitle = new Sprite(PIXI.loader.resources[ResourcesManager.newPlayer].texture)
+        let showtitle = new Sprite(
+            PIXI.loader.resources[ResourcesManager.newPlayer].texture
+        )
         showtitle.scale.set(50 / showtitle.height)
         showtitle.position.set(115, 50)
         personInfoContainer.addChild(showtitle)
@@ -179,17 +189,11 @@ export default class profile extends PIXI.Container {
         /* profile item */
         this.personInfoItemContainer = new Container()
         personInfoContainer.addChild(this.personInfoItemContainer)
-<<<<<<< HEAD
         this.personInfoItemContainer.position.set(307, 150)
-        let id = this.account
-        this.create_item(' I D', id, ResourcesManager.id)
-=======
-        this.personInfoItemContainer.position.set(307,150)
         //ID
         let id = this.account
-        this.create_item(' I D',id,ResourcesManager.id)
+        this.create_item(' I D', id, ResourcesManager.id)
         //姓名
->>>>>>> 707608d93b5bbd23ec4b4535d4da24f8d5fec8a4
         let temp = new Container()
         this.setTextField()
         temp.addChild(this.input)
@@ -199,35 +203,22 @@ export default class profile extends PIXI.Container {
         this.setEditSaveBtn()
         temp.addChild(this.editBtn)
         temp.addChild(this.saveBtn)
-<<<<<<< HEAD
         this.create_item('姓名', temp, ResourcesManager.name)
-        let gender = c.clothing.gender
-        console.log(c.clothing.gender)
-        this.create_item('性別', gender, ResourcesManager.gender)
-        let birthday = '2020.20.20'
-        this.create_item('生日', birthday, ResourcesManager.birthday)
-        let title = new Sprite(PIXI.loader.resources[ResourcesManager.newPlayer].texture)
-        title.scale.set(30 / title.height)
-        this.create_item('稱號', title, ResourcesManager.title)
-        let money = '$' + 500
-        this.create_item('金幣', money, ResourcesManager.money)
-=======
-        this.create_item('姓名',temp,ResourcesManager.name)
         //性別
         let gender = this.person.gender
-        this.create_item('性別',gender,ResourcesManager.gender)
+        this.create_item('性別', gender, ResourcesManager.gender)
         //生日
         let birthday = this.person.birthday
-        this.create_item('生日',birthday,ResourcesManager.birthday)
+        this.create_item('生日', birthday, ResourcesManager.birthday)
         //稱號
-        let title = new Sprite(PIXI.loader.resources[ResourcesManager[this.person.title]].texture)
-        title.scale.set(30/title.height)
-        this.create_item('稱號',title,ResourcesManager.title)
+        let title = new Sprite(
+            PIXI.loader.resources[ResourcesManager[this.person.title]].texture
+        )
+        title.scale.set(30 / title.height)
+        this.create_item('稱號', title, ResourcesManager.title)
         //金錢
-        let money = '$'+ this.person.money
-        this.create_item('金幣',money,ResourcesManager.money)
-        
->>>>>>> 707608d93b5bbd23ec4b4535d4da24f8d5fec8a4
+        let money = '$' + this.person.money
+        this.create_item('金幣', money, ResourcesManager.money)
 
         this.dialog.addChild(personInfoContainer)
     }
@@ -263,18 +254,30 @@ export default class profile extends PIXI.Container {
         }
         tempContainer.addChild(value)
 
-        tempContainer.position.set(0, this.personInfoItemContainer.children.length * 40)
+        tempContainer.position.set(
+            0,
+            this.personInfoItemContainer.children.length * 40
+        )
         this.personInfoItemContainer.addChild(tempContainer)
     }
     setLearningPanel() {
         let learningContainer = this.learningContainer
-        learningContainer.position.set(this.dialog.dialog.x + 650, this.dialog.dialog.y)
+        learningContainer.position.set(
+            this.dialog.dialog.x + 650,
+            this.dialog.dialog.y
+        )
         /* title:學習狀況 */
         let learningTitle = new PIXI.Text('學習狀況', style11)
         learningTitle.position.set(100, 75)
         learningContainer.addChild(learningTitle)
         /* 雷達圖 */
-        let labels = ['正確率', '反應速度', '  低頻辨識率', '  高頻辨識率', '完成度']
+        let labels = [
+            '正確率',
+            '反應速度',
+            '  低頻辨識率',
+            '  高頻辨識率',
+            '完成度',
+        ]
         let datasets = [
             { name: '最近一次測驗', data: [50, 10, 75, 150, 100] },
             { name: '個人學習平均值', data: [100, 70, 150, 80, 30] },
@@ -285,7 +288,12 @@ export default class profile extends PIXI.Container {
         chart.scale.set(325 / chart.width)
         learningContainer.addChild(chart)
         /* button:各能力計算標準 */
-        let standardBtn = new Button2(150, 30, ResourcesManager.question, '能力計算標準')
+        let standardBtn = new Button2(
+            150,
+            30,
+            ResourcesManager.question,
+            '能力計算標準'
+        )
         standardBtn.position.set(180, 470)
         standardBtn.setText(style1)
         standardBtn.setBorder(0)
@@ -305,7 +313,10 @@ export default class profile extends PIXI.Container {
     setStandardPanel() {
         let standardContainer = this.standardContainer
         standardContainer.visible = false
-        standardContainer.position.set(this.dialog.dialog.x, this.dialog.dialog.y)
+        standardContainer.position.set(
+            this.dialog.dialog.x,
+            this.dialog.dialog.y
+        )
         /* panel */
         let standardPanel = new PIXI.Graphics()
         standardPanel.beginFill(0xfbffe0)
@@ -320,7 +331,11 @@ export default class profile extends PIXI.Container {
         let standard = [
             { name: '正確率', data: '答對總數/題目總數。' },
             { name: '完成度', data: '已完成情境測類總數/各類情境測驗總數。' },
-            { name: '反應速度', data: '第一次測驗結果為0.5分，往後以第一次測驗數據為基準進行評分。' },
+            {
+                name: '反應速度',
+                data:
+                    '第一次測驗結果為0.5分，往後以第一次測驗數據為基準進行評分。',
+            },
             { name: '高頻辨識率', data: '高頻類題目答對總數/高頻類題目總數。' },
             { name: '低頻辨識率', data: '低頻類題目答對總數/低頻類題目總數。' },
         ]

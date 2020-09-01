@@ -70,7 +70,23 @@
             // echo $audio_arr;
             // $sql = "DELETE FROM data WHERE id IN (".$audio_arr.")";
             break;
+        case 'upload':
+            $data = [];
+            echo count($_FILES['file']['tmp_name']);
+            // if(is_uploaded_file($_FILES['file']['tmp_name'])){
+            //     $upfile=$_FILES["file"]; 
+            //     $data['name']=$upfile["name"];
+            //     $data['type']=$upfile["type"];
+            //     $data['size']=$upfile["size"]; 
+            //     $data['tmp_name']=$upfile["tmp_name"];
+            // }
+            // // if (move_uploaded_file($_FILES["file"]["tmp_name"], $_FILES['file']['name'])){}
+            // echo json_encode($data, JSON_UNESCAPED_UNICODE);
+            break;
         default:
             # code...
             break;
     }
+
+    //檔案儲存 -> 資料庫填寫
+    //檔案儲存失敗 -> X

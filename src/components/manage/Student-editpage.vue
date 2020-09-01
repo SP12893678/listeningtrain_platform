@@ -93,14 +93,21 @@
         <v-dialog v-model="progress.dialog" max-width="600" persistent>
             <v-card>
                 <v-card-title>執行進度</v-card-title>
-                <v-progress-linear :value="progress.value" :buffer-value="progress.value" color="deep-purple accent-4" stream rounded height="6"></v-progress-linear>
+                <v-progress-linear
+                    :value="progress.value"
+                    :buffer-value="progress.value"
+                    color="deep-purple accent-4"
+                    stream
+                    rounded
+                    height="6"
+                ></v-progress-linear>
             </v-card>
         </v-dialog>
     </v-container>
 </template>
 
 <script>
-import { apiManageExcel } from '@/js/api'
+import { apiManageExcel } from "@/js/api";
 
 export default {
     data() {
@@ -118,76 +125,75 @@ export default {
             users: [],
             user_header: [
                 {
-                    text: '名稱',
-                    align: 'start',
-                    value: 'name',
+                    text: "名稱",
+                    align: "start",
+                    value: "name",
                 },
-                { text: '帳號', value: 'account' },
-                { text: '密碼', value: 'password', sortable: false },
-                { text: '信箱', value: 'email' },
-                { text: '標籤', value: 'tags' },
-                { text: '刪除', value: 'delete', sortable: false },
+                { text: "帳號", value: "account" },
+                { text: "密碼", value: "password", sortable: false },
+                { text: "信箱", value: "email" },
+                { text: "標籤", value: "tags" },
+                { text: "刪除", value: "delete", sortable: false },
             ],
-        }
+        };
     },
     mounted() {
-        console.log('Student editpage Page run')
+        console.log("Student editpage Page run");
     },
     methods: {
         uploadFileClick() {
-            this.$refs.uploader.click()
+            this.$refs.uploader.click();
         },
         onFileChanged(event) {
-            this.file = event.target.files[0]
-            console.log(this.file)
+            this.file = event.target.files[0];
             if (this.file != undefined && this.file != null)
-                this.getExcelFileData()
+                this.getExcelFileData();
         },
         getExcelFileData: async function (params) {
-            var formData = new FormData()
-            formData.append('file', this.file)
-            console.log(formData)
+            var formData = new FormData();
+            formData.append("file", this.file);
+            console.log(formData);
 
             let config = {
                 onUploadProgress: (ProgressEvent) => {
                     console.log(
                         (((ProgressEvent.loaded / ProgressEvent.total) * 100) |
                             0) +
-                            '%'
-                    )
+                            "%"
+                    );
                 },
-            }
+            };
 
             apiManageExcel(
                 formData,
                 {
                     headers: {
-                        'Content-Type': 'multipart/form-data',
+                        "Content-Type": "multipart/form-data",
                     },
                     params: {
-                        type: 'upload_and_get_excel_data',
+                        type: "upload_and_get_excel_data",
                     },
                 },
                 config.onUploadProgress
             ).then((res) => {
-                console.log(res.data)
-                var app = this
+                console.log(res.data);
+                var app = this;
                 res.data.forEach((item, index) => {
-                    var user = {}
-                    user.name = item.A
-                    user.account = item.B
-                    user.password = item.C
-                    user.email = item.D
-                    user.tags = item.E.split(';')
-                    user.pwshow = false
+                    var user = {};
+                    user.name = item.A;
+                    user.account = item.B;
+                    user.password = item.C;
+                    user.email = item.D;
+                    user.tags = item.E.split(";");
+                    user.pwshow = false;
                     if (app.setting.firstline && index == 0) {
-                        app.users.push(user)
+                        app.users.push(user);
                     } else if (index != 0) {
-                        app.users.push(user)
+                        app.users.push(user);
                     }
-                })
-            })
-            console.log(123)
+                });
+            });
+            console.log(123);
         },
         addOneUser() {
             var user = {
@@ -197,22 +203,22 @@ export default {
                 email: null,
                 tags: [],
                 pwshow: false,
-            }
-            this.users.push(user)
+            };
+            this.users.push(user);
         },
         deleteOneUser(item) {
-            this.users.splice(this.users.indexOf(item), 1)
+            this.users.splice(this.users.indexOf(item), 1);
         },
         saveAccount() {
-            this.progress.dialog = true
-            var app = this
+            this.progress.dialog = true;
+            var app = this;
             var interval = setInterval(() => {
-                app.progress.value += Math.random() * 20
-                if (app.progress.value >= 100) clearInterval(interval)
-            }, 1000)
+                app.progress.value += Math.random() * 20;
+                if (app.progress.value >= 100) clearInterval(interval);
+            }, 1000);
         },
     },
-}
+};
 </script>
 
 <style scoped>
