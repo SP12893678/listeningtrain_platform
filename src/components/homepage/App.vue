@@ -1,53 +1,5 @@
 <template>
     <v-app>
-        <!-- <v-navigation-drawer v-model="nav_drawer" absolute temporary width="280">
-            <v-list nav class="py-0">
-                <v-list-item class="mb-0" two-line>
-                    <v-list-item-avatar>
-                        <v-img :src="require('@/assets/images/avatar-default.png')"></v-img>
-                    </v-list-item-avatar>
-
-                    <v-list-item-content>
-                        <v-list-item-title>User Name</v-list-item-title>
-                        <v-list-item-subtitle>Identity</v-list-item-subtitle>
-                    </v-list-item-content>
-                </v-list-item>
-
-                <v-divider></v-divider>
-            </v-list>
-            <v-list nav>
-                <v-list-item-group active-class="green--text text--accent-4">
-                    <v-list-item>
-                        <v-list-item-icon>
-                            <v-icon>mdi-home</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-title>首頁</v-list-item-title>
-                    </v-list-item>
-
-                    <v-list-item>
-                        <v-list-item-icon>
-                            <v-icon>mdi-monitor-edit</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-title>情境教材管理</v-list-item-title>
-                    </v-list-item>
-
-                    <v-list-item>
-                        <v-list-item-icon>
-                            <v-icon>mdi-music-box</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-title>聲音資源管理</v-list-item-title>
-                    </v-list-item>
-
-                    <v-list-item>
-                        <v-list-item-icon>
-                            <v-icon>mdi-account-cog</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-title>學生帳戶管理</v-list-item-title>
-                    </v-list-item>
-                </v-list-item-group>
-            </v-list>
-        </v-navigation-drawer>-->
-
         <v-app-bar dark app>
             <v-col md="1">
                 <v-avatar tile @click="value=0">
@@ -55,11 +7,27 @@
                 </v-avatar>
             </v-col>
             <v-toolbar-title>情境式環境音訓練平台</v-toolbar-title>
-
             <v-spacer></v-spacer>
-
             <v-btn text large color="blue" @click="value=0">首頁</v-btn>
-            <v-btn text large color="amber" @click="value=1">介紹</v-btn>
+            <v-menu offset-y>
+                <template v-slot:activator="{ on, attrs }">
+                    <v-btn text large color="amber" v-bind="attrs" v-on="on">導覽</v-btn>
+                </template>
+                <v-list dark>
+                    <v-list-item>
+                        <v-btn color="green" text @click="value=1">平台簡介</v-btn>
+                    </v-list-item>
+                    <v-list-item>
+                        <v-btn color="error" text @click="value=2">遊戲系統</v-btn>
+                    </v-list-item>
+                    <v-list-item>
+                        <v-btn color="amber" text @click="value=3">模式介紹</v-btn>
+                    </v-list-item>
+                    <v-list-item>
+                        <v-btn color="blue" text @click="value=4">幫助我們</v-btn>
+                    </v-list-item>
+                </v-list>
+            </v-menu>
             <v-btn text large color="error" @click="gotoManage">幫助我們</v-btn>
             <v-btn text large color="green" @click="gotoGame">遊戲</v-btn>
 
@@ -83,11 +51,20 @@
 
                     <v-list>
                         <v-list-item>
-                            <v-btn text>阿災</v-btn>
+                            <v-btn
+                                color="#9C0ACFFF"
+                                text
+                                @click="
+                                dialog3 = true                             
+                            "
+                            >個人資訊</v-btn>
+                        </v-list-item>
+                        <v-list-item>
+                            <v-btn color="#EEA510FF" text>學習狀況</v-btn>
                         </v-list-item>
 
                         <v-list-item>
-                            <v-btn color="primary" text @click="logout">登出</v-btn>
+                            <v-btn color="primary" text @click="logout">登出系統</v-btn>
                         </v-list-item>
                     </v-list>
                 </v-card>
@@ -106,7 +83,7 @@
                 <v-card color="	#8E8E8E">
                     <v-form v-model="valid" lazy-validation ref="form">
                         <v-card-title>
-                            <span class="headline" style="color: #007979;">登入系統</span>
+                            <span style="color: #007979;">登入系統</span>
                         </v-card-title>
                         <v-card-text>
                             <v-container>
@@ -154,7 +131,7 @@
             <v-dialog v-model="dialog2" max-width="600px">
                 <v-card color="	#8E8E8E" dark>
                     <v-card-title>
-                        <span class="headline" style="color: #007979;">註冊系統</span>
+                        <span style="color: #21BFEDFF;">註冊系統</span>
                     </v-card-title>
                     <v-card-text>
                         <v-container>
@@ -225,6 +202,173 @@
                     </v-card-actions>
                 </v-card>
             </v-dialog>
+            <!-- information -->
+            <v-dialog v-model="dialog3" dark max-width="300px">
+                <v-card>
+                    <v-card-title>
+                        <span style="color: #21BFEDFF;">你的資料</span>
+                    </v-card-title>
+                    <v-card-text>
+                        <v-container>
+                            <v-form lazy-validation>
+                                <v-row>
+                                    <v-col cols="12" sm="12">
+                                        <v-text-field
+                                            label="姓名"
+                                            v-model="showUsername"
+                                            color="blue"
+                                            readonly
+                                        ></v-text-field>
+                                    </v-col>
+
+                                    <v-col cols="12" sm="12">
+                                        <v-text-field
+                                            v-model="showMail"
+                                            label="Email"
+                                            color="pink"
+                                            readonly
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="12">
+                                        <v-text-field
+                                            v-model="showId"
+                                            label="身分"
+                                            color="orange"
+                                            readonly
+                                        ></v-text-field>
+                                    </v-col>
+                                </v-row>
+                            </v-form>
+                        </v-container>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                            text
+                            color="success"
+                            @click="
+                                dialog3 = false                          
+                            "
+                        >返回</v-btn>
+                        <v-btn text color="orange" @click="dialog4 = !dialog4">更改資料</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+            <!-- information end-->
+            <v-dialog v-model="dialog4" max-width="250px">
+                <v-card>
+                    <v-form v-model="valid" lazy-validation ref="form3">
+                        <v-card-title>
+                            <span style="color: #007979">身分檢驗</span>
+                        </v-card-title>
+                        <v-card-text>
+                            <v-container>
+                                <v-row>
+                                    <v-col cols="12">
+                                        <v-text-field
+                                            v-model="accheck"
+                                            label="帳號"
+                                            required
+                                            :rules="required"
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12">
+                                        <v-text-field
+                                            v-model="pwcheck"
+                                            label="密碼"
+                                            type="password"
+                                            required
+                                            :rules="required"
+                                        ></v-text-field>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn
+                                color="success"
+                                v-on:click="                                
+                               checkvalidate();
+                            "
+                            >檢驗</v-btn>
+                        </v-card-actions>
+                    </v-form>
+                </v-card>
+            </v-dialog>
+            <v-dialog v-model="dialog5" persistent dark max-width="500px">
+                <v-card>
+                    <v-card-title>
+                        <span style="color: #21BFEDFF">更改資料</span>
+                    </v-card-title>
+                    <v-card-text>
+                        <v-container>
+                            <v-form v-model="valid" lazy-validation ref="form4">
+                                <v-row>
+                                    <v-col cols="12" sm="6">
+                                        <v-text-field
+                                            label="姓名變更為"
+                                            v-model="showUsername"
+                                            color="blue"
+                                            :rules="counter12"
+                                            counter
+                                            required
+                                        ></v-text-field>
+                                    </v-col>
+
+                                    <v-col cols="12" sm="6">
+                                        <v-text-field
+                                            v-model="showMail"
+                                            label="Email變更為"
+                                            color="pink"
+                                            :rules="email"
+                                            required
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="6">
+                                        <v-text-field
+                                            v-model="pwr"
+                                            label="密碼變更為"
+                                            :rules="counter16"
+                                            counter
+                                            type="password"
+                                            required
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="6">
+                                        <v-text-field
+                                            v-model="pwr2"
+                                            label="再次輸入變更後的密碼"
+                                            :rules="counter16"
+                                            counter
+                                            type="password"
+                                            required
+                                        ></v-text-field>
+                                    </v-col>
+                                    <small>*密碼若不更改請填原本的密碼</small>
+                                </v-row>
+                            </v-form>
+                        </v-container>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                            text
+                            color="success"
+                            @click="
+                                dialog5 = false                          
+                            "
+                        >取消</v-btn>
+                        <v-btn
+                            text
+                            color="red"
+                            v-on:click="                                
+                               changevalidate();
+                            "
+                        >確定更改</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
         </v-app-bar>
 
         <v-main>
@@ -240,10 +384,61 @@
                     vertical-delimiters
                     hide-delimiter-background
                 >
-                    <v-carousel-item v-for="(slide, i) in slides" :key="i">
+                    <v-carousel-item
+                        v-for="(slide, i) in slides"
+                        :key="i"
+                        reverse-transition="fade-transition"
+                        transition="fade-transition"
+                    >
                         <v-sheet :color="colors[i]" height="100%">
                             <v-row class="fill-height" align="center" justify="center">
-                                <div class="display-3">{{ slide }}</div>
+                                <v-card
+                                    class="text-center"
+                                    v-if="value===0"
+                                    light
+                                    color="#FF000000"
+                                    width="800"
+                                >
+                                    <v-card-text class="text-h2">情境式環境音訓練平台首頁</v-card-text>
+                                </v-card>
+                                <v-card
+                                    class="text-center"
+                                    v-if="value===1"
+                                    light
+                                    color="#FF000000"
+                                    width="800"
+                                >
+                                    <v-card-text class="text-h2">平台簡介</v-card-text>
+                                </v-card>
+                                <v-card
+                                    class="text-center"
+                                    v-if="value===2"
+                                    light
+                                    color="#FF000000"
+                                    width="800"
+                                >
+                                    <v-card-text class="text-h2">遊戲系統</v-card-text>
+                                </v-card>
+                                <v-card
+                                    class="text-center"
+                                    v-if="value===3"
+                                    light
+                                    color="#FF000000"
+                                    width="800"
+                                >
+                                    <v-card-text class="text-h2">模式介紹</v-card-text>
+                                </v-card>
+                                <v-card
+                                    class="text-center"
+                                    v-if="value===4"
+                                    light
+                                    color="#FF000000"
+                                    width="800"
+                                >
+                                    <v-card-text class="text-h2">幫助我們</v-card-text>
+                                </v-card>
+
+                                <!-- <div class="display-3">{{ slide }}</div> -->
                             </v-row>
                         </v-sheet>
                     </v-carousel-item>
@@ -253,9 +448,10 @@
 
         <v-dialog v-model="msg" width="300">
             <v-card center>
-                <v-card-title>Hello</v-card-title>
+                <v-card-title v-model="card">{{card}}</v-card-title>
             </v-card>
         </v-dialog>
+
         <!-- <v-footer app></v-footer> -->
     </v-app>
 </template>
@@ -267,24 +463,35 @@ export default {
     data() {
         return {
             msg: false,
+            card: null,
             islogin: 0,
             valid: true,
-            nav_drawer: false,
-            dialog: false,
-            dialog2: false,
             account: null,
             password: null,
+            logindata: null,
+            // --------
+            dialog: false,
             ac: null,
             pw: null,
+            // --------
+            dialog2: false,
             name: null,
             mail: null,
             acr: null,
             pwr: null,
             pwr2: null,
             identity: null,
+            // --------
+            dialog3: false,
+            // --------
+            dialog4: false,
+            accheck: null,
+            pwcheck: null,
+            // --------
+            dialog5: false,
             showUsername: null,
             showId: null,
-            logindata: null,
+            showMail: null,
 
             colors: [
                 "indigo",
@@ -336,15 +543,20 @@ export default {
                     console.log(res.data);
                     this.logindata = res.data;
                     if (this.logindata[2] == 1) {
-                        // alert("登入成功！");
+                        this.dialog = false;
                         this.islogin = 1;
                         this.msg = true;
+                        this.card = this.logindata[0] + " 歡迎回來!";
                         this.showUsername = this.logindata[0];
                         this.showId = this.logindata[1];
+                        this.showMail = this.logindata[3];
+                        this.ac = null;
+                        this.pw = null;
                     } else {
                         this.ac = null;
                         this.pw = null;
-                        alert("查無此人！");
+                        this.msg = true;
+                        this.card = "查無此人";
                     }
                 })
                 .catch((error) => {
@@ -360,11 +572,14 @@ export default {
                     console.log(res.data);
                     this.logindata = res.data;
                     if (this.logindata[2] == 1) {
-                        alert(this.logindata[0] + " 歡迎回來！");
+                        this.msg = true;
+                        this.card = this.logindata[0] + " 歡迎回來!";
                         this.islogin = 1;
-                        //this.msg = true;
                         this.showUsername = this.logindata[0];
                         this.showId = this.logindata[1];
+                        this.showMail = this.logindata[3];
+                        this.ac = null;
+                        this.pw = null;
                     } else {
                     }
                 })
@@ -380,14 +595,17 @@ export default {
                 .then((res) => {
                     console.log(res.data);
                     if (res.data == 1) {
-                        alert("登出成功！");
+                        this.msg = true;
+                        this.card = "登出成功!";
                         this.islogin = 0;
                         this.showUsername = null;
                         this.showId = null;
+                        this.showMail = null;
                         this.ac = null;
                         this.pw = null;
                     } else {
-                        alert("登出失敗！");
+                        this.msg = true;
+                        this.card = "登出失敗";
                     }
                 })
                 .catch((error) => {
@@ -398,6 +616,7 @@ export default {
         register() {
             if (this.pwr === this.pwr2) {
                 return apiManageRegister({
+                    type: "register",
                     name: this.name,
                     mail: this.mail,
                     acr: this.acr,
@@ -407,18 +626,78 @@ export default {
                     .then((res) => {
                         console.log(res.data);
                         if (res.data == 1) {
-                            alert("註冊成功！");
+                            this.pwr = null;
+                            this.pwr2 = null;
+                            this.msg = true;
+                            this.card = "註冊成功";
+                            this.dialog2 = false;
                         } else if (res.data == 2) {
-                            alert("使用者名稱已被使用！");
+                            this.msg = true;
+                            this.card = "使用者名稱已被使用！";
                         } else {
-                            alert("帳號已被使用！");
+                            this.msg = true;
+                            this.card = "帳號已被使用！";
                         }
                     })
                     .catch((error) => {
                         console.error(error);
                     });
             } else {
-                alert("密碼不一!");
+                this.msg = true;
+                this.card = "密碼不一!";
+            }
+        },
+
+        checkinfor() {
+            return apiManageLogin({
+                type: "inforcheck",
+                account: this.accheck,
+                password: this.pwcheck,
+            })
+                .then((res) => {
+                    console.log(res.data);
+                    if (res.data == 1) {
+                        this.dialog3 = false;
+                        this.dialog4 = false;
+                        this.accheck = null;
+                        this.pwcheck = null;
+                        this.dialog5 = true;
+                    } else {
+                        this.accheck = null;
+                        this.pwcheck = null;
+                        this.msg = true;
+                        this.card = "驗證失敗";
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        },
+
+        inforchange() {
+            if (this.pwr === this.pwr2) {
+                return apiManageLogin({
+                    type: "inforchange",
+                    name: this.showUsername,
+                    mail: this.showMail,
+                    pwr: this.pwr,
+                })
+                    .then((res) => {
+                        console.log(res.data);
+                        if (res.data == 1) {
+                            this.msg = true;
+                            this.pwr = null;
+                            this.pwr2 = null;
+                            this.card = "更改成功!";
+                            this.dialog5 = false;
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            } else {
+                this.msg = true;
+                this.card = "密碼不一!";
             }
         },
 
@@ -451,14 +730,22 @@ export default {
 
         revalidate() {
             if (this.$refs.form2.validate()) {
-                this.dialog2 = false;
                 this.register();
             }
         },
         invalidate() {
             if (this.$refs.form.validate()) {
-                this.dialog = false;
                 this.login();
+            }
+        },
+        checkvalidate() {
+            if (this.$refs.form3.validate()) {
+                this.checkinfor();
+            }
+        },
+        changevalidate() {
+            if (this.$refs.form4.validate()) {
+                this.inforchange();
             }
         },
         gotoGame() {
@@ -472,12 +759,6 @@ export default {
 </script>
 
 <style scoped>
-/* .fullpage-container {
-    position: absolute;
-    width: 50%;
-    height: 50%;
-} */
-
 .v-window-x-transition-enter-active,
 .v-window-x-transition-leave-active,
 .v-window-x-reverse-transition-enter-active,
@@ -486,6 +767,6 @@ export default {
 .v-window-y-transition-leave-active,
 .v-window-y-reverse-transition-enter-active,
 .v-window-y-reverse-transition-leave-active {
-    transition: all 1000ms ease 0s;
+    transition: all 100ms ease 0s;
 }
 </style>
