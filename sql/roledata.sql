@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： localhost
--- 產生時間： 2020 年 08 月 29 日 16:08
+-- 產生時間： 2020 年 09 月 02 日 18:33
 -- 伺服器版本： 10.4.13-MariaDB
 -- PHP 版本： 7.2.32
 
@@ -50,6 +50,8 @@ CREATE TABLE `roledata` (
 --
 
 INSERT INTO `roledata` (`account`, `nickname`, `gender`, `birthday`, `title`, `money`, `hair`, `clothes`, `cleft`, `cright`, `bottoms`, `shoe`, `sright`, `h_deco`, `wrist_deco`) VALUES
+('33', '33', 'gg', '2020-09-03', 'newPlayer', 0, 'Character/hair/gg/hair1_gg', 'Character/clothes/clothes4_gg', 'Character/cleft/c4_l_gg', 'Character/cright/c4_r_gg', 'Character/bottoms/pant3_gg', 'Character/sleft/shoe2_l_gg', 'Character/sright/s2_r_gg', '', 'Character/wrist_deco/wrist_deco1_gg_mm'),
+('55', '55', 'mm', '2020-09-02', 'newPlayer', 0, 'Character/hair/mm/hair1', 'Character/clothes/clothes1_mm', 'Character/cleft/c1_l_mm', 'Character/cright/c1_r_mm', 'Character/bottoms/skirt2_mm', 'Character/sleft/shoe1_l_mm', 'Character/sright/s1_r_mm', '', ''),
 ('test', 'EL', 'mm', '2020-08-27', 'newPlayer', 0, 'Character/hair/mm/hair4', 'Character/clothes/clothes3_mm', 'Character/cleft/c3_l_mm', 'Character/cright/c3_r_mm', 'Character/bottoms/skirt1_mm', 'Character/sleft/shoe1_l_mm', 'Character/sright/s1_r_mm', 'Character/h_deco/h_deco2_mm', 'Character/wrist_deco/wrist_deco1_gg_mm');
 
 --
