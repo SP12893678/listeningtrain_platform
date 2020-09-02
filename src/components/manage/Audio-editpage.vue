@@ -3,9 +3,7 @@
         <!--聲音資源標題 & 新增資料類別;頻率;波形/儲存按鈕 -->
         <v-list-item two-line>
             <v-list-item-content>
-                <v-list-item-title class="jf-title pa-2"
-                    >聲音資源編輯</v-list-item-title
-                >
+                <v-list-item-title class="jf-title pa-2">聲音資源編輯</v-list-item-title>
             </v-list-item-content>
             <v-list-item-action class="ml-0 mb-0">
                 <v-btn @click="addAudioData" text>
@@ -41,26 +39,22 @@
                 <v-data-table
                     :headers="audio_header"
                     :items="audio"
-                    item-key="name"
+                    item-key="index"
                     class="elevation-1"
                     multi-sort
                 >
                     <template v-slot:item.name="{ item }">
-                        <v-text-field
-                            v-model="item.name"
-                            clearable
-                        ></v-text-field>
+                        <v-text-field v-model="item.name" :rules="rules.name" required clearable></v-text-field>
                     </template>
                     <template v-slot:item.audio_id="{ item }">
-                        <v-text-field
-                            v-model="item.audio_id"
-                            clearable
-                        ></v-text-field>
+                        <v-text-field v-model="item.audio_id" :rules="rules.id" required clearable></v-text-field>
                     </template>
                     <template v-slot:item.category="{ item }">
                         <v-select
                             v-model="item.category"
                             :items="category_options"
+                            :rules="rules.category"
+                            required
                             multiple
                         >
                             <template v-slot:selection="{ item, index }">
@@ -74,6 +68,8 @@
                         <v-select
                             v-model="item.frequency"
                             :items="frequency_options"
+                            :rules="rules.frequency"
+                            required
                             multiple
                         ></v-select>
                     </template>
@@ -81,12 +77,16 @@
                         <v-select
                             v-model="item.waveform"
                             :items="waveform_options"
+                            :rules="rules.waveform"
+                            required
                         ></v-select>
                     </template>
                     <template v-slot:item.upload="{ item }">
                         <v-file-input
                             v-model="item.file"
                             @change="onChange($event, item)"
+                            :rules="rules.file"
+                            accept="audio/mp3, audio/wav"
                             class="ma-0 pa-0"
                             prepend-icon="mdi-cloud-upload"
                             hide-input
@@ -116,26 +116,24 @@
                         </v-card-text>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn
-                                @click="dialog.body = false"
-                                color="blue darken-1"
-                                text
-                                >離開</v-btn
-                            >
-                            <v-btn @click="addOption" color="red darken-1" text
-                                >插入</v-btn
-                            >
+                            <v-btn @click="dialog.body = false" color="blue darken-1" text>離開</v-btn>
+                            <v-btn @click="addOption" color="red darken-1" text>插入</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
             </v-list-item-content>
         </v-list-item>
+        <v-dialog v-model="alert.dialog" width="600">
+            <v-card>
+                <v-card-title>{{alert.title}}</v-card-title>
+            </v-card>
+        </v-dialog>
     </v-container>
 </template>
 
 <script>
 import audio_format from "@/assets/json/audio_format.json";
-import { apiManageAudio } from "@/js/api";
+import { apiManageAudio, apiPostAudio } from "@/js/api";
 
 export default {
     props: ["passdata"],
@@ -171,6 +169,27 @@ export default {
             // audio_data_table: {
 
             // }
+            alert: {
+                dialog: false,
+                title: "",
+            },
+            rules: {
+                name: [
+                    (v) => !!v || "必填!",
+                    (v) => (v && v.length <= 8) || "最大8個字",
+                ],
+                id: [
+                    (v) => !!v || "必填!",
+                    (v) => (v && v.length <= 12) || "最大12個字",
+                ],
+                category: [(v) => v.length >= 1 || "至少一種"],
+                frequency: [(v) => v.length >= 1 || "至少一種"],
+                waveform: [(v) => !!v || "必填!"],
+                file: [
+                    (v) => !v || v.size < 2000000 || "檔案大小必須小於2MB",
+                    (v) => !v || v.size > 0 || "需要有聲音檔",
+                ],
+            },
         };
     },
     async mounted() {
@@ -267,12 +286,12 @@ export default {
             this.dialog.items = [];
             this.dialog.body = false;
         },
-        onChange: function(event, item) {
+        onChange: function (event, item) {
             console.log(event);
             if (event != undefined) {
                 var reader = new FileReader();
                 var app = this;
-                reader.onload = function(event) {
+                reader.onload = function (event) {
                     console.log(event);
                     item.sound_src = event.target.result;
                 };
@@ -287,11 +306,14 @@ export default {
             }
         },
         saveAudioData() {
+            var formData = new FormData();
+            this.audio.forEach((audio) => {
+                formData.append("file[]", audio.file);
+            });
+            // formData.append("file", this.audio[0].file);
+            console.log(formData);
             console.log("audio", this.audio);
-            apiManageAudio({
-                type: "edit",
-                items: this.audio,
-            }).then((res) => {
+            apiPostAudio(formData, { type: "upload" }).then((res) => {
                 console.log(res.data);
             });
         },
