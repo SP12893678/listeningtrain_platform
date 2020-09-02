@@ -186,7 +186,8 @@ export default class CreateRoleScene extends Scene {
                 t.dialog.yesBtn.click = async function() {
                     console.log('press yesBtn')
                     await t.character.save_character_data()
-                    await t.character.clothing.saveClothes()
+                    await t.character.clothing.saveClothing()
+                    await t.character.clothing.clothingDataToProperty()
                     Events.emit('goto', { id: 'game_main', animate: 'fadeIn' })
                 }
                 /* cancelBtn action */

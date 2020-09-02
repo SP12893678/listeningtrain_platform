@@ -73,16 +73,15 @@ export default class GameStartScene extends Scene {
             console.error(error);
         });
         
-        window.sessionStorage.setItem('account', this.logindata[0]);//儲存帳號
+        window.sessionStorage.setItem('account', this.logindata[3]);//儲存帳號
 
         if(this.logindata[0] != "0"){
-            await apiManageRoleData({ type: 'getData', account: this.logindata[0] })
+            await apiManageRoleData({ type: 'getData', account: this.logindata[3] })
             .then((res) => {
                 console.log('character_data', res.data)
                 let scene = ''
                 if(res.data.length != 0){
                     scene = 'game_main'
-                    // window.sessionStorage.setItem('gender', res.data[2]);
                 }else{
                     scene = 'create_role'
                 }

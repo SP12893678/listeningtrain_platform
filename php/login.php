@@ -10,7 +10,7 @@ switch ($logintype) {
     case 'checklogin':
         if(!isset($_SESSION['account']) ) {
            
-            $data = ["0","0","0"];
+            $data = ["0","0","0","0"];
             echo json_encode($data, JSON_UNESCAPED_UNICODE); 
         }else{
             
@@ -27,8 +27,8 @@ switch ($logintype) {
             array_push($data,$name);
             array_push($data,$id);
             array_push($data,"1");
+            array_push($data,$sac);
         
-
             echo json_encode($data, JSON_UNESCAPED_UNICODE);   
         }
 

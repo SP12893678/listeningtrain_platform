@@ -9,6 +9,7 @@ import EnviromentDetailScene from 'Scene/EnviromentDetailScene'
 import TrainModeScene from 'Scene/TrainModeScene'
 import PracticeModeScene from 'Scene/PracticeModeScene'
 import TestModeScene from 'Scene/TestModeScene'
+import BackpackScene from 'Scene/BackpackScene'
 
 import { gsap } from 'gsap'
 import { PixiPlugin } from 'gsap/PixiPlugin'
@@ -50,6 +51,9 @@ events.on('goto', (val) => {
                 break
             case 'test_mode':
                 ScenesManager.createScene(val.id, new TestModeScene())
+                break
+            case 'backpack':
+                ScenesManager.createScene(val.id, new BackpackScene())
                 break
             default:
                 break

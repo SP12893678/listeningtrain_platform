@@ -116,6 +116,7 @@ export default class TestModeScene extends Scene {
                 this.timer.stop()
             this.showResult()
             this.result.visible = true
+            this.reset()
             return
         }
 

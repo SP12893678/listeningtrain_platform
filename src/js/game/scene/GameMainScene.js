@@ -25,10 +25,12 @@ export default class GameMainScene extends Scene {
         this.profile = new profile(this.account)
         this.button = new RoundedButton(150, 60, '出征')
         this.btn_profile = new RoundedButton(150, 60, '個人資訊')
+        this.btn_backpack = new RoundedButton(150, 60, '背包')
 
         this.setBackground()
         this.setButton()
         this.setProfileButton()
+        this.setBackPackButton()
         this.setCharacter()
         this.setProfile()
     }
@@ -60,6 +62,15 @@ export default class GameMainScene extends Scene {
         btn_profile.position.set(700, 300)
         btn_profile.click = () => (this.profile.dialog.visible = !this.profile.dialog.visible)
         this.addChild(btn_profile)
+    }
+    setBackPackButton() {
+        let btn_backpack = this.btn_backpack
+        btn_backpack.setBorder(0)
+        btn_backpack.setBackgroundColor(0x29d4ff)
+        btn_backpack.setText(style7)
+        btn_backpack.position.set(700, 500)
+        btn_backpack.click = () => Events.emit('goto', { id: 'backpack', animate: 'fadeIn' })
+        this.addChild(btn_backpack)
     }
     /* 建立角色 */
     setCharacter() {

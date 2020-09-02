@@ -25,7 +25,7 @@ export default class Character{
 
         this.show_character(this.gender);
         this.clothing = new clothing(this.armatureDisplay,this.factory,this.gender,account);
-        this.check_if_has_data(account);
+        this.check_if_has_data();
     }
     show_character(gender){
         /* Character */
@@ -42,8 +42,8 @@ export default class Character{
         if(this.clothing != null)
             this.clothing.change_character_clothing(this.armatureDisplay,this.factory,gender);
     }
-    get_character_data(account) {
-        return apiManageRoleData({ type: 'getData', account: account })
+    get_character_data() {
+        return apiManageRoleData({ type: 'getData', account: this.account })
         .then((res) => {
             console.log('data',res.data)
             if(res.data.length != 0){
@@ -52,15 +52,16 @@ export default class Character{
                 this.birthday = res.data[0].birthday
                 this.title = res.data[0].title
                 this.money = res.data[0].money
-                this.clothing.clothing_data = res.data;
             }
+            this.clothing.clothing_data = res.data;
         })
         .catch((error) => {
             console.error(error);
         })
     } 
-    async check_if_has_data(account){
-        await this.get_character_data(account);
+    async check_if_has_data(){
+        await this.get_character_data();
+        console.log('checkbug',this.clothing.clothing_data);
         if(this.clothing.clothing_data.length != 0){
             await this.clothing.changeClothes();
             this.clothing.initialClothing();

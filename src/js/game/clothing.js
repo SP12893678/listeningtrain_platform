@@ -1,10 +1,10 @@
 import * as PIXI from 'pixi.js'
 import dragonBones from 'pixi-dragonbones';
 import { apiManageRoleData } from '@/js/api'
-import axios from 'axios'
 import { GlowFilter} from 'pixi-filters'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
 import character_tex_json from '@/assets/json/Character_tex.json'
+import Config from '@/js/game/Config'
 
 
 let Application = PIXI.Application,
@@ -20,16 +20,38 @@ export default class Clothing{
         this.factory = factory;
         this.gender = gender;
         this.account = account;
+        this.item_data = {}
+        this.wardrobe_data = {}
+        this.wardrobeOrder = {}
+        this.property_data = {}
+        this.property = []
+        this.clothing_data = {}
+        this.clothingData = {}
+        this.dressing_room = new Container();
+        this.IconContainer = new Container();
+        this.replacement = new Container();
         this.loadData(character_tex_json);
     }
-    loadData(itemPath){
-        this.initialClothing()
-        this.item_data = itemPath;
-        this.item_classifier(this.item_data);
+    async loadData(itemPath){
+        this.initialClothing();
+        await this.item_classifier(itemPath);
+        await this.getWardrobeClothes()
+        if(this.property.length != 0){
+            this.property_data = await this.clothes_classifier(this.property)
+            this.wardrobe_data = this.property_data
+            this.wardrobeOrder = this.property
+            console.log('test',this.property)
+            // this.addWardrobeClothes('hair',6)
+        }
+        else{
+            this.wardrobe_data = await this.clothes_classifier(Config.initClothes)
+        }
+            // this.wardrobe_data = this.item_data
     }
+    /*--------------------------------------------------------------------------------*/
     /* 將讀取的json檔內容 配件info做好分類 */
-    item_classifier(item_data){
-        let temp = this.item_data;
+    item_classifier(itemPath){
+        let temp = itemPath;
         let itemClass = {'gg':{'hair':{},'clothes':{},'cleft':{},'cright':{},'bottoms':{},'shoe':{},'sright':{},'h_deco':{},'wrist_deco':{}},
                          'mm':{'hair':{},'clothes':{},'cleft':{},'cright':{},'bottoms':{},'shoe':{},'sright':{},'h_deco':{},'wrist_deco':{}}
         };
@@ -49,10 +71,34 @@ export default class Clothing{
                 }
             });
         }
-        // console.log(itemClass);
+        console.log(itemClass);
         // console.log(itemClass.mm.hair[1]);//可以叫出mm hair1的info
         this.item_data = itemClass;
     }
+    /* 初始化的角色服飾data */
+   clothes_classifier(data){
+        let temp = data;
+        let tempClass = {'gg':{'hair':{},'clothes':{},'cleft':{},'cright':{},'bottoms':{},'shoe':{},'sright':{},'h_deco':{},'wrist_deco':{}},
+                         'mm':{'hair':{},'clothes':{},'cleft':{},'cright':{},'bottoms':{},'shoe':{},'sright':{},'h_deco':{},'wrist_deco':{}}
+        };
+        let itemName = Object.keys(Object.values(tempClass)[0]);
+
+        for(let i=0;i<temp.length;i++){
+            itemName.forEach(item=>{
+                let gender = temp[i].gender
+                let str = temp[i][item]
+                if(str != ""){
+                    let strAry = str.split(',');
+                    strAry.forEach(no=>{
+                        tempClass[gender][item][no] = this.item_data[gender][item][no]
+                    });
+                }
+            });
+        }
+        return tempClass;
+    }
+    /*--------------------------------------------------------------------------------*/
+    /* 初始化角色當前身上的服飾 */
     initialClothing(){
         this.clothingData = {'hair':'','clothes':'','cleft':'','cright':'','bottoms':'','shoe':'','sright':'','h_deco':'','wrist_deco':''};
         let itemName = Object.keys(this.clothingData);
@@ -63,22 +109,24 @@ export default class Clothing{
             }
         });
     }
+    /* 角色切換時須重新紀錄當前服飾 */
     change_character_clothing(armatureDisplay,factory,gender){
         this.armatureDisplay = armatureDisplay;
         this.factory = factory;
         this.gender = gender;
         this.initialClothing();
     }
+    /*--------------------------------------------------------------------------------*/
      /* 建立換衣間 */
      create_dressing_room(){
         /* Create a dressing room */
-        let dressing_room = new Container();
+        let dressing_room = this.dressing_room
         /*----------------------------------------*/
         /* Create icons */
         /* Icon container */
-        this.IconContainer = new Container();
-        dressing_room.addChild(this.IconContainer);
-        this.IconContainer.position.set(0,0);
+        let IconContainer = this.IconContainer
+        dressing_room.addChild(IconContainer);
+        IconContainer.position.set(0,0);
         /* Hair_icon setting */
         this.create_replacement_icon("hair",ResourcesManager.icon_hair);
         /* Clothes_icon setting */
@@ -94,6 +142,7 @@ export default class Clothing{
         /*----------------------------------------*/
         /* Draws a wardrobe */
         let wardrobe = new PIXI.Graphics();
+        wardrobe.name = "wardrobe"
         wardrobe.lineStyle(4,0xFFFFFF);
         wardrobe.beginFill( 0xCCDDFF,0.6);//填充
         wardrobe.drawRoundedRect(0,0,600,450,10);
@@ -104,9 +153,9 @@ export default class Clothing{
         this.wardrobeHeight= 4502-40;
         /*----------------------------------------*/
         /* Replacements' area */
-        this. replacement = new Container();
-        dressing_room.addChild(this.replacement);
-        this.replacement.position.set(wardrobe.x+20,wardrobe.y+10)
+        let replacement = this.replacement
+        dressing_room.addChild(replacement);
+        replacement.position.set(wardrobe.x+20,wardrobe.y+10)
         /*----------------------------------------*/
         return dressing_room;
     }
@@ -139,37 +188,45 @@ export default class Clothing{
     }
     show_item(itemName){
         this.replacement.removeChildren();
-        let temp = this.item_data;
+        let temp = this.wardrobe_data;
         let xx=0;
         let yy=0;
         let item = temp[this.gender][itemName];
-        let size = Object.keys(item).length;
-
-        for(let i=1;i<=size;i++){
-            let str = item[i].name;
-            let height = item[i].height;
-            let width = item[i].width;
-            let x = item[i].x;
-            let y = item[i].y;
-            if((xx+110)>this.wardrobeWidth){
-                yy += 110;
-                xx = 0;
-            }
-            /* 針對clothes的顯示 */
-            if(itemName == 'clothes'){
-                let cl = temp[this.gender]['cleft'][i];
-                let cr = temp[this.gender]['cright'][i];
-                this.show_itemPic('cleft',i,xx,yy,cl.x,cl.y,cl.height,cl.width);
-                this.show_itemPic('cright',i,xx,yy,cr.x,cr.y,cr.height,cr.width);
-            }
-            /* 針對shoes的顯示 */
-            else if(itemName == 'shoe'){
-                let sr = temp[this.gender]['sright'][i];//s1_r_gg
-                this.show_itemPic('sright',i,xx,yy,sr.x,sr.y,sr.height,sr.width);
-            }
-            this.show_itemPic(itemName,i,xx,yy,x,y,height,width);
-            xx += 110;
+        let order
+        if(Object.getOwnPropertyNames(this.wardrobeOrder).length == 0){
+            order = Object.keys(item)
         }
+        else{
+            let list = (this.wardrobeOrder[0].gender == this.gender)?this.wardrobeOrder[0][itemName]:this.wardrobeOrder[1][itemName]
+            order = list.split(',')
+        }
+        order.forEach( i =>{
+            if(i!=""){
+                let height = item[i].height;
+                let width = item[i].width;
+                let x = item[i].x;
+                let y = item[i].y;
+
+                if((xx+110)>this.wardrobeWidth){
+                    yy += 110;
+                    xx = 0;
+                }
+                /* 針對clothes的顯示 */
+                if(itemName == 'clothes'){
+                    let cl = temp[this.gender]['cleft'][i];
+                    let cr = temp[this.gender]['cright'][i];
+                    this.replacement.addChild(this.show_itemPic('cleft',i,xx,yy,cl.x,cl.y,cl.height,cl.width));
+                    this.replacement.addChild(this.show_itemPic('cright',i,xx,yy,cr.x,cr.y,cr.height,cr.width));
+                }
+                /* 針對shoes的顯示 */
+                else if(itemName == 'shoe'){
+                    let sr = temp[this.gender]['sright'][i];//s1_r_gg
+                    this.replacement.addChild(this.show_itemPic('sright',i,xx,yy,sr.x,sr.y,sr.height,sr.width));
+                }
+                this.replacement.addChild(this.show_itemPic(itemName,i,xx,yy,x,y,height,width));
+                xx += 110;
+            }
+        })
     }
 
     show_itemPic(itemName,no,xx,yy,x,y,height,width) {
@@ -228,7 +285,7 @@ export default class Clothing{
             show.scale.set(sc);
         }
         /*----------------------------------------*/
-        let temp = this.item_data;
+        let temp = this.wardrobe_data;
         show.interactive = true; // 設定可以互動
         show.buttonMode = true; // 當滑鼠滑過時顯示為手指圖示
         let t = this;
@@ -271,7 +328,8 @@ export default class Clothing{
             }
         }
         //將精靈添加到舞台中
-        this.replacement.addChild(show);
+        // this.replacement.addChild(show);
+        return show
     }
     /* 可以拿掉配件 */
     takeoff_item(armature,itemName,str){
@@ -298,7 +356,7 @@ export default class Clothing{
         });
     }
     /* 將服裝info上傳至資料庫  */
-    saveClothes(){
+    saveClothing(){
         return apiManageRoleData({
             type: 'saveClothing',
             account: this.account,
@@ -314,7 +372,7 @@ export default class Clothing{
             wrist_deco: this.clothingData.wrist_deco
         })
         .then((res) => {
-            console.log('saving clothes',res.data);
+            console.log('saving clothing',res.data);
         })
         .catch((error) => {
             console.error(error)
@@ -322,7 +380,7 @@ export default class Clothing{
     }
     /* 隨機換裝 */
     randomChangeClothes(){
-        let temp = this.item_data;
+        let temp = this.wardrobe_data;
         let itemName = Object.keys(temp[this.gender]);
         itemName.forEach(item=>{
             if(item != 'cright' && item != 'cleft' && item != 'sright'){
@@ -353,5 +411,70 @@ export default class Clothing{
             }
         });
     }
-    
+    /* 讀取角色擁有的服飾 */
+    getWardrobeClothes() {
+        return apiManageRoleData({ type: 'getClothes', account: this.account })
+        .then((res) => {
+            console.log('property',res.data)
+            this.property = res.data
+        })
+        .catch((error) => {
+            console.error(error);
+        })
+    } 
+    /* 加入獲得的服飾 */
+    addWardrobeClothes(category,itemNo){
+        this.property_data[this.gender][category][itemNo] = this.item_data[this.gender][category][itemNo]
+        let list = (this.property[0].gender == this.gender)?list = this.property[0]:this.property[1]
+        let Category = list[category]
+        let now = (Category != [])?Category.split(','):[]
+        if(now.indexOf(itemNo.toString())!= -1)
+            return -1 //repeat
+        now.push(itemNo.toString())
+        let update = now.join()
+        list[category] = update
+        this.saveClothes(category,update)
+        console.log('check property',this.property)
+
+        return 0 //success
+    }
+    /* 存取角色獲得的服飾(單一類別) */
+    saveClothes(category,itemNoList){
+        console.log(category)
+        console.log(itemNoList)
+        return apiManageRoleData({
+            type: 'saveClothes',
+            account: this.account,
+            gender: this.gender,
+            category: category,
+            itemNoList: itemNoList
+        })
+        .then((res) => {
+            console.log('saving clothes',res.data);
+        })
+        .catch((error) => {
+            console.error(error)
+        })
+    }
+    /* 整套衣服轉為獲得服飾 */
+    clothingDataToProperty(){
+        if(this.property.length == 0){
+            this.property_data = this.clothes_classifier(this.property)
+            //initial this.property 
+            this.property = [{'gender':'gg','hair':"",'clothes':"",'cleft':"",'cright':"",'bottoms':"",'shoe':"",'sright':"",'h_deco':"",'wrist_deco':""},
+            {'gender':'mm','hair':"",'clothes':"",'cleft':"",'cright':"",'bottoms':"",'shoe':"",'sright':"",'h_deco':"",'wrist_deco':""}]
+        }
+        let itemName = Object.keys(this.clothingData)
+        let temp = this.clothingData
+        itemName.forEach(item =>{
+            let str = temp[item]
+            console.log('item->',temp[item])
+            if(str != ""){
+                let no = str.match(/\d+/g)[0]
+                console.log('item',item)//hair
+                console.log('no->',no)
+                this.addWardrobeClothes(item,no)
+            }
+        })
+    }
 }
