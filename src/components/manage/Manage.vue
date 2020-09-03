@@ -5,7 +5,13 @@
                 <v-app-bar-nav-icon @click="nav_drawer = true" data-v-step="0"></v-app-bar-nav-icon>
                 <v-toolbar-title>情境式環境音管理平台</v-toolbar-title>
                 <v-spacer></v-spacer>
-                <v-menu v-model="notify" :close-on-content-click="false" nudge-width="300" max-height="400" offset-y>
+                <v-menu
+                    v-model="notify"
+                    :close-on-content-click="false"
+                    nudge-width="300"
+                    max-height="400"
+                    offset-y
+                >
                     <template v-slot:activator="{ on, attrs }">
                         <v-btn v-bind="attrs" v-on="on" icon>
                             <v-badge color="pink" dot>
@@ -145,8 +151,8 @@
 </template>
 
 <script>
-import { apiManageLogin } from '@/js/api'
-import vDescriptionManual from './Description-manual.vue'
+import { apiManageLogin } from "@/js/api";
+import vDescriptionManual from "./Description-manual.vue";
 
 export default {
     components: {
@@ -155,13 +161,13 @@ export default {
     data() {
         return {
             user: {
-                name: 'User Name',
-                identity: 'Identity',
+                name: "User Name",
+                identity: "Identity",
             },
             alert_dialog: {
                 dialog: false,
-                title: 'Title',
-                text: 'text',
+                title: "Title",
+                text: "text",
             },
             nav_drawer: false,
             passdata: {},
@@ -171,44 +177,44 @@ export default {
                 {
                     target: '[data-v-step="0"]',
                     header: {
-                        title: '導航欄選單按鈕',
+                        title: "導航欄選單按鈕",
                     },
                     content: `點擊後顯示導航欄抽屜，可點選進入各個頁面`,
                 },
                 {
                     target: '[data-v-step="1"]',
                     header: {
-                        title: '幫助選單按鈕',
+                        title: "幫助選單按鈕",
                     },
                     content:
-                        '內有說明手冊、操作導覽、客服詢問功能，可幫助了解管理平台以及解決疑難雜症',
+                        "內有說明手冊、操作導覽、客服詢問功能，可幫助了解管理平台以及解決疑難雜症",
                 },
             ],
-        }
+        };
     },
     async mounted() {
-        console.log(this.$route.name)
-        apiManageLogin({ type: 'checklogin' })
+        console.log(this.$route.name);
+        apiManageLogin({ type: "checklogin" })
             .then((res) => {
-                if (res.data[2] == 0)
+                if (res.data.islogin != 1)
                     this.showDialog({
-                        title: '尚未登入',
-                        text: '如欲使用管理功能需先進行登入',
-                    })
-                else if (res.data[1] == '學生')
+                        title: "尚未登入",
+                        text: "如欲使用管理功能需先進行登入",
+                    });
+                else if (res.data.user.identity == "學生")
                     this.showDialog({
-                        title: '身份不符',
-                        text: '學生身份無權限使用管理功能',
-                    })
+                        title: "身份不符",
+                        text: "學生身份無權限使用管理功能",
+                    });
                 else {
-                    let [name, identity] = res.data
-                    this.user.name = name
-                    this.user.identity = identity
+                    let { name, identity } = res.data.user;
+                    this.user.name = name;
+                    this.user.identity = identity;
                 }
             })
             .catch((error) => {
-                console.error(error)
-            })
+                console.error(error);
+            });
         /**Todo
          * requset personal data and update name and identity
          * else router push to Website Index
@@ -216,25 +222,25 @@ export default {
     },
     methods: {
         test() {
-            this.dialog = true
+            this.dialog = true;
         },
         changeDialog(val) {
-            this.dialog = val
+            this.dialog = val;
         },
         callGuideTour() {
             if (this.$tours[this.$route.name])
-                this.$tours[this.$route.name].start()
+                this.$tours[this.$route.name].start();
         },
         showDialog(data) {
-            this.alert_dialog.title = data.title
-            this.alert_dialog.text = data.text
-            this.alert_dialog.dialog = true
+            this.alert_dialog.title = data.title;
+            this.alert_dialog.text = data.text;
+            this.alert_dialog.dialog = true;
         },
         goToIndexPage() {
-            window.location.href = './index.html'
+            window.location.href = "./index.html";
         },
     },
-}
+};
 </script>
 
 <style scoped></style>
