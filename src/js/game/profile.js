@@ -107,7 +107,7 @@ export default class profile extends PIXI.Container {
         editBtn.visible = true
         editBtn.interactive = true // 設定可以互動
         editBtn.buttonMode = true // 當滑鼠滑過時顯示為手指圖示
-        editBtn.click = function() {
+        editBtn.click = function () {
             t.editBtn.visible = false
             t.saveBtn.visible = true
             t.input.disabled = false
@@ -122,7 +122,7 @@ export default class profile extends PIXI.Container {
         saveBtn.visible = false
         saveBtn.interactive = true // 設定可以互動
         saveBtn.buttonMode = true // 當滑鼠滑過時顯示為手指圖示
-        saveBtn.click = async function() {
+        saveBtn.click = async function () {
             editBtn.visible = true
             saveBtn.visible = false
             t.input.disabled = true
@@ -302,7 +302,7 @@ export default class profile extends PIXI.Container {
         standardBtn.interactive = true
         standardBtn.buttonMode = true
         let t = this
-        standardBtn.click = function() {
+        standardBtn.click = function () {
             t.personInfoContainer.visible = !t.personInfoContainer.visible
             t.standardContainer.visible = !t.standardContainer.visible
         }

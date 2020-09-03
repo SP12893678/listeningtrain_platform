@@ -481,6 +481,7 @@ export default {
             pwr: null,
             pwr2: null,
             identity: null,
+
             // --------
             dialog3: false,
             // --------
@@ -542,14 +543,14 @@ export default {
                 .then((res) => {
                     console.log(res.data);
                     this.logindata = res.data;
-                    if (this.logindata[2] == 1) {
+                    if (this.logindata.islogin == 1) {
                         this.dialog = false;
                         this.islogin = 1;
                         this.msg = true;
-                        this.card = this.logindata[0] + " 歡迎回來!";
-                        this.showUsername = this.logindata[0];
-                        this.showId = this.logindata[1];
-                        this.showMail = this.logindata[3];
+                        this.card = this.logindata.user.name + " 歡迎回來!";
+                        this.showUsername = this.logindata.user.name;
+                        this.showId = this.logindata.user.identity;
+                        this.showMail = this.logindata.user.mail;
                         this.ac = null;
                         this.pw = null;
                     } else {
@@ -571,13 +572,14 @@ export default {
                 .then((res) => {
                     console.log(res.data);
                     this.logindata = res.data;
-                    if (this.logindata[2] == 1) {
+
+                    if (this.logindata.islogin == 1) {
                         this.msg = true;
-                        this.card = this.logindata[0] + " 歡迎回來!";
+                        this.card = this.logindata.user.name + " 歡迎回來!";
                         this.islogin = 1;
-                        this.showUsername = this.logindata[0];
-                        this.showId = this.logindata[1];
-                        this.showMail = this.logindata[3];
+                        this.showUsername = this.logindata.user.name;
+                        this.showId = this.logindata.user.identity;
+                        this.showMail = this.logindata.user.mail;
                         this.ac = null;
                         this.pw = null;
                     } else {

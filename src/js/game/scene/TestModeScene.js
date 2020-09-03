@@ -112,7 +112,7 @@ export default class TestModeScene extends Scene {
         Sound.stopAll()
 
         if (this.questionNo == this.questionTotal) {
-            if(this.timer.state)
+            if (this.timer.state)
                 this.timer.stop()
             this.showResult()
             this.result.visible = true
@@ -152,17 +152,17 @@ export default class TestModeScene extends Scene {
         btn_goback.position.set(60, 60)
         btn_goback.click = () => {
             if (!this.startBtn.visible) {
-                if(this.timer.state)
+                if (this.timer.state)
                     this.timer.stop()
                 this.leaveDialog.visible = true
             }
             else Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
         }
-        btn_goback.mouseover = function(mouseData) {
+        btn_goback.mouseover = function (mouseData) {
             btn_goback.scale.set(scale * 1.1)
             goBackText.scale.set(1.1)
         }
-        btn_goback.mouseout = function(mouseData) {
+        btn_goback.mouseout = function (mouseData) {
             btn_goback.scale.set(scale)
             goBackText.scale.set(1)
         }
@@ -205,10 +205,10 @@ export default class TestModeScene extends Scene {
             if (!this.timer.state) this.timer.start()
             else this.timer.stop()
         }
-        btn_help.mouseover = function(mouseData) {
+        btn_help.mouseover = function (mouseData) {
             btn_help.scale.set(1.1)
         }
-        btn_help.mouseout = function(mouseData) {
+        btn_help.mouseout = function (mouseData) {
             btn_help.scale.set(1)
         }
         title.addChild(btn_help)
@@ -331,7 +331,7 @@ export default class TestModeScene extends Scene {
         leaveBtn.setText(style15)
         leaveBtn.click = () => {
             leaveDialog.visible = true
-            if(this.timer.state)this.timer.stop()
+            if (this.timer.state) this.timer.stop()
         }
         screenDown.addChild(leaveBtn)
     }
@@ -378,15 +378,15 @@ export default class TestModeScene extends Scene {
 
         let EnvironmentPic = this.resultEnvironmentPic
         EnvironmentPic.mask = EnvironmentPicMask
-        EnvironmentPic.position.set(50,50)
+        EnvironmentPic.position.set(50, 50)
         result.addChild(EnvironmentPic)
         /* result text */
         let resultText = this.resultText
-        resultText.position.set(600,115)
+        resultText.position.set(600, 115)
         result.addChild(resultText)
         /* answerCheck*/
-        let no = new PIXI.Text('題數',style15)
-        no.position.set(50,350)
+        let no = new PIXI.Text('題數', style15)
+        no.position.set(50, 350)
         result.addChild(no)
 
         let correctAnswer = new Sprite(resources[ResourcesManager.correctAnswer].texture)
@@ -461,9 +461,9 @@ export default class TestModeScene extends Scene {
         })
         let correctTotal = correct.length
         let resultText = this.resultText
-    
+
         resultText.text =
-            '作答情境: '+environmentName + '\n作答題數: ' + this.questionTotal + ' 題' + '\n答對題數: ' + correctTotal + ' 題' + '\n作答時間: ' + this.timer.text.text
+            '作答情境: ' + environmentName + '\n作答題數: ' + this.questionTotal + ' 題' + '\n答對題數: ' + correctTotal + ' 題' + '\n作答時間: ' + this.timer.text.text
         resultText.style = style17
 
         let envionmentPicTexture = this.environment.background._texture

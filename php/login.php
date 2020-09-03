@@ -25,7 +25,7 @@ switch ($logintype) {
             $pwr = $_GET['pwr'];   
             $ac=$_SESSION['account'] ;
             $sql = "UPDATE user  SET name='$name',mail='$mail',password='$pwr' WHERE account='$ac'";
-            $row =mysqli_query($con, $sql);
+            $change =mysqli_query($con, $sql);
             $_SESSION['password'] =$pwr;
             echo 1;   
     break;
@@ -33,31 +33,38 @@ switch ($logintype) {
     case 'checklogin':
         if(!isset($_SESSION['account']) ) {
            
-            $data = ["0","0","0"];
+            $data = [0,0];
             echo json_encode($data, JSON_UNESCAPED_UNICODE); 
         }else{
+             $ac=$_SESSION['account'] ;
+
+             $sql = "SELECT * FROM user WHERE account='$ac'" ;
+             $result = mysqli_query($con, $sql);
+             $data['user'] = mysqli_fetch_array($result);
+             $data['islogin']= 1;
+             echo json_encode($data, JSON_UNESCAPED_UNICODE);
             
-            
-            $sql2 = "SELECT name  FROM user WHERE account='$sac'" ;
-            $sql3 = "SELECT identity FROM user WHERE account='$sac'" ;
-            $sql4 = "SELECT mail FROM user WHERE account='$ac' AND  password='$pw'" ;
-            $result2 = mysqli_query($con, $sql2);
-            $result3 = mysqli_query($con, $sql3);
-            $result4 = mysqli_query($con, $sql4);
-            $data = [];
-            $row= mysqli_fetch_array($result2, MYSQLI_NUM);
-            $row2 = mysqli_fetch_array($result3, MYSQLI_NUM);
-            $row3 = mysqli_fetch_array($result4, MYSQLI_NUM);
-             $name = implode(" ",$row); 
-             $id = implode(" ",$row2); 
-             $mail = implode(" ",$row3); 
-            array_push($data,$name);
-            array_push($data,$id);
-            array_push($data,"1");
-            array_push($data, $mail);
+            // $sql2 = "SELECT name  FROM user WHERE account='$ac'" ;
+            // $sql3 = "SELECT identity FROM user WHERE account='$ac'" ;
+            // $sql4 = "SELECT mail FROM user WHERE account='$ac'" ;
+            // $result2 = mysqli_query($con, $sql2);
+            // $result3 = mysqli_query($con, $sql3);
+            // $result4 = mysqli_query($con, $sql4);
+            // $data = [];
+            // $row= mysqli_fetch_array($result2, MYSQLI_NUM);
+            // $row2 = mysqli_fetch_array($result3, MYSQLI_NUM);
+            // $row3 = mysqli_fetch_array($result4, MYSQLI_NUM);
+            //  $name = implode(" ",$row); 
+            //  $id = implode(" ",$row2); 
+            //  $mail = implode(" ",$row3); 
+            // array_push($data,$name);
+            // array_push($data,$id);
+            // array_push($data,"1");
+            // array_push($data, $mail);
+            // array_push($data, $ac);
           
         
-            echo json_encode($data, JSON_UNESCAPED_UNICODE);   
+            // echo json_encode($data, JSON_UNESCAPED_UNICODE);   
         }
 
     break;
@@ -70,35 +77,21 @@ switch ($logintype) {
         $sql = "SELECT * FROM user WHERE account='$ac' AND  password='$pw'" ;
         $result = mysqli_query($con, $sql);
         $total_records = mysqli_num_rows($result);
-        if ( $total_records > 0 ) {
+        if ( $total_records > 0 ) {          
             
             $_SESSION['account'] = $ac;
-            $_SESSION['password'] = $pw;
-
+            $_SESSION['password'] = $pw;       
+            // while($row = mysqli_fetch_array($result2))
+            // {
+            //     array_push($data,$row);
+            // }          
+            $data['user'] = mysqli_fetch_array($result);
+            $data['islogin']= 1;
+            echo json_encode($data, JSON_UNESCAPED_UNICODE);
             
-            $sql2 = "SELECT name  FROM user WHERE account='$ac' AND  password='$pw'" ;
-            $sql3 = "SELECT identity FROM user WHERE account='$ac' AND  password='$pw'" ;
-            $sql4 = "SELECT mail FROM user WHERE account='$ac' AND  password='$pw'" ;
-            $result2 = mysqli_query($con, $sql2);
-            $result3 = mysqli_query($con, $sql3);
-            $result4 = mysqli_query($con, $sql4);
-            $data = [];
-            $row= mysqli_fetch_array($result2, MYSQLI_NUM);
-            $row2 = mysqli_fetch_array($result3, MYSQLI_NUM);
-            $row3 = mysqli_fetch_array($result4, MYSQLI_NUM);
-            $name = implode(" ",$row); 
-            $id = implode(" ",$row2); 
-            $mail = implode(" ",$row3); 
-            array_push($data,$name);
-            array_push($data,$id);
-            array_push($data,"1");
-            array_push($data, $mail);
-            
-        
-            echo json_encode($data, JSON_UNESCAPED_UNICODE);   
         }
         else{
-            $data = [0,0,0];
+            $data = [0,0];
             echo json_encode($data, JSON_UNESCAPED_UNICODE);  
         }
     break;
