@@ -37,10 +37,10 @@ switch ($logintype) {
             echo json_encode($data, JSON_UNESCAPED_UNICODE); 
         }else{
             
-            
-            $sql2 = "SELECT name  FROM user WHERE account='$sac'" ;
-            $sql3 = "SELECT identity FROM user WHERE account='$sac'" ;
-            $sql4 = "SELECT mail FROM user WHERE account='$ac' AND  password='$pw'" ;
+            $ac = $_SESSION['account'] ;
+            $sql2 = "SELECT name  FROM user WHERE account='$ac'" ;
+            $sql3 = "SELECT identity FROM user WHERE account='$ac'" ;
+            $sql4 = "SELECT mail FROM user WHERE account='$ac'" ;
             $result2 = mysqli_query($con, $sql2);
             $result3 = mysqli_query($con, $sql3);
             $result4 = mysqli_query($con, $sql4);
@@ -55,6 +55,8 @@ switch ($logintype) {
             array_push($data,$id);
             array_push($data,"1");
             array_push($data, $mail);
+            array_push($data, $ac);
+
           
         
             echo json_encode($data, JSON_UNESCAPED_UNICODE);   
