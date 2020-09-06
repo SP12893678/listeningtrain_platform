@@ -27,9 +27,38 @@
             }
             break;
         case 'delete':
-            
             $id = $_GET['id'];
             $sql = "DELETE FROM enviro WHERE id = '". $id ."'";
+            break;
+        case 'update':
+            $data = [];
+            $item = json_decode($_GET['item'],true);
+            $id = $item['id'];
+            $background_src = $item['background_src'];
+            $category = $item['category'];
+            $name = $item['name'];
+            $object = $item['object'];
+            if ($id == -1) {
+                $sql = "INSERT INTO `enviro`
+                (`background_src`, `category`, `name`, `object`) VALUES 
+                ('$background_src','$category','$name','$object')";
+                $result = mysqli_query($con, $sql);
+                $data['result'] = $result;
+                $data['id'] = $con -> insert_id;
+                echo json_encode($data, JSON_UNESCAPED_UNICODE);
+            }
+            else{
+                $sql = "UPDATE `enviro` SET 
+                `background_src`='$background_src',
+                `category`='$category',
+                `name`='$name',
+                `object`='$object'
+                 WHERE `id` = $id";
+                $result = mysqli_query($con, $sql);
+                $data['result'] = $result;
+                $data['id'] = $id;
+                echo json_encode($data, JSON_UNESCAPED_UNICODE);
+            }
             break;
         default:
             # code...

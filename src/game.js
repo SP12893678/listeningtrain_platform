@@ -6,7 +6,12 @@ import ScenesManager from '@/js/game/engine/ScenesManager'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
 import Events from '@/js/game/Events'
 import Config from '@/js/game/Config'
-import { apiGetFolderFileList, apiManageEnviroment, apiManageObject, apiManageAudio } from '@/js/api'
+import {
+    apiGetFolderFileList,
+    apiManageEnviroment,
+    apiManageObject,
+    apiManageAudio,
+} from '@/js/api'
 
 import { gsap } from 'gsap'
 import { PixiPlugin } from 'gsap/PixiPlugin'
@@ -16,15 +21,24 @@ PixiPlugin.registerPIXI(PIXI)
 /**----------------------------- */
 ;(function() {
     function loadProgressHandler(loader, resource) {
-        if (resources[ResourcesManager.create_role_bg].texture && scenesManager.scenes['loading'] == null) Events.emit('goto', { id: 'loading' })
+        if (
+            resources[ResourcesManager.create_role_bg].texture &&
+            scenesManager.scenes['loading'] == null
+        )
+            Events.emit('goto', { id: 'loading' })
         if (scenesManager.scenes['loading'] != null) {
-            scenesManager.scenes['loading'].progress_bar.setProgress(loader.progress / 100)
+            scenesManager.scenes['loading'].progress_bar.setProgress(
+                loader.progress / 100
+            )
         }
     }
 
     function getloadResources(resources) {
         let data = Object.values(resources)
-        return data.filter((item, index, self) => index === self.indexOf(item) && !PIXI.loader.resources[item])
+        return data.filter(
+            (item, index, self) =>
+                index === self.indexOf(item) && !PIXI.loader.resources[item]
+        )
     }
 
     function start() {
@@ -37,17 +51,29 @@ PixiPlugin.registerPIXI(PIXI)
         let audio_arr = []
         let data = []
 
-        await apiManageEnviroment({ type: 'get', amount: 'all' }).then((res) => {
-            data.push(...res.data.map((item) => item.background_src))
-            res.data.forEach((item) => object_arr.push(...item.object.split(',')))
-        })
+        await apiManageEnviroment({ type: 'get', amount: 'all' }).then(
+            (res) => {
+                data.push(...res.data.map((item) => item.background_src))
+                res.data.forEach((item) =>
+                    object_arr.push(...item.object.split(','))
+                )
+            }
+        )
 
-        await apiManageObject({ type: 'get', amount: 'part', items: object_arr }).then((res) => {
+        await apiManageObject({
+            type: 'get',
+            amount: 'part',
+            items: object_arr,
+        }).then((res) => {
             data.push(...res.data.map((item) => item.pic_src))
             audio_arr = res.data.map((item) => item.sound_src)
         })
 
-        await apiManageAudio({ type: 'get', amount: 'part', items: audio_arr }).then((res) => {
+        await apiManageAudio({
+            type: 'get',
+            amount: 'part',
+            items: audio_arr,
+        }).then((res) => {
             data.push(...res.data.map((item) => item.sound_src))
         })
 
@@ -95,7 +121,7 @@ PixiPlugin.registerPIXI(PIXI)
     // let console = {
     //     isDev: false,
     //     log(...args) {
-    //         if (!this.isDev) return
+    //         if (!console.isDev) return
     //         window.console.log(...args)
     //     },
     // }
