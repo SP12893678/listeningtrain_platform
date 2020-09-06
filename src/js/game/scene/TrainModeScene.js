@@ -26,10 +26,9 @@ let resources = PIXI.loader.resources
 export default class TrainModeScene extends Scene {
     constructor() {
         super()
-        this.account = window.sessionStorage.getItem('account')
         this.background = new PIXI.Graphics()
         this.title = new Container()
-        this.character = new character(this.account)
+        this.character = new character()
         this.environmentArea = new Container()
         this.objectList = new ObjectList()
         this.gearlocking = new GearLocking()
@@ -149,9 +148,10 @@ export default class TrainModeScene extends Scene {
         this.addChild(title)
     }
     /* 建立角色 */
-    setCharacter() {
+    async setCharacter() {
         /* Character */
         let character = this.character
+        await character.check_if_has_data()
         let factory = character.factory
         let armatureDisplay = character.armatureDisplay
         armatureDisplay.position.set(250, 670)

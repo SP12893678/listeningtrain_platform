@@ -25,14 +25,18 @@ export default class CreateRoleScene extends Scene {
     constructor() {
         super()
         this.account = window.sessionStorage.getItem('account')
-        this.setBackground()
-        this.setTitle()
         this.container = new Container()//for bubble
         this.addChild(this.container)
+        this.character = new character(this.account)
+        
+        this.init()
+    }
+    async init(){
+        this.setBackground()
+        this.setTitle()
         this.doParticles()
         this.setStage()
-        this.character = new character(this.account)
-        this.setCharacter()
+        await this.setCharacter()
         this.setGenderBtn()
         this.setRandomButton()
         this.setSaveButton()
@@ -76,8 +80,9 @@ export default class CreateRoleScene extends Scene {
         update()
     }
     /* 建立角色 */
-    setCharacter() {
+    async setCharacter() {
         /* Character */
+        await this.character.check_if_has_data()
         this.factory = this.character.factory
         this.armatureDisplay = this.character.armatureDisplay
         this.armatureDisplay.position.set(395, 490)

@@ -10,7 +10,7 @@ const config = {
     },
     lanague: 'chinese',
     text: language_zh_tw,
-    initClothes: [{   'gender':'gg',
+    initClothes: {  'gg':{'gender':'gg',
                         'hair':"1,2,3,4",
                         'clothes':"1,2,3,4",
                         'cleft':"1,2,3,4",
@@ -21,7 +21,7 @@ const config = {
                         'h_deco':"",
                         'wrist_deco':"1"
                     },
-                    {   'gender':'mm',
+                    'mm':{'gender':'mm',
                         'hair':"1,2,3,4,5,6",
                         'clothes':"1,2,3,4,5",
                         'cleft':"1,2,3,4,5",
@@ -32,7 +32,7 @@ const config = {
                         'h_deco':"1,2",
                         'wrist_deco':"1"
                     }
-                ]
+                }
 }
 
 export default config

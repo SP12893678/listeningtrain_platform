@@ -26,10 +26,9 @@ let Application = PIXI.Application,
 export default class TestModeScene extends Scene {
     constructor() {
         super()
-        this.account = window.sessionStorage.getItem('account')
         this.background = new PIXI.Graphics()
         this.title = new Container()
-        this.character = new character(this.account)
+        this.character = new character()
         this.questionTotal = 10
         this.questionNo = 1
         this.screenUp = new Container()
@@ -216,9 +215,10 @@ export default class TestModeScene extends Scene {
         this.addChild(title)
     }
     /* 建立角色 */
-    setCharacter() {
+    async setCharacter() {
         /* Character */
         let character = this.character
+        await character.check_if_has_data()
         let factory = character.factory
         let armatureDisplay = character.armatureDisplay
         armatureDisplay.position.set(250, 670)

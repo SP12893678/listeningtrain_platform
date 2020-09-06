@@ -5,6 +5,7 @@ import Scene from '@/js/game/engine/Scene'
 import Events from '@/js/game/Events'
 import RoundedButton from 'Component/button3'
 import { style7 } from '@/js/game/engine/TextStyleManager'
+import Dialog from 'Component/dialog'
 
 import character from '@/js/game/character'
 import profile from '@/js/game/profile'
@@ -19,19 +20,23 @@ let Application = PIXI.Application,
 export default class GameMainScene extends Scene {
     constructor() {
         super()
-        this.account = window.sessionStorage.getItem('account')
         this.background = new Sprite()
-        this.character = new character(this.account)
-        this.profile = new profile(this.account)
+        this.character = new character()
+        this.profile = new profile()
         this.button = new RoundedButton(150, 60, '出征')
         this.btn_profile = new RoundedButton(150, 60, '個人資訊')
         this.btn_backpack = new RoundedButton(150, 60, '背包')
+        this.test = new RoundedButton(60, 60, 'Get')
 
+        this.init()
+    }
+    async init(){
         this.setBackground()
         this.setButton()
         this.setProfileButton()
         this.setBackPackButton()
-        this.setCharacter()
+        this.setGetButton()
+        await this.setCharacter()
         this.setProfile()
     }
     setBackground() {
@@ -72,10 +77,47 @@ export default class GameMainScene extends Scene {
         btn_backpack.click = () => Events.emit('goto', { id: 'backpack', animate: 'fadeIn' })
         this.addChild(btn_backpack)
     }
+    setGetButton() {
+        let temp = this.test
+        temp.setBorder(0)
+        temp.setBackgroundColor(0x005493)
+        temp.setText(style7)
+        temp.position.set(750, 600)
+        temp.click = () => {
+            let category = 'clothes'
+            let no = (this.character.gender == 'gg')?5:6
+            if (this.dialog == null) {
+                let dialog = new Dialog('恭喜你獲得',2)
+                dialog.setSize(400,300)
+                dialog.text.position.set(dialog.text.x,dialog.text.y-60)
+                dialog.yesBtn.position.set(dialog.yesBtn.x,dialog.yesBtn.y+30)
+                dialog.yesBtn.setBorder(0)
+                dialog.yesBtn.scale.set(0.8)
+                this.addChild(dialog)
+                this.dialog = dialog
+                /* yesBtn action */
+                this.dialog.yesBtn.click = () =>{
+                    let check = this.character.clothing.addWardrobeClothes(category,no)
+                    this.dialog.visible = false
+                    check.then(success=>{
+                        Events.emit('warning', { no:success })
+                    })
+                } 
+                //獲得服飾顯示（for test）
+                let clothing = this.character.clothing
+                let getItem = clothing.showClothes(category,no,this.dialog.dialog.x+140,this.dialog.dialog.y+90)
+                this.dialog.addChild(getItem)        
+            } else {
+                this.dialog.visible = true
+            }
+        }
+        this.addChild(temp)
+    }
     /* 建立角色 */
-    setCharacter() {
+    async setCharacter() {
         /* Character */
         let character = this.character
+        await character.check_if_has_data()
         let factory = character.factory
         let armatureDisplay = character.armatureDisplay
         let t = this
