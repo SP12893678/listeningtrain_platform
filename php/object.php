@@ -30,6 +30,7 @@
             // $sql = "DELETE FROM data WHERE id IN (".$object_arr.")";
             break;
         case 'update':
+            $data = [];
             $item = json_decode($_GET['item'],true);
             $id = $item['id'];
             $pic_src = $item['pic_src'];
@@ -39,19 +40,15 @@
             $size = $item['size'];
             $angle = $item['angle'];
             $scale = $item['scale'];
-            // for ($index=0; $index < count($items); $index++) { 
-                
-            // }
 
             if ($id == -1) {
                 $sql = "INSERT INTO `object` 
                 (`pic_src`,`sound_src`,`name`,`coordinate`,`size`,`angle`,`scale`) 
                 VALUES ('$pic_src','$sound_src','$name','$coordinate','$size','$angle','$scale')";
-
                 $result = mysqli_query($con, $sql);
-                $sql = "SELECT LAST_INSERT_ID()";
-                $result = mysqli_query($con, $sql);
-                echo $result;
+                $data['result'] = $result;
+                $data['id'] = $con -> insert_id;
+                echo json_encode($data, JSON_UNESCAPED_UNICODE);
             }
             else{
                 $sql = "UPDATE `object` SET 
@@ -63,23 +60,11 @@
                 angle = '$angle',
                 scale = '$scale'
                  WHERE `id` = $id";
-                 
                 $result = mysqli_query($con, $sql);
-                echo $result;
+                $data['result'] = $result;
+                $data['id'] = $id;
+                echo json_encode($data, JSON_UNESCAPED_UNICODE);
             }
-
-            // foreach($items as $item) {
-            //     if ($item['id'] == -1) {
-            //         $sql = "INSERT INTO `object`(`pic_src`) VALUES ('123')";
-            //         $result = mysqli_query($con, $sql);
-            //         $sql = "SELECT LAST_INSERT_ID()";
-            //         $result = mysqli_query($con, $sql);
-            //         echo $result;
-            //     }
-            //     else{
-
-            //     }
-            // }
         
             break;
         default:
