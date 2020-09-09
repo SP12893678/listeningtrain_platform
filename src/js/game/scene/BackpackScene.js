@@ -17,8 +17,7 @@ let Application = PIXI.Application,
 export default class Backpack extends Scene {
     constructor() {
         super()
-        this.account = window.sessionStorage.getItem('account')
-        this.character = new character(this.account)
+        this.character = new character()
 
         this.init()
     }
@@ -50,18 +49,19 @@ export default class Backpack extends Scene {
         btn_goback.interactive = true
         btn_goback.buttonMode = true
         btn_goback.position.set(60, 60)
-        let t = this
-        btn_goback.click = async function(){
+        btn_goback.click = () =>{
             // Events.emit('goto', { id: 'game_main', animate: 'fadeIn' })
-            // console.log('check backpack character clothes',this.character.clothing.clothingData)
-            t.character.clothing.saveClothing()
-            ScenesManager.scenes['game_main'].character.clothing.changeClothes(t.character.clothing.clothingData)
-            ScenesManager.scenes['game_main'].profile.character.clothing.changeClothes(t.character.clothing.clothingData)
-            if(ScenesManager.scenes['train_mode'])ScenesManager.scenes['train_mode'].character.clothing.changeClothes(t.character.clothing.clothingData)
-            if(ScenesManager.scenes['practice_mode'])ScenesManager.scenes['practice_mode'].character.clothing.changeClothes(t.character.clothing.clothingData)
-            if(ScenesManager.scenes['test_mode'])ScenesManager.scenes['test_mode'].character.clothing.changeClothes(t.character.clothing.clothingData)
-            
-            ScenesManager.goToScene('game_main')
+            this.character.clothing.wardrobeReset()
+            if(JSON.stringify(this.character.clothing.clothingData) != JSON.stringify(ScenesManager.scenes['game_main'].character.clothing.clothingData)){
+                this.character.clothing.saveClothing()
+                let changeData = this.character.clothing.clothingData
+                ScenesManager.scenes['game_main'].character.clothing.changeClothes(changeData)
+                ScenesManager.scenes['game_main'].profile.character.clothing.changeClothes(changeData)
+                if(ScenesManager.scenes['train_mode'])ScenesManager.scenes['train_mode'].character.clothing.changeClothes(changeData)
+                if(ScenesManager.scenes['practice_mode'])ScenesManager.scenes['practice_mode'].character.clothing.changeClothes(changeData)
+                if(ScenesManager.scenes['test_mode'])ScenesManager.scenes['test_mode'].character.clothing.changeClothes(changeData)
+            }
+            Events.emit('goto', { id: 'game_main', animate: 'fadeIn' })
         }
         btn_goback.mouseover = function(mouseData) {
             btn_goback.scale.set(scale * 1.1)

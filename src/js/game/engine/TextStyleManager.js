@@ -146,6 +146,16 @@ const style20 = new TextStyle({
     fontSize: 20,
     fill: '#ffffff',
 })
+const style21 = new TextStyle({
+    fill: [
+        "white",
+        "#929292"
+    ],
+    fontSize: 36,
+    fontStyle: "italic",
+    fontWeight: "bold",
+    strokeThickness: 8
+})//for show next
 export {
     style1,
     style2,
@@ -167,4 +177,5 @@ export {
     style18,
     style19,
     style20,
+    style21,
 }

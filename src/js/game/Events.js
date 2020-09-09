@@ -22,7 +22,6 @@ var EventEmitter = require('eventemitter3')
 var events = new EventEmitter()
 
 events.on('goto', (val) => {
-    console.log('test scene',ScenesManager.scenes)
     console.log(val)
     if (ScenesManager.scenes[val.id]) ScenesManager.goToScene(val.id)
     else {

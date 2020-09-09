@@ -77,6 +77,9 @@ PixiPlugin.registerPIXI(PIXI)
             data.push(...res.data.map((item) => item.sound_src))
         })
 
+        data.push("../static/sound/effect/correct.mp3")
+        data.push("../static/sound/effect/wrong.mp3")
+
         // await apiGetFolderFileList({
         //     path: 'images-enviro-background',
         //     extensions: ['*.gif', '*.jpg', '*.png'],

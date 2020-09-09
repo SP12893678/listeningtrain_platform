@@ -29,6 +29,7 @@ export default class Clothing{
         this.clothingData = {}
         this.dressing_room = new Container();
         this.IconContainer = new Container();
+        this.IconSelected = null
         this.replacement = new Container();
         
         this.loadData(character_tex_json);
@@ -165,24 +166,13 @@ export default class Clothing{
         icon.position.set(280*0.3*(this.IconContainer.children.length),0);
         icon.interactive = true; // 設定可以互動
         icon.buttonMode = true; // 當滑鼠滑過時顯示為手指圖示
-        icon.click = function(){
-            t.choose_replacement(icon);
+        icon.click = () => {
+            if(this.IconSelected) this.IconSelected.filters = null
+            this.IconSelected = icon
+            icon.filters = [new GlowFilter(10,5,0,0xffffff)];
+            this.show_item(icon.name);
         }
         this.IconContainer.addChild(icon);
-    }
-    choose_replacement(which_icon){
-        let choose_icon = which_icon;
-        let t = this;
-        this.IconContainer.children.forEach(item=>{
-                if(item.name == choose_icon.name){
-                    item.filters = [new GlowFilter(10,5,0,0xffffff)];
-                    this.show_item(item.name);
-                    t.itemName = item.name;
-                }
-                else
-                    item.filters = null;
-            }
-        );
     }
     show_item(itemName){
         this.replacement.removeChildren();
@@ -341,6 +331,10 @@ export default class Clothing{
         else
             armature.getSlot(itemName).displayIndex = 1;//讓原本空卡槽的部分顯示圖片
     }
+    wardrobeReset(){
+        this.replacement.removeChildren();
+        if(this.IconSelected) this.IconSelected.filters = null
+    }
     /*--------------------------------------------------------------------------------*/
     /* 根據內容進行換裝 */
     changeClothes(data){
@@ -355,7 +349,10 @@ export default class Clothing{
                 this.clothingData[item] = str;
                 this.factory.replaceSlotDisplay("Character",(gender == 'gg')?'Girl':'Boy',item,str,aramature.getSlot(item));//局部換裝
             }
-            else aramature.getSlot(item).displayIndex = -1;
+            else {
+                this.clothingData[item] = "";
+                aramature.getSlot(item).displayIndex = -1;
+            }
         });
     }
     /* 隨機換裝 */

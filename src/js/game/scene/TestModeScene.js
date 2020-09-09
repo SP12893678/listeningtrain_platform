@@ -83,6 +83,7 @@ export default class TestModeScene extends Scene {
         questionSystem.init(environment.data.objects)
 
         let screenCover = this.screenCover
+        screenCover.interactive = true
         screenCover.beginFill(0xffffff, 0.8)
         screenCover.drawRoundedRect(0, 0, screen.length, screen.height, 10)
         screenCover.endFill()
@@ -201,8 +202,7 @@ export default class TestModeScene extends Scene {
         btn_help.setBackgroundColor('', 0)
         btn_help.setText(style15)
         btn_help.click = () => {
-            if (!this.timer.state) this.timer.start()
-            else this.timer.stop()
+            
         }
         btn_help.mouseover = function (mouseData) {
             btn_help.scale.set(1.1)
@@ -352,6 +352,7 @@ export default class TestModeScene extends Scene {
         this.addChild(result)
 
         let resultPanel = new PIXI.Graphics()
+        resultPanel.interactive = true
         let panelLength = Config.screen.width - this.screenUp.x - 20
         let panelHeight = Config.screen.height - this.screenUp.y - 20
         resultPanel.beginFill(0xfbffe0)
