@@ -13,12 +13,29 @@ export default class VerticalScroller extends PIXI.Container {
         this.doVerticalScroller(radius, controlled, container)
     }
 
+    move(percentage) {
+        let new_y = this.scroll_length * percentage
+        new_y = new_y <= 0 ? 0 : new_y
+        new_y = new_y >= this.scroll_length ? this.scroll_length : new_y
+        this.thumb.position.y = new_y
+        let ratio =
+            this.scroll_length > 0
+                ? (this.controlled.height - this.container.height) /
+                  this.scroll_length
+                : 0
+        this.controlled.position.y = this.controlled_init_y - new_y * ratio
+    }
+
     doVerticalScroller(radius, controlled, container) {
         this.track = this.drawTrack(radius * 2, container.height - 10, radius)
         let need_length = (controlled.height - container.height) / this.ratio
         let track_length = this.track.height - 2 - 2
-        let thumb_height = need_length <= track_length - this.min_thumb ? track_length - need_length : this.min_thumb
-        thumb_height = need_length <= 0 ? container.height - radius * 2 + 6 : thumb_height
+        let thumb_height =
+            need_length <= track_length - this.min_thumb
+                ? track_length - need_length
+                : this.min_thumb
+        thumb_height =
+            need_length <= 0 ? container.height - radius * 2 + 6 : thumb_height
         this.scroll_length = track_length - thumb_height
         this.thumb = this.drawThumb(this.min_thumb, thumb_height, radius - 2)
 
@@ -28,7 +45,8 @@ export default class VerticalScroller extends PIXI.Container {
         var event = {
             mousedown(event) {
                 this.data = event.data
-                this.offset_y = this.data.getLocalPosition(this.parent).y - this.position._y
+                this.offset_y =
+                    this.data.getLocalPosition(this.parent).y - this.position._y
                 this.dragging = true
             },
             mouseup() {
@@ -40,10 +58,19 @@ export default class VerticalScroller extends PIXI.Container {
                     var newPosition = this.data.getLocalPosition(this.parent)
                     var new_y = newPosition.y - this.offset_y
                     new_y = new_y <= 0 ? 0 : new_y
-                    new_y = new_y >= this.parent.scroll_length ? this.parent.scroll_length : new_y
+                    new_y =
+                        new_y >= this.parent.scroll_length
+                            ? this.parent.scroll_length
+                            : new_y
                     this.position.y = new_y
-                    let ratio = this.parent.scroll_length > 0 ? (this.parent.controlled.height - this.parent.container.height) / this.parent.scroll_length : 0
-                    this.parent.controlled.position.y = this.parent.controlled_init_y - new_y * ratio
+                    let ratio =
+                        this.parent.scroll_length > 0
+                            ? (this.parent.controlled.height -
+                                  this.parent.container.height) /
+                              this.parent.scroll_length
+                            : 0
+                    this.parent.controlled.position.y =
+                        this.parent.controlled_init_y - new_y * ratio
                 }
             },
         }
