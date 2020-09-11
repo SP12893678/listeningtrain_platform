@@ -122,7 +122,7 @@
                 </v-list-group>
             </v-list>
         </v-navigation-drawer>
-        <v-dialog v-model="object_img_profile.dialog" max-width="1000" max-height="600" persistent>
+        <v-dialog v-model="object_img_profile.dialog" max-width="1000" max-height="600">
             <v-card>
                 <v-card-title>
                     <span class="jf-title">物件圖像庫</span>
@@ -215,7 +215,7 @@
                 </v-tabs-items>
             </v-card>
         </v-dialog>
-        <v-dialog v-model="background_img_profile.dialog" max-width="1000" max-height="600" persistent>
+        <v-dialog v-model="background_img_profile.dialog" max-width="1000" max-height="600">
             <v-card>
                 <v-card-title>
                     <span class="jf-title">背景圖像庫</span>
@@ -312,7 +312,13 @@
 
         <v-dialog v-model="alert.dialog" width="600">
             <v-card>
-                <v-card-title>尚未完成情境教材</v-card-title>
+                <v-card-title>
+                    <span class="jf-title">尚未完成情境教材</span>
+                    <v-spacer></v-spacer>
+                    <v-btn @click="alert.dialog=false" icon>
+                        <v-icon color="grey lighten-1">mdi-close</v-icon>
+                    </v-btn>
+                </v-card-title>
                 <v-card-text>背景</v-card-text>
                 <v-card-text>
                     <v-card width="300">
@@ -356,7 +362,7 @@
                         <v-row v-for="(object,index) in alert.objects" :key="index" class="ma-0 pa-0" outlined tile>
                             <v-col>
                                 <v-row justify="center" align-self="center">
-                                    <v-icon :color="(object.image)?'blue':'red'">{{(object.image)?'mdi-check':'mdi-close'}}</v-icon>
+                                    <v-img aspect-ratio="1" :src="object.image" max-height="60" min-height="60" min-width="60" contain></v-img>
                                 </v-row>
                             </v-col>
                             <v-col>
@@ -375,8 +381,28 @@
 
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn text>
+                    <v-btn @click="alert.dialog=false" text block>
                         <v-icon>mdi-check</v-icon>確認
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <v-dialog v-model="progress.dialog" max-width="600" persistent>
+            <v-card>
+                <v-card-title>{{progress.text}}</v-card-title>
+                <v-stepper :value="stepper.progress">
+                    <v-stepper-header>
+                        <template v-for="(step,index) in stepper.steps">
+                            <v-stepper-step :step="index" :complete="stepper.progress > index" :key="`${index}-step`">{{step.text}}</v-stepper-step>
+                            <v-divider v-if="index + 1 !== stepper.steps.length" :key="index"></v-divider>
+                        </template>
+                    </v-stepper-header>
+                </v-stepper>
+                <v-progress-linear :value="progress.value" :buffer-value="progress.value" color="light-blue" stream rounded height="6"></v-progress-linear>
+                <v-card-actions>
+                    <v-btn @click="progress.dialog = false" text block>
+                        <v-icon>mdi-check</v-icon>完成
                     </v-btn>
                 </v-card-actions>
             </v-card>
@@ -393,6 +419,7 @@ import {
     apiManageObject,
     apiManageAudio,
     apiGetFolderFileList,
+    apiManageFile,
 } from '@/js/api'
 
 export default {
@@ -447,6 +474,19 @@ export default {
                     category: false,
                 },
                 objects: [],
+            },
+            progress: {
+                dialog: false,
+                value: 0,
+                text: '儲存進度流程',
+            },
+            stepper: {
+                steps: [
+                    { text: '上傳圖檔' },
+                    { text: '儲存物件' },
+                    { text: '儲存情境' },
+                ],
+                progress: 0,
             },
         }
     },
@@ -710,6 +750,8 @@ export default {
                 size: '100',
                 sound_src: null,
                 audio: null,
+                scale: 1,
+                angle: 0,
             }
             var object_texture = PIXI.Texture.from(
                 '../static/images/enviro/object/object.png'
@@ -782,39 +824,134 @@ export default {
         },
         checkEditComplete() {
             console.log(this.enviro)
-            console.log(this.enviro.background_src)
-            this.alert.enviro.background = this.enviro.background_src
-                ? true
-                : false
-            this.alert.enviro.name = this.enviro.name ? true : false
-            this.alert.enviro.category = this.enviro.category ? true : false
-
             console.log(this.objects)
+            let isComplete = false
+            let { background, name, category } = this.alert.enviro
+            background = this.enviro.background_src ? true : false
+            name = this.enviro.name ? true : false
+            category = this.enviro.category ? true : false
+            Object.assign(this.alert.enviro, { background, name, category })
+
             this.alert.objects = []
             this.objects.forEach((object) => {
                 let obj = {}
                 obj.name = object.name ? true : false
-                obj.image = object.pic_src ? true : false
+                obj.image = object.pic_src
                 obj.audio = object.audio ? true : false
                 this.alert.objects.push(obj)
             })
 
-            let upload_files = []
-            if (this.enviro.file != null && this.enviro.file != undefined)
-                upload_files.push(this.enviro.file)
-            this.objects.forEach((object) => {
-                if (object.file != null && this.enviro.file != undefined)
-                    upload_files.push(object.file)
+            let result = this.alert.objects.filter(
+                (object) => !object.name || !object.audio
+            )
+            if (background && name && category && result.length == 0)
+                isComplete = true
+
+            return isComplete
+        },
+        async saveEnvironment() {
+            this.stepper.progress = -1
+            if (!this.checkEditComplete() && this.showUnFinishedDialog()) return
+            this.progress.dialog = true
+
+            /**upload image file */
+            this.stepper.progress = 0
+            if (this.isNeedFileUpload())
+                await this.uploadFiles(files, upload_files)
+
+            /**save object */
+            let saveObject = new Promise((resolve, reject) => {
+                this.stepper.progress = 1
+                let count = 0
+                this.objects.forEach((object, index) => {
+                    let item = Object.assign({}, object)
+                    delete item.sprite
+                    delete item.file
+                    apiManageObject({ type: 'update', item: item }).then(
+                        (res) => {
+                            console.log(object.name, res.data)
+                            if (res.data.result) object.id = res.data.id
+                            if (++count >= this.objects.length) resolve()
+                        }
+                    )
+                })
             })
 
-            console.log(upload_files)
+            /**save enviro */
+
+            saveObject.then(() => {
+                this.stepper.progress = 2
+                let object_arr = this.objects.map((object) => object.id)
+                this.enviro.object = object_arr.join(',')
+                apiManageEnviroment({
+                    type: 'update',
+                    item: this.enviro,
+                }).then((res) => {
+                    console.log(res.data)
+                    this.stepper.progress = 3
+                })
+            })
         },
-        saveEnvironment() {
-            this.checkEditComplete()
+        showUnFinishedDialog() {
             this.alert.title = '未完成情境教材'
             this.alert.text = '尚有物件未完成'
             this.alert.dialog = true
-            /**upload image file */
+            return true
+        },
+        isNeedFileUpload() {
+            let upload_files = []
+            let files = []
+            if (this.enviro.file != null && this.enviro.file != undefined) {
+                upload_files.push({ type: 'background' })
+                files.push(this.enviro.file)
+            }
+
+            this.objects.forEach((object, index) => {
+                if (object.file != null && object.file != undefined) {
+                    upload_files.push({
+                        type: 'object',
+                        index: index,
+                    })
+                    files.push(object.file)
+                }
+            })
+
+            return upload_files.length > 0
+        },
+        async uploadFiles(files, data) {
+            this.progress.text = '正在上傳檔案'
+
+            var formData = new FormData()
+            files.forEach((file) => formData.append('file[]', file))
+
+            let app = this
+            let config = {
+                onUploadProgress: (ProgressEvent) => {
+                    let progress =
+                        ((ProgressEvent.loaded / ProgressEvent.total) * 100) | 0
+                    this.progress.value = progress
+                },
+            }
+
+            await apiManageFile(
+                formData,
+                { type: 'upload', data: data },
+                config.onUploadProgress
+            ).then((res) => {
+                console.log(res.data)
+                res.data.forEach((item) => {
+                    switch (item.type) {
+                        case 'background':
+                            this.enviro.background_src = item.filename
+                            break
+                        case 'object':
+                            this.objects[item.index].pic_src = item.filename
+                            break
+                        default:
+                            break
+                    }
+                })
+            })
         },
     },
     watch: {
@@ -837,10 +974,12 @@ export default {
                 this.objects[i].name = this.select_object.name
                 this.objects[i].audio = this.select_object.audio
                 this.objects[i].coordinate =
-                    this.select_object.position.x +
+                    Math.round(this.select_object.position.x) +
                     ',' +
-                    this.select_object.position.y
+                    Math.round(this.select_object.position.y)
                 this.objects[i].degree = this.select_object.degree
+                this.objects[i].sound_src = this.select_object.audio.id
+                this.objects[i].scale = this.select_object.scale
             },
             deep: true,
         },

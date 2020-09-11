@@ -27,10 +27,9 @@ let Application = PIXI.Application,
 export default class TestModeScene extends Scene {
     constructor() {
         super()
-        this.account = window.sessionStorage.getItem('account')
         this.background = new PIXI.Graphics()
         this.title = new Container()
-        this.character = new character(this.account)
+        this.character = new character()
         this.questionTotal = 10
         this.questionNo = 1
         this.screenUp = new Container()
@@ -86,6 +85,7 @@ export default class TestModeScene extends Scene {
         questionSystem.init(environment.data.objects)
 
         let screenCover = this.screenCover
+        screenCover.interactive = true
         screenCover.beginFill(0xffffff, 0.8)
         screenCover.drawRoundedRect(0, 0, screen.length, screen.height, 10)
         screenCover.endFill()
@@ -207,9 +207,9 @@ export default class TestModeScene extends Scene {
         btn_help.setBackgroundColor('', 0)
         btn_help.setText(style15)
         btn_help.click = () => {
-            // if (!this.timer.state) this.timer.start()
-            // else this.timer.stop()
+
             btn_help.click = () => (this.testdescription.dialog.visible = !this.testdescription.dialog.visible)
+
         }
         btn_help.mouseover = function (mouseData) {
             btn_help.scale.set(1.1)
@@ -222,9 +222,10 @@ export default class TestModeScene extends Scene {
         this.addChild(title)
     }
     /* 建立角色 */
-    setCharacter() {
+    async setCharacter() {
         /* Character */
         let character = this.character
+        await character.check_if_has_data()
         let factory = character.factory
         let armatureDisplay = character.armatureDisplay
         armatureDisplay.position.set(250, 670)
@@ -358,6 +359,7 @@ export default class TestModeScene extends Scene {
         this.addChild(result)
 
         let resultPanel = new PIXI.Graphics()
+        resultPanel.interactive = true
         let panelLength = Config.screen.width - this.screenUp.x - 20
         let panelHeight = Config.screen.height - this.screenUp.y - 20
         resultPanel.beginFill(0xfbffe0)

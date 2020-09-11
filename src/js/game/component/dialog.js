@@ -15,18 +15,19 @@ export default class Dialog extends Overlay {
         super();
         this.dialogLabel = label;
         this.type = type
-        this.settingDialog(Config.screen.width,Config.screen.height);
+        
+        this.dialog = new PIXI.Graphics();
+        this.dialogWidth = Config.screen.width/4;
+        this.dialogHeight = Config.screen.height/3;
+        this.dialogBgColor = 0x000000;
+        this.dialogBgColorAlpha = 0.8;
+        this.settingDialog();
         // this.click = () => {
         //         this.visible = false;
         // }
     }
-    settingDialog(width,height){
-        this.dialog = new PIXI.Graphics();
+    settingDialog(){
         this.addChild(this.dialog);
-        this.dialogWidth = width/4;
-        this.dialogHeight = height/3;
-        this.dialogBgColor = 0x000000;
-        this.dialogBgColorAlpha = 0.8;
         this.draw();
         switch(this.type){
             case 0:
@@ -53,8 +54,10 @@ export default class Dialog extends Overlay {
     setYesButton(){
         let yesBtn = new Button3(this.dialogWidth*0.75/2,this.dialogHeight*0.20,'確認');
         yesBtn.position.set(this.dialog.x+(this.dialogWidth-this.dialogWidth*0.8)/2+yesBtn.btnWidth+this.dialogWidth*0.05,this.dialog.y+this.dialogHeight*0.6);
-        if(this.type == 2)
-            yesBtn.position.set(this.dialog.x+(this.dialogWidth-yesBtn.btnWidth)/2,this.dialog.y+this.dialogHeight*0.6);
+        if(this.type == 2){
+            yesBtn.pivot.set(yesBtn.btnWidth/2,yesBtn.btnHeight/2)
+            yesBtn.position.set(this.dialog.x+this.dialogWidth/2,this.dialog.y+this.dialogHeight*0.7);
+        }
         yesBtn.setCornerRadius(this.dialogHeight*0.20/(2.1));
         yesBtn.setBackgroundColor(0xffd700,0.95);
         yesBtn.setTextColor(0x000000);
@@ -124,9 +127,11 @@ export default class Dialog extends Overlay {
         this.draw();
     }
     setSize(width,height){
+        this.removeChildren()
+        this.addChild(this.overlay)
         this.dialogWidth = width
         this.dialogHeight = height
-        this.draw()
+        this.settingDialog(Config.screen.width,Config.screen.height)
     }
     setBackgroundColor(color,alpha){
         this.dialogBgColor = color;

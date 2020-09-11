@@ -5,6 +5,7 @@ import { style2, style15} from '@/js/game/engine/TextStyleManager'
 import Config from '@/js/game/Config'
 import Scene from '@/js/game/engine/Scene'
 import character from '@/js/game/character'
+import ScenesManager from '@/js/game/engine/ScenesManager'
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -16,13 +17,16 @@ let Application = PIXI.Application,
 export default class Backpack extends Scene {
     constructor() {
         super()
-        this.account = window.sessionStorage.getItem('account')
+        this.character = new character()
+
+        this.init()
+    }
+    async init(){
         this.setBackground()
         this.setGoBack()
         this.setTitle()
         this.setStage()
-        this.character = new character(this.account)
-        this.setCharacter()
+        await this.setCharacter()
         this.setDressingRoom()
     }
 
@@ -45,7 +49,20 @@ export default class Backpack extends Scene {
         btn_goback.interactive = true
         btn_goback.buttonMode = true
         btn_goback.position.set(60, 60)
-        btn_goback.click = () => {Events.emit('goto', { id: 'game_main', animate: 'fadeIn' })}
+        btn_goback.click = () =>{
+            // Events.emit('goto', { id: 'game_main', animate: 'fadeIn' })
+            this.character.clothing.wardrobeReset()
+            if(JSON.stringify(this.character.clothing.clothingData) != JSON.stringify(ScenesManager.scenes['game_main'].character.clothing.clothingData)){
+                this.character.clothing.saveClothing()
+                let changeData = this.character.clothing.clothingData
+                ScenesManager.scenes['game_main'].character.clothing.changeClothes(changeData)
+                ScenesManager.scenes['game_main'].profile.character.clothing.changeClothes(changeData)
+                if(ScenesManager.scenes['train_mode'])ScenesManager.scenes['train_mode'].character.clothing.changeClothes(changeData)
+                if(ScenesManager.scenes['practice_mode'])ScenesManager.scenes['practice_mode'].character.clothing.changeClothes(changeData)
+                if(ScenesManager.scenes['test_mode'])ScenesManager.scenes['test_mode'].character.clothing.changeClothes(changeData)
+            }
+            Events.emit('goto', { id: 'game_main', animate: 'fadeIn' })
+        }
         btn_goback.mouseover = function(mouseData) {
             btn_goback.scale.set(scale * 1.1)
             goBackText.scale.set(1.1)
@@ -70,13 +87,15 @@ export default class Backpack extends Scene {
         title.position.set(350, 50)
     }
     /* 建立角色 */
-    setCharacter() {
+    async setCharacter() {
         /* Character */
-        this.factory = this.character.factory
-        this.armatureDisplay = this.character.armatureDisplay
-        this.armatureDisplay.position.set(320, 590)
-        this.armatureDisplay.scale.set(0.5)
-        this.addChild(this.armatureDisplay)
+        let character = this.character
+        await character.check_if_has_data()
+        let factory = character.factory
+        let armatureDisplay = character.armatureDisplay
+        armatureDisplay.position.set(320, 590)
+        armatureDisplay.scale.set(0.5)
+        this.addChild(armatureDisplay)
     }
     /* 建立角色舞台 */
     setStage() {

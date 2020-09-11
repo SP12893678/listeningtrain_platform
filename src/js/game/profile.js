@@ -22,9 +22,8 @@ let Application = PIXI.Application,
     Sprite = PIXI.Sprite
 
 export default class profile extends PIXI.Container {
-    constructor(account) {
+    constructor() {
         super()
-        this.account = account
         this.dialog = new Dialog('', 1)
         this.input = new TextInput({
             input: {
@@ -50,7 +49,7 @@ export default class profile extends PIXI.Container {
         })
         this.editBtn = new Sprite()
         this.saveBtn = new Sprite()
-        this.person = new character(this.account)
+        this.character = new character()
         this.personInfoContainer = new Container()
         this.learningContainer = new Container()
         this.standardContainer = new Container()
@@ -67,8 +66,7 @@ export default class profile extends PIXI.Container {
         this.setStandardPanel()
     }
     async checkData() {
-        await this.person.get_character_data(this.account)
-        console.log(this.person.gender)
+        await this.character.get_character_data()
     }
     setDialog() {
         let dialog = this.dialog
@@ -144,7 +142,7 @@ export default class profile extends PIXI.Container {
             }
         })
     }
-    setPersonInfoPanel() {
+    async setPersonInfoPanel() {
         let personInfoContainer = this.personInfoContainer
         personInfoContainer.position.set(
             this.dialog.dialog.x,
@@ -175,8 +173,9 @@ export default class profile extends PIXI.Container {
         showtitle.position.set(115, 50)
         personInfoContainer.addChild(showtitle)
         /* character */
-        let c = this.person
-        let person = this.person.armatureDisplay
+        let c = this.character
+        await c.check_if_has_data()
+        let person = this.character.armatureDisplay
         person.scale.set(0.35)
         person.position.set(164, 310)
         person.interactive = false
@@ -191,13 +190,13 @@ export default class profile extends PIXI.Container {
         personInfoContainer.addChild(this.personInfoItemContainer)
         this.personInfoItemContainer.position.set(307, 150)
         //ID
-        let id = this.account
+        let id = c.account
         this.create_item(' I D', id, ResourcesManager.id)
         //姓名
         let temp = new Container()
         this.setTextField()
         temp.addChild(this.input)
-        let name = this.person.nickname
+        let name = c.nickname
         this.input.text = name
         this.input.placeholder = '輸入你的暱稱...'
         this.setEditSaveBtn()
@@ -205,19 +204,19 @@ export default class profile extends PIXI.Container {
         temp.addChild(this.saveBtn)
         this.create_item('姓名', temp, ResourcesManager.name)
         //性別
-        let gender = this.person.gender
+        let gender = c.gender
         this.create_item('性別', gender, ResourcesManager.gender)
         //生日
-        let birthday = this.person.birthday
+        let birthday = c.birthday
         this.create_item('生日', birthday, ResourcesManager.birthday)
         //稱號
         let title = new Sprite(
-            PIXI.loader.resources[ResourcesManager[this.person.title]].texture
+            PIXI.loader.resources[ResourcesManager[c.title]].texture
         )
         title.scale.set(30 / title.height)
         this.create_item('稱號', title, ResourcesManager.title)
         //金錢
-        let money = '$' + this.person.money
+        let money = '$' + c.money
         this.create_item('金幣', money, ResourcesManager.money)
 
         this.dialog.addChild(personInfoContainer)

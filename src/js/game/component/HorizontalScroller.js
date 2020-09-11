@@ -13,12 +13,29 @@ export default class HorizontalScroller extends PIXI.Container {
         this.doVerticalScroller(radius, controlled, container)
     }
 
+    move(percentage) {
+        let new_x = this.scroll_length * percentage
+        new_x = new_x <= 0 ? 0 : new_x
+        new_x = new_x >= this.scroll_length ? this.scroll_length : new_x
+        this.thumb.position.x = new_x
+        let ratio =
+            this.scroll_length > 0
+                ? (this.controlled.width - this.container.width) /
+                  this.scroll_length
+                : 0
+        this.controlled.position.x = this.controlled_init_x - new_x * ratio
+    }
+
     doVerticalScroller(radius, controlled, container) {
         this.track = this.drawTrack(container.width - 10, radius * 2, radius)
         let need_length = (controlled.width - container.width) / this.ratio
         let track_length = this.track.width - 2 - 2
-        let thumb_width = need_length <= track_length - this.min_thumb ? track_length - need_length : this.min_thumb
-        thumb_width = need_length <= 0 ? container.width - radius * 2 + 6 : thumb_width
+        let thumb_width =
+            need_length <= track_length - this.min_thumb
+                ? track_length - need_length
+                : this.min_thumb
+        thumb_width =
+            need_length <= 0 ? container.width - radius * 2 + 6 : thumb_width
         this.scroll_length = track_length - thumb_width
         this.thumb = this.drawThumb(thumb_width, this.min_thumb, radius - 2)
 
@@ -28,7 +45,8 @@ export default class HorizontalScroller extends PIXI.Container {
         var event = {
             mousedown(event) {
                 this.data = event.data
-                this.offset_x = this.data.getLocalPosition(this.parent).x - this.position._x
+                this.offset_x =
+                    this.data.getLocalPosition(this.parent).x - this.position._x
                 this.dragging = true
             },
             mouseup() {
@@ -40,10 +58,19 @@ export default class HorizontalScroller extends PIXI.Container {
                     var newPosition = this.data.getLocalPosition(this.parent)
                     var new_x = newPosition.x - this.offset_x
                     new_x = new_x <= 0 ? 0 : new_x
-                    new_x = new_x >= this.parent.scroll_length ? this.parent.scroll_length : new_x
+                    new_x =
+                        new_x >= this.parent.scroll_length
+                            ? this.parent.scroll_length
+                            : new_x
                     this.position.x = new_x
-                    let ratio = this.parent.scroll_length > 0 ? (this.parent.controlled.width - this.parent.container.width) / this.parent.scroll_length : 0
-                    this.parent.controlled.position.x = this.parent.controlled_init_x - new_x * ratio
+                    let ratio =
+                        this.parent.scroll_length > 0
+                            ? (this.parent.controlled.width -
+                                  this.parent.container.width) /
+                              this.parent.scroll_length
+                            : 0
+                    this.parent.controlled.position.x =
+                        this.parent.controlled_init_x - new_x * ratio
                 }
             },
         }

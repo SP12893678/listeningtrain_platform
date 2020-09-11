@@ -592,7 +592,6 @@ export default {
                     this.logindata = res.data;
 
                     if (this.logindata.islogin == 1) {
-                        this.msg = true;
                         this.card = this.logindata.user.name + " 歡迎回來!";
                         this.islogin = 1;
                         this.showUsername = this.logindata.user.name;
@@ -600,6 +599,7 @@ export default {
                         this.showMail = this.logindata.user.mail;
                         this.ac = null;
                         this.pw = null;
+                        this.msg = true;
                     } else {
                     }
                 })

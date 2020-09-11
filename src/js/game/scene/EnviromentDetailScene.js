@@ -27,7 +27,12 @@ export default class EnviromentDetailScene extends Scene {
         super()
         this.background = new Graphics()
         this.background.beginFill(0xffffff, 1)
-        this.background.drawRect(0, 0, Config.screen.width, Config.screen.height)
+        this.background.drawRect(
+            0,
+            0,
+            Config.screen.width,
+            Config.screen.height
+        )
         this.background.endFill()
         this.addChild(this.background)
 
@@ -50,13 +55,21 @@ export default class EnviromentDetailScene extends Scene {
          * 取得情境資料(包含物件)
          * 取得該情境之玩家學習狀況
          */
-        await apiManageEnviroment({ type: 'get', amount: 'one', item: id }).then((res) => {
+        await apiManageEnviroment({
+            type: 'get',
+            amount: 'one',
+            item: id,
+        }).then((res) => {
             this.data = {}
             this.data.environment = res.data
         })
 
         let object_arr = this.data.environment.object.split(',')
-        await apiManageObject({ type: 'get', amount: 'part', items: object_arr }).then((res) => {
+        await apiManageObject({
+            type: 'get',
+            amount: 'part',
+            items: object_arr,
+        }).then((res) => {
             console.log(res.data)
             this.data.objects = res.data
         })
@@ -91,8 +104,10 @@ export default class EnviromentDetailScene extends Scene {
         goBackArea.interactive = true
         goBackArea.buttonMode = true
 
-        goBackArea.mouseover = () => gsap.to(goBackArea, { pixi: { scale: 1.2 }, duration: 0.5 })
-        goBackArea.mouseout = () => gsap.to(goBackArea, { pixi: { scale: 1 }, duration: 0.5 })
+        goBackArea.mouseover = () =>
+            gsap.to(goBackArea, { pixi: { scale: 1.2 }, duration: 0.5 })
+        goBackArea.mouseout = () =>
+            gsap.to(goBackArea, { pixi: { scale: 1 }, duration: 0.5 })
         goBackArea.click = () => ScenesManager.goToScene('enviro_select')
         this.addChild(goBackArea)
     }
@@ -155,7 +170,13 @@ export default class EnviromentDetailScene extends Scene {
         scroller.position.set(136, 444)
         objectList.position.set(136, 358)
 
-        let labels = ['正確率', '完成度', '反應速度', '低頻辨識率', '高頻辨識率']
+        let labels = [
+            '正確率',
+            '完成度',
+            '反應速度',
+            '低頻辨識率',
+            '高頻辨識率',
+        ]
         let datasets = [
             {
                 name: 'test',
@@ -205,8 +226,14 @@ export default class EnviromentDetailScene extends Scene {
         }
 
         btn_train_mode.position.set(0, 0)
-        btn_practice_mode.position.set(btn_train_mode.position.x + btn_train_mode.width, 0)
-        btn_test_mode.position.set(btn_practice_mode.position.x + btn_practice_mode.width, 0)
+        btn_practice_mode.position.set(
+            btn_train_mode.position.x + btn_train_mode.width,
+            0
+        )
+        btn_test_mode.position.set(
+            btn_practice_mode.position.x + btn_practice_mode.width,
+            0
+        )
 
         gamemodeArea.addChild(btn_train_mode)
         gamemodeArea.addChild(btn_practice_mode)

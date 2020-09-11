@@ -10,6 +10,7 @@ import TrainModeScene from 'Scene/TrainModeScene'
 import PracticeModeScene from 'Scene/PracticeModeScene'
 import TestModeScene from 'Scene/TestModeScene'
 import BackpackScene from 'Scene/BackpackScene'
+import Dialog from 'Component/dialog'
 
 import { gsap } from 'gsap'
 import { PixiPlugin } from 'gsap/PixiPlugin'
@@ -19,6 +20,7 @@ PixiPlugin.registerPIXI(PIXI)
 
 var EventEmitter = require('eventemitter3')
 var events = new EventEmitter()
+
 events.on('goto', (val) => {
     console.log(val)
     if (ScenesManager.scenes[val.id]) ScenesManager.goToScene(val.id)
@@ -70,4 +72,20 @@ events.on('goto', (val) => {
         duration: 1,
     })
 })
+
+events.on('warning', (val) => {
+    switch(val.no){
+        case -1:
+            let warningDialog = new Dialog('你已獲得過此服裝',2)
+            warningDialog.name = 'repeatClothes'
+            ScenesManager.currentScene.addChild(warningDialog)
+            warningDialog.yesBtn.click= () =>{
+                ScenesManager.currentScene.removeChild(warningDialog)
+            }
+            break
+        default:
+            break
+    }
+})
+
 export default events

@@ -15,17 +15,12 @@ let Application = PIXI.Application,
     Sprite = PIXI.Sprite
 
 export default class Character{
-    constructor(account) {
-        this.account = account
-        this.nickname = account
+    constructor() {
+        this.nickname = ''
         this.gender ='gg';
         this.birthday = '2020-20-20'
         this.title = 'newPlayer'
         this.money = 0
-
-        this.show_character(this.gender);
-        this.clothing = new clothing(this.armatureDisplay,this.factory,this.gender,account);
-        this.check_if_has_data();
     }
     show_character(gender){
         /* Character */
@@ -39,21 +34,24 @@ export default class Character{
 
         this.armatureDisplay = this.factory.buildArmatureDisplay((gender == 'gg')?'Boy':'Girl');//預設男孩
         // armatureDisplay.animation.play('handmove',0);
-        if(this.clothing != null)
+        if(this.clothing != null){
             this.clothing.change_character_clothing(this.armatureDisplay,this.factory,gender);
+            console.log('here')
+        }
     }
     get_character_data() {
-        return apiManageRoleData({ type: 'getData', account: this.account })
+        return apiManageRoleData({ type: 'getData'})
         .then((res) => {
-            console.log('data',res.data)
-            if(res.data.length != 0){
-                this.gender = res.data[0].gender
-                this.nickname = res.data[0].nickname
-                this.birthday = res.data[0].birthday
-                this.title = res.data[0].title
-                this.money = res.data[0].money
+            // console.log('data',res.data)
+            if(res.data != null){
+                this.account = res.data.account
+                this.gender = res.data.gender
+                this.nickname = res.data.nickname
+                this.birthday = res.data.birthday
+                this.title = res.data.title
+                this.money = res.data.money
             }
-            this.clothing.clothing_data = res.data;
+            this.clothing_data = res.data;
         })
         .catch((error) => {
             console.error(error);
@@ -61,14 +59,13 @@ export default class Character{
     } 
     async check_if_has_data(){
         await this.get_character_data();
-        console.log('checkbug',this.clothing.clothing_data);
-        if(this.clothing.clothing_data.length != 0){
-            await this.clothing.changeClothes();
-            this.clothing.initialClothing();
+        await this.show_character(this.gender);
+        this.clothing = new clothing(this.armatureDisplay,this.factory,this.gender,this.account);
+        if(this.clothing_data != null){
+            await this.clothing.changeClothes(this.clothing_data);
         }
     }
     save_character_data(){
-        let account = this.account //帳號
         let gender = this.gender
         let nickname = this.nickname //暱稱
         let today = new Date();
@@ -77,7 +74,6 @@ export default class Character{
         let money = this.money //金錢
         return apiManageRoleData({
             type: 'saveData',
-            account: account,
             gender: gender,
             nickname: nickname,
             birthday: birthday,

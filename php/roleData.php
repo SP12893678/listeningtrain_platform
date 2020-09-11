@@ -1,7 +1,8 @@
 <?php
+    session_start();
     require_once './connect.php';
     $type = $_GET['type'];
-    $account = $_GET['account'];
+    $account = $_SESSION['account'];
     switch ($type) {
         /* 讀取角色個人資料 */
         case 'getData':
@@ -11,15 +12,12 @@
                 printf("Error: %s\n", mysqli_error($con));
                 exit();
             }
-            $data = [];
-            while($row = mysqli_fetch_array($result)){
-                array_push($data,$row);
-            }
+            $data = mysqli_fetch_array($result);
             echo json_encode($data, JSON_UNESCAPED_UNICODE);
             break;
         /* 存取角色個人資料 */
         case 'saveData':
-            $nickname = $_GET['nickname'];
+            $nickname = ($_GET['nickname']=='')?$account:$_GET['nickname'];
             $gender = $_GET['gender'];
             $birthday = $_GET['birthday'];
             $title = $_GET['title'];
@@ -84,7 +82,7 @@
             }
             $data = [];
             while($row = mysqli_fetch_array($result)){
-                array_push($data,$row);
+                $data[$row['gender']] = $row;
             }
             echo json_encode($data, JSON_UNESCAPED_UNICODE);
             break;
@@ -99,6 +97,7 @@
             $row = mysqli_fetch_assoc($result);
             if ($row == null) {
                 $save = "INSERT INTO `roleClothes`(`account`, `gender`, `$category`) VALUES ('$account','$gender','$itemNoList')";
+                //INSERT INTO `roleClothes`(`account`, `gender`, `hair`) VALUES('55','gg','1,2,3')
             }
             else{
                 //更新clothing data
