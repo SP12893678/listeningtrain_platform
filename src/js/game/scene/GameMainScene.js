@@ -89,7 +89,7 @@ export default class GameMainScene extends Scene {
         btn_set.setBorder(0)
         btn_set.setBackgroundColor(0x29d4ff)
         btn_set.setText(style7)
-        btn_set.position.set(700, 600)
+        btn_set.position.set(700, 700)
         btn_set.click = () => (this.set.dialog.visible = !this.set.dialog.visible)
         this.addChild(btn_set)
     }

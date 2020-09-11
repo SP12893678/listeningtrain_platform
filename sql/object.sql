@@ -34,7 +34,7 @@ CREATE TABLE `object` (
   `name` varchar(10) CHARACTER SET utf8 NOT NULL,
   `coordinate` varchar(100) CHARACTER SET utf8 NOT NULL,
   `size` int(11) DEFAULT 5,
-  `scale` text COLLATE utf8_bin NOT NULL DEFAULT '1',
+  `scale` text COLLATE utf8_bin NOT NULL ,
   `angle` varchar(3) COLLATE utf8_bin NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 

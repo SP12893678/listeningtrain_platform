@@ -20,7 +20,7 @@ import { OutlineFilter } from 'pixi-filters'
 import { Graphics, Container, Sprite, Text } from 'pixi.js/lib/core'
 import Sound from 'pixi-sound'
 import { apiManageAudio } from '@/js/api'
-
+import ptdescription from '@/js/game/ptdescription'
 import { gsap } from 'gsap'
 import { PixiPlugin } from 'gsap/PixiPlugin'
 
