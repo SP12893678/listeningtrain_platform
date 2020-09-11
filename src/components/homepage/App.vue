@@ -39,11 +39,14 @@
                 </template>
                 <v-card>
                     <v-list>
-                        <v-list-item>
+                        <v-list-item class="mb-0" two-line>
                             <v-list-item-content>
                                 <v-list-item-title v-model="showUsername">{{showUsername}}</v-list-item-title>
                                 <v-list-item-subtitle v-model="showId">{{showId}}</v-list-item-subtitle>
                             </v-list-item-content>
+                            <v-list-item-avatar>
+                                <v-img :src="require('@/assets/images/avatar-default.png')"></v-img>
+                            </v-list-item-avatar>
                         </v-list-item>
                     </v-list>
 
@@ -203,16 +206,22 @@
                 </v-card>
             </v-dialog>
             <!-- information -->
-            <v-dialog v-model="dialog3" dark max-width="300px">
+            <v-dialog v-model="dialog3" dark max-width="500px">
                 <v-card>
                     <v-card-title>
-                        <span style="color: #21BFEDFF;">你的資料</span>
+                        <v-list-item class="grow">
+                            <span style="color: #21BFEDFF;">你的資料</span>
+                            <v-spacer></v-spacer>
+                            <v-list-item-avatar>
+                                <v-img :src="require('@/assets/images/avatar-default.png')"></v-img>
+                            </v-list-item-avatar>
+                        </v-list-item>
                     </v-card-title>
                     <v-card-text>
                         <v-container>
                             <v-form lazy-validation>
                                 <v-row>
-                                    <v-col cols="12" sm="12">
+                                    <v-col cols="12" sm="6">
                                         <v-text-field
                                             label="姓名"
                                             v-model="showUsername"
@@ -221,7 +230,7 @@
                                         ></v-text-field>
                                     </v-col>
 
-                                    <v-col cols="12" sm="12">
+                                    <v-col cols="12" sm="6">
                                         <v-text-field
                                             v-model="showMail"
                                             label="Email"
@@ -229,11 +238,19 @@
                                             readonly
                                         ></v-text-field>
                                     </v-col>
-                                    <v-col cols="12" sm="12">
+                                    <v-col cols="12" sm="6">
                                         <v-text-field
                                             v-model="showId"
                                             label="身分"
                                             color="orange"
+                                            readonly
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12" sm="6">
+                                        <v-text-field
+                                            v-model="creatday"
+                                            label="創建日期"
+                                            color="yellow"
                                             readonly
                                         ></v-text-field>
                                     </v-col>
@@ -491,6 +508,7 @@ export default {
             // --------
             dialog5: false,
             showUsername: null,
+            creatday: "2020/02/30",
             showId: null,
             showMail: null,
 

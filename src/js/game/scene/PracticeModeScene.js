@@ -15,6 +15,7 @@ import { OutlineFilter } from 'pixi-filters'
 import { Graphics, Container, Sprite, Text } from 'pixi.js/lib/core'
 import Sound from 'pixi-sound'
 import { apiManageAudio } from '@/js/api'
+import ptdescription from '@/js/game/ptdescription'
 import * as dat from 'dat.gui'
 
 let resources = PIXI.loader.resources
@@ -44,6 +45,7 @@ export default class PracticeModeScene extends Scene {
         this.leaveDialog = new Dialog('確定要離開練習嗎？')
         this.questionSystem = new QuestionSystem()
         this.showAnserDialog = new showAnserDialog()
+        this.ptdescription = new ptdescription()
 
         this.setBackground()
         this.setTitle()
@@ -88,6 +90,10 @@ export default class PracticeModeScene extends Scene {
         }
         screen.addChild(startBtn)
 
+        let ptdescription = this.ptdescription
+        ptdescription.position.set(0, 0)
+        this.addChild(ptdescription)
+
         let listenBtn = this.listenBtn
         listenBtn.click = () => questionSystem.play(this.questionNo - 1)
     }
@@ -120,11 +126,11 @@ export default class PracticeModeScene extends Scene {
             if (!this.startBtn.visible) this.leaveDialog.visible = true
             else Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
         }
-        btn_goback.mouseover = function(mouseData) {
+        btn_goback.mouseover = function (mouseData) {
             btn_goback.scale.set(scale * 1.1)
             goBackText.scale.set(1.1)
         }
-        btn_goback.mouseout = function(mouseData) {
+        btn_goback.mouseout = function (mouseData) {
             btn_goback.scale.set(scale)
             goBackText.scale.set(1)
         }
@@ -164,13 +170,14 @@ export default class PracticeModeScene extends Scene {
         btn_help.setBackgroundColor('', 0)
         btn_help.setText(style15)
         this.bool = false
-        btn_help.click = () => {}
-        btn_help.mouseover = function(mouseData) {
+        btn_help.click = () => { }
+        btn_help.mouseover = function (mouseData) {
             btn_help.scale.set(1.1)
         }
-        btn_help.mouseout = function(mouseData) {
+        btn_help.mouseout = function (mouseData) {
             btn_help.scale.set(1)
         }
+        btn_help.click = () => (this.ptdescription.dialog.visible = !this.ptdescription.dialog.visible)
         title.addChild(btn_help)
 
         this.addChild(title)
@@ -268,7 +275,7 @@ export default class PracticeModeScene extends Scene {
         nextBtn.setCornerRadius(15)
         nextBtn.setBackgroundColor(0xf8f9ea)
         nextBtn.setText(style15)
-        nextBtn.update = () => {}
+        nextBtn.update = () => { }
         nextBtn.click = () => this.nextQuestion()
 
         screenDown.addChild(nextBtn)
@@ -455,24 +462,24 @@ class showAnserDialog extends Overlay {
         correctAnswerIcon.width = 40
         correctAnswerIcon.height = 40
         correctAnswerIcon.anchor.set(0.5)
-        correctAnswerIcon.position.set(80,50)
+        correctAnswerIcon.position.set(80, 50)
         this.board.addChild(correctAnswerIcon)
 
         let correctAnswerLabel = this.correctAnswerLabel
         correctAnswerLabel.text = '正確答案'
         correctAnswerLabel.style = style15
         correctAnswerLabel.anchor.set(0.5)
-        correctAnswerLabel.position.set(160,50)
+        correctAnswerLabel.position.set(160, 50)
         this.board.addChild(correctAnswerLabel)
 
         let dottedLine = new Graphics()
-        dottedLine.lineStyle(2,0x000000)
+        dottedLine.lineStyle(2, 0x000000)
         let length = 150
-        for(let i = 0; (i+1)*20 < length ;i++){
-            dottedLine.moveTo(0,i*20+5);
-            dottedLine.lineTo(0,(i+1)*20);
+        for (let i = 0; (i + 1) * 20 < length; i++) {
+            dottedLine.moveTo(0, i * 20 + 5);
+            dottedLine.lineTo(0, (i + 1) * 20);
         }
-        dottedLine.position.set(350,30)
+        dottedLine.position.set(350, 30)
         this.board.addChild(dottedLine)
 
         let yourAnswerIcon = this.yourAnswerIcon
@@ -480,19 +487,19 @@ class showAnserDialog extends Overlay {
         yourAnswerIcon.width = 40
         yourAnswerIcon.height = 40
         yourAnswerIcon.anchor.set(0.5)
-        yourAnswerIcon.position.set(480,50)
+        yourAnswerIcon.position.set(480, 50)
         this.board.addChild(yourAnswerIcon)
 
         let yourAnswerLabel = this.yourAnswerLabel
         yourAnswerLabel.text = '你的答案'
         yourAnswerLabel.style = style15
         yourAnswerLabel.anchor.set(0.5)
-        yourAnswerLabel.position.set(560,50)
+        yourAnswerLabel.position.set(560, 50)
         this.board.addChild(yourAnswerLabel)
 
         this.confirmButton.interactive = true
         this.confirmButton.buttonMode = true
-        this.confirmButton.update = () => {}
+        this.confirmButton.update = () => { }
         this.confirmButton.click = () => {
             this.visible = false
             this.confirmButton.update()

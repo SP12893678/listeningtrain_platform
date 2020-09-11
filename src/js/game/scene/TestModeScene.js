@@ -15,6 +15,7 @@ import RadarChart from 'Component/RadarChart'
 import { apiManageAudio } from '@/js/api'
 import { OutlineFilter } from 'pixi-filters'
 import Sound from 'pixi-sound'
+import testdescription from '@/js/game/testdescription'
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -53,6 +54,7 @@ export default class TestModeScene extends Scene {
         this.resultText = new PIXI.Text()
         this.answerBoard = new AnswerBoard(this.answerCheck)
         this.questionSystem = new QuestionSystem()
+        this.testdescription = new testdescription()
 
         this.setBackground()
         this.setTitle()
@@ -105,6 +107,9 @@ export default class TestModeScene extends Scene {
             questionSystem.play(this.questionNo - 1)
         }
         screen.addChild(startBtn)
+        let testdescription = this.testdescription
+        testdescription.position.set(0, 0)
+        this.addChild(testdescription)
     }
 
     nextQuestion() {
@@ -202,8 +207,9 @@ export default class TestModeScene extends Scene {
         btn_help.setBackgroundColor('', 0)
         btn_help.setText(style15)
         btn_help.click = () => {
-            if (!this.timer.state) this.timer.start()
-            else this.timer.stop()
+            // if (!this.timer.state) this.timer.start()
+            // else this.timer.stop()
+            btn_help.click = () => (this.testdescription.dialog.visible = !this.testdescription.dialog.visible)
         }
         btn_help.mouseover = function (mouseData) {
             btn_help.scale.set(1.1)

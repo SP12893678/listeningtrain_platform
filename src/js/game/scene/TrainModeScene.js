@@ -15,7 +15,7 @@ import { apiManageAudio } from '@/js/api'
 import Sound from 'pixi-sound'
 import { gsap } from 'gsap'
 import { PixiPlugin } from 'gsap/PixiPlugin'
-
+import trdescription from '@/js/game/traindescription'
 import * as dat from 'dat.gui'
 
 gsap.registerPlugin(PixiPlugin)
@@ -33,10 +33,12 @@ export default class TrainModeScene extends Scene {
         this.environmentArea = new Container()
         this.objectList = new ObjectList()
         this.gearlocking = new GearLocking()
+        this.trdescription = new trdescription()
 
         this.setBackground()
         this.setTitle()
         this.setCharacter()
+
     }
 
     async init(id) {
@@ -75,12 +77,18 @@ export default class TrainModeScene extends Scene {
             }
         })
 
+        let trdescription = this.trdescription
+        trdescription.position.set(0, 0)
+
+
+
         environment.position.set(500, 100)
 
         environment.addChild(gearlocking)
         this.addChild(environment)
         this.addChild(objectList)
         this.addChild(scroller)
+        this.addChild(trdescription)
     }
 
     setBackground() {
@@ -110,11 +118,11 @@ export default class TrainModeScene extends Scene {
         btn_goback.click = () => {
             Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
         }
-        btn_goback.mouseover = function(mouseData) {
+        btn_goback.mouseover = function (mouseData) {
             btn_goback.scale.set(scale * 1.1)
             goBackText.scale.set(1.1)
         }
-        btn_goback.mouseout = function(mouseData) {
+        btn_goback.mouseout = function (mouseData) {
             btn_goback.scale.set(scale)
             goBackText.scale.set(1)
         }
@@ -137,13 +145,14 @@ export default class TrainModeScene extends Scene {
         btn_help.setBorder(0)
         btn_help.setBackgroundColor('', 0)
         btn_help.setText(style15)
-        btn_help.click = () => {}
-        btn_help.mouseover = function(mouseData) {
+        btn_help.click = () => { }
+        btn_help.mouseover = function (mouseData) {
             btn_help.scale.set(1.1)
         }
-        btn_help.mouseout = function(mouseData) {
+        btn_help.mouseout = function (mouseData) {
             btn_help.scale.set(1)
         }
+        btn_help.click = () => (this.trdescription.dialog.visible = !this.trdescription.dialog.visible)
         title.addChild(btn_help)
 
         this.addChild(title)
@@ -159,6 +168,8 @@ export default class TrainModeScene extends Scene {
         this.addChild(armatureDisplay)
         //this.armatureDisplay.animation.play('shakeHand',1);
     }
+
+
 }
 
 class TrainModeEnvironment extends Environment {
@@ -175,7 +186,7 @@ class TrainModeEnvironment extends Environment {
             object.buttonMode = true
             object.mouseover = () => (object.filters = [new OutlineFilter(3, 0x99ff99)])
             object.mouseout = () => (object.filters = [new OutlineFilter(3, 0xf0aaee)])
-            object.update = () => {}
+            object.update = () => { }
             object.click = () => this.objectClick(object)
         })
     }

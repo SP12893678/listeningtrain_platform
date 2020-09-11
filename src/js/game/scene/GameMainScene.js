@@ -8,6 +8,7 @@ import { style7 } from '@/js/game/engine/TextStyleManager'
 
 import character from '@/js/game/character'
 import profile from '@/js/game/profile'
+import set from '@/js/game/set'
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -23,16 +24,23 @@ export default class GameMainScene extends Scene {
         this.background = new Sprite()
         this.character = new character(this.account)
         this.profile = new profile(this.account)
+        this.set = new set()
         this.button = new RoundedButton(150, 60, '出征')
         this.btn_profile = new RoundedButton(150, 60, '個人資訊')
         this.btn_backpack = new RoundedButton(150, 60, '背包')
+        this.btn_set = new RoundedButton(150, 60, '其他')
+
+
+
 
         this.setBackground()
         this.setButton()
         this.setProfileButton()
         this.setBackPackButton()
+        this.setSetButton()
         this.setCharacter()
         this.setProfile()
+        this.setSet()
     }
     setBackground() {
         // var background = new Sprite(resources[ResourcesManager.game_main].texture)
@@ -72,6 +80,15 @@ export default class GameMainScene extends Scene {
         btn_backpack.click = () => Events.emit('goto', { id: 'backpack', animate: 'fadeIn' })
         this.addChild(btn_backpack)
     }
+    setSetButton() {
+        let btn_set = this.btn_set
+        btn_set.setBorder(0)
+        btn_set.setBackgroundColor(0x29d4ff)
+        btn_set.setText(style7)
+        btn_set.position.set(700, 600)
+        btn_set.click = () => (this.set.dialog.visible = !this.set.dialog.visible)
+        this.addChild(btn_set)
+    }
     /* 建立角色 */
     setCharacter() {
         /* Character */
@@ -84,7 +101,7 @@ export default class GameMainScene extends Scene {
         this.addChild(armatureDisplay)
         armatureDisplay.interactive = true
         armatureDisplay.buttonMode = true
-        armatureDisplay.mouseover = function(mouseData) {
+        armatureDisplay.mouseover = function (mouseData) {
             // armatureDisplay.animation.play('shakeHand', 1)
             // armatureDisplay.animation.fadeIn('shakeHand',0,1,1)
             // armatureDisplay.animation.fadeIn('fighting',0,1,2)
@@ -93,8 +110,8 @@ export default class GameMainScene extends Scene {
             let emojiAnimation = armatureDisplay.animation.fadeIn('fighting', 0, 1, 0, 'emoji')
             emojiAnimation.addBoneMask('emoji') //只顯示表情這部分
         }
-        armatureDisplay.mouseout = function(mouseData) {}
-        armatureDisplay.click = function() {
+        armatureDisplay.mouseout = function (mouseData) { }
+        armatureDisplay.click = function () {
             t.profile.dialog.visible = !t.profile.dialog.visible
         }
         //this.armatureDisplay.animation.play('shakeHand',1);
@@ -102,6 +119,10 @@ export default class GameMainScene extends Scene {
     setProfile() {
         let profile = this.profile
         this.addChild(profile)
+    }
+    setSet() {
+        let set = this.set
+        this.addChild(set)
     }
     /*---------*/
     update() {

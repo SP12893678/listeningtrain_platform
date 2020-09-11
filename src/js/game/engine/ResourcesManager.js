@@ -66,6 +66,7 @@ import gear_inside from '@/assets/images/gear-inside.png'
 import gear_center from '@/assets/images/gear-center.png'
 import gear_outside from '@/assets/images/gear-outside.png'
 
+
 const resources = {
     loading_bg: loadingBackground,
     create_role_bg: create_role_bg,
@@ -129,6 +130,7 @@ const resources = {
     correctAnswer: correctAnswer,
     yourAnswer: yourAnswer,
     check: check,
+
 }
 
 export default resources
