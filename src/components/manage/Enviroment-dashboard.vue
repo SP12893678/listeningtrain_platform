@@ -14,7 +14,9 @@
                 hide-details
             ></v-text-field>
             <v-list-item-action>
-                <v-btn data-v-step="Enviroment-dashboard-2"> <v-icon left>mdi-pencil-plus</v-icon>新增 </v-btn>
+                <v-btn @click="test" data-v-step="Enviroment-dashboard-2">
+                    <v-icon left>mdi-pencil-plus</v-icon>新增
+                </v-btn>
             </v-list-item-action>
         </v-list-item>
 
@@ -56,11 +58,11 @@
                                 {{ item.category }}
                             </v-chip>
                         </v-card-title>
-                        <v-card-subtitle class="pb-1">
-                            {{ item.created_time }}
-                        </v-card-subtitle>
+                        <v-card-subtitle class="pb-1">{{ item.created_time }}</v-card-subtitle>
                         <v-card-actions>
-                            <v-btn @click.prevent="goToEditPage(item.id)" color="blue" text> <v-icon left>mdi-image-edit</v-icon>編輯 </v-btn>
+                            <v-btn @click.prevent="goToEditPage(item.id)" color="blue" text>
+                                <v-icon left>mdi-image-edit</v-icon>編輯
+                            </v-btn>
                             <v-spacer></v-spacer>
                             <v-btn @click="enviro_cards.delete_dialog = true" color="red" icon>
                                 <v-icon>mdi-delete</v-icon>
@@ -137,7 +139,8 @@ export default {
                     header: {
                         title: '幫助選單按鈕',
                     },
-                    content: '內有說明手冊、操作導覽、客服詢問功能，可幫助了解管理平台以及解決疑難雜症',
+                    content:
+                        '內有說明手冊、操作導覽、客服詢問功能，可幫助了解管理平台以及解決疑難雜症',
                     params: {
                         enableScrolling: false,
                     },
@@ -171,7 +174,10 @@ export default {
                 )
             })
             return tmp.filter((item, index) => {
-                return index < 10 * app.enviro_cards.page && index >= 10 * (app.enviro_cards.page - 1)
+                return (
+                    index < 10 * app.enviro_cards.page &&
+                    index >= 10 * (app.enviro_cards.page - 1)
+                )
             })
         },
         /**取得分頁數量(每頁情境數量以10為限) */
@@ -188,6 +194,50 @@ export default {
         },
     },
     methods: {
+        test() {
+            let data = []
+            for (let index = 0; index < 1; index++) {
+                let obj = {
+                    environ_id: 1,
+                    questions: [
+                        {
+                            audio_id: 1,
+                            your_answer: 1,
+                            time: 300,
+                        },
+                        {
+                            audio_id: 2,
+                            your_answer: 5,
+                            time: 300,
+                        },
+                        {
+                            audio_id: 4,
+                            your_answer: 3,
+                            time: 300,
+                        },
+                        {
+                            audio_id: 7,
+                            your_answer: 2,
+                            time: 300,
+                        },
+                        {
+                            audio_id: 1,
+                            your_answer: 1,
+                            time: 300,
+                        },
+                    ],
+                    accuracy: 50,
+                    completion: 50,
+                    reaction_rate: 50,
+                    high_frequency_accuracy: 60,
+                    low_frequency_accuracy: 60,
+                }
+                data.push(obj)
+            }
+            apiManageEnviroment({ type: 'none', data: data }).then((res) => {
+                console.log(res.data)
+            })
+        },
         /**前往該情境教材的編輯頁面 */
         goToEditPage(id) {
             var obj = { enviro: { id: id } }

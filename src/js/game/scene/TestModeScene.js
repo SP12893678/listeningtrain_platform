@@ -117,8 +117,7 @@ export default class TestModeScene extends Scene {
         Sound.stopAll()
 
         if (this.questionNo == this.questionTotal) {
-            if (this.timer.state)
-                this.timer.stop()
+            if (this.timer.state) this.timer.stop()
             this.showResult()
             this.result.visible = true
             this.reset()
@@ -157,17 +156,15 @@ export default class TestModeScene extends Scene {
         btn_goback.position.set(60, 60)
         btn_goback.click = () => {
             if (!this.startBtn.visible) {
-                if (this.timer.state)
-                    this.timer.stop()
+                if (this.timer.state) this.timer.stop()
                 this.leaveDialog.visible = true
-            }
-            else Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
+            } else Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
         }
-        btn_goback.mouseover = function (mouseData) {
+        btn_goback.mouseover = function(mouseData) {
             btn_goback.scale.set(scale * 1.1)
             goBackText.scale.set(1.1)
         }
-        btn_goback.mouseout = function (mouseData) {
+        btn_goback.mouseout = function(mouseData) {
             btn_goback.scale.set(scale)
             goBackText.scale.set(1)
         }
@@ -211,10 +208,10 @@ export default class TestModeScene extends Scene {
             btn_help.click = () => (this.testdescription.dialog.visible = !this.testdescription.dialog.visible)
 
         }
-        btn_help.mouseover = function (mouseData) {
+        btn_help.mouseover = function(mouseData) {
             btn_help.scale.set(1.1)
         }
-        btn_help.mouseout = function (mouseData) {
+        btn_help.mouseout = function(mouseData) {
             btn_help.scale.set(1)
         }
         title.addChild(btn_help)
@@ -428,12 +425,12 @@ export default class TestModeScene extends Scene {
         result.addChild(answerBoard)
 
         /* 雷達圖 */
-        let labels = ['正確率', '反應\n速度', '  低頻\n辨識率', '  高頻\n辨識率', '完成度']
-        let datasets = [
-            { name: '最近一次測驗', data: [50, 10, 75, 150, 100] },
-            { name: '個人學習平均值', data: [100, 70, 150, 80, 30] },
-        ]
-        let chart = new RadarChart(labels, datasets)
+        let labels = ['正確率', '反應速度', '  低頻辨識率', '  高頻辨識率', '完成度']
+        // let datasets = [
+        //     { name: '最近一次測驗', data: [50, 10, 75, 30, 100] },
+        //     { name: '個人學習平均值', data: [100, 70, 40, 80, 30] },
+        // ]
+        let chart = new RadarChart(labels)
         chart.position.set(resultText.x + 225, no.y + 170)
         chart.barLabel.position.set(-390, 340)
         chart.scale.set(380 / chart.width)
@@ -471,7 +468,16 @@ export default class TestModeScene extends Scene {
         let resultText = this.resultText
 
         resultText.text =
-            '作答情境: ' + environmentName + '\n作答題數: ' + this.questionTotal + ' 題' + '\n答對題數: ' + correctTotal + ' 題' + '\n作答時間: ' + this.timer.text.text
+            '作答情境: ' +
+            environmentName +
+            '\n作答題數: ' +
+            this.questionTotal +
+            ' 題' +
+            '\n答對題數: ' +
+            correctTotal +
+            ' 題' +
+            '\n作答時間: ' +
+            this.timer.text.text
         resultText.style = style17
 
         let envionmentPicTexture = this.environment.background._texture
@@ -482,6 +488,20 @@ export default class TestModeScene extends Scene {
         this.answerBoard.update()
     }
 }
+
+/**測驗結果
+ * 正確率: 本次測驗答題正確數 / 本次測驗題數
+ * 反應速度: 平均答題所需時間
+ * 完成度: 本次測驗完成物件數 / 該情境物件數
+ * 低頻辨識率: 本次測驗低頻物件答對數 / 本次測驗低頻物件數
+ * 高頻辨識率: 本次測驗高頻物件答對數 / 本次測驗高頻物件數
+ *
+ * 測驗完流程
+ * 取得資料庫測驗資料並計算學習平均成績
+ * 計算當前測驗成績
+ * 將當前測驗資料和成績儲存至資料庫
+ * 呈現測驗結果至畫面
+ */
 
 class AnswerBoard extends Container {
     constructor(data) {
