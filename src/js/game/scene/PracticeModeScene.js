@@ -116,6 +116,7 @@ export default class PracticeModeScene extends Scene {
 
             this.showNext.x = 425
             this.showNextCover.visible = true
+            this.showNext.visible = true
             gsap.to(this.showNextCover, { pixi: { alpha: 1 }, duration: 1.5 })
             gsap.to(this.showNext, {
                 pixi: { text: '開始練習 ', alpha: 1, x: this.showNext.x + 100 },
@@ -271,6 +272,7 @@ export default class PracticeModeScene extends Scene {
         armatureDisplay.position.set(250, 670)
         armatureDisplay.scale.set(0.4)
         this.addChild(armatureDisplay)
+
         //this.armatureDisplay.animation.play('shakeHand',1);
     }
     setScreenUp() {
@@ -396,6 +398,10 @@ export default class PracticeModeScene extends Scene {
     }
     reset() {
         Sound.stopAll()
+        gsap.globalTimeline.clear()
+        this.showNext.visible = false
+        this.showNextCover.visible = false
+
         // this.questionTotalNo = this.questionTotal
 
         this.questionNo = 1
@@ -417,6 +423,7 @@ export default class PracticeModeScene extends Scene {
 
     nextQuestion() {
         Sound.stopAll()
+        /* 顯示 */
         if (!this.environment.selected)
             this.showAnserDialog.showAnser(
                 this.questionSystem.question[this.questionNo - 1],
@@ -427,7 +434,7 @@ export default class PracticeModeScene extends Scene {
                 this.questionSystem.question[this.questionNo - 1],
                 this.environment.selected.data
             )
-
+        /* 判斷是否播放下一題 */
         let check =
             !this.environment.selected ||
                 this.environment.selected.data.pic_src ==
@@ -435,10 +442,12 @@ export default class PracticeModeScene extends Scene {
                 ? true
                 : false
         // let checkColor = (this.environment.selected.data.pic_src == this.questionSystem.question[this.questionNo - 1].pic_src) ? 0xFFFB00 : 0xDD9000
+        /* 判斷要播的音效 */
         if (!check) {
             Sound.stopAll()
             Sound.add('wrong', '../static/sound/effect/wrong.mp3')
             Sound.play('wrong')
+            this.character.armatureDisplay.animation.fadeIn('emoji_sad', 0, 1, 1, 'emoji')
         }
         if (
             this.environment.selected &&
@@ -448,6 +457,9 @@ export default class PracticeModeScene extends Scene {
             Sound.stopAll()
             Sound.add('correct', '../static/sound/effect/correct.mp3')
             Sound.play('correct')
+            this.character.armatureDisplay.animation.fadeIn('clapHand', 0, 1, 1, 'hand')
+            this.character.armatureDisplay.animation.fadeIn('emoji_fighting', 0, 1, 1, 'emoji')
+            // animationName,fadeInTime,playTimes,layer,group,fadeOutMode
         }
         this.showAnserDialog.confirmButton.update = () => {
             this.environment.cancelSelectedObject()
@@ -461,6 +473,7 @@ export default class PracticeModeScene extends Scene {
             } else this.showNext.text = '再聽一次 '
             this.showNext.x = 425
             this.showNextCover.visible = true
+            this.showNext.visible = true
             gsap.to(this.showNextCover, { pixi: { alpha: 1 }, duration: 0.5 })
             gsap.to(this.showNext, {
                 pixi: { alpha: 1, x: this.showNext.x + 100 },
@@ -479,6 +492,10 @@ export default class PracticeModeScene extends Scene {
             gsap.delayedCall(2.5, () => {
                 this.questionSystem.play(this.questionNo - 1) //播放 after 3 seconds
                 this.showNextCover.visible = false
+                this.character.armatureDisplay.animation.fadeIn('listen_up', 0, 1, 1)
+            })
+            gsap.delayedCall(4.5, () => {
+                this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen',15,1)
             })
         }
     }
