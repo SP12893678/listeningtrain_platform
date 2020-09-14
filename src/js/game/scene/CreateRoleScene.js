@@ -24,11 +24,9 @@ let Application = PIXI.Application,
 export default class CreateRoleScene extends Scene {
     constructor() {
         super()
-        this.account = window.sessionStorage.getItem('account')
         this.container = new Container()//for bubble
         this.addChild(this.container)
-        this.character = new character(this.account)
-        
+        this.character = new character()
         this.init()
     }
     async init(){

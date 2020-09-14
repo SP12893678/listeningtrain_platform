@@ -124,8 +124,8 @@ export default class profile extends PIXI.Container {
             editBtn.visible = true
             saveBtn.visible = false
             t.input.disabled = true
-            t.person.nickname = await t.input.text
-            await t.person.save_character_data()
+            t.character.nickname = t.input.text
+            await t.character.save_character_data()
             console.log('You have entered', t.input.text)
             console.log('now is editBtn')
         }
@@ -136,8 +136,10 @@ export default class profile extends PIXI.Container {
                 editBtn.visible = true
                 saveBtn.visible = false
                 t.input.disabled = true
-                t.person.nickname = await t.input.text
-                await t.person.save_character_data()
+                t.character.nickname = t.input.text
+                await t.character.save_character_data()
+                console.log('You have entered', t.input.text)
+                console.log('now is editBtn')
                 console.log('enter')
             }
         })

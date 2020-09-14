@@ -34,9 +34,20 @@ export default class Character{
 
         this.armatureDisplay = this.factory.buildArmatureDisplay((gender == 'gg')?'Boy':'Girl');//預設男孩
         // armatureDisplay.animation.play('handmove',0);
-        if(this.clothing != null){
-            this.clothing.change_character_clothing(this.armatureDisplay,this.factory,gender);
-            console.log('here')
+
+        // this.armatureDisplay.addEventListener(dragonBones.EventObject.COMPLETE,()=>{
+        //     this.armatureDisplay.animation.gotoAndStopByTime('clapHand',0)
+        // })
+        this.armatureDisplay.armature.eventDispatcher.addDBEventListener(dragonBones.EventObject.COMPLETE, this.animationEventHandler,this)
+        if(this.clothing != null)this.clothing.change_character_clothing(this.armatureDisplay,this.factory,gender);
+    }
+    animationEventHandler(event) {
+        if (event.type === dragonBones.EventObject.COMPLETE) {
+            if (event.animationState.name === "clapHand") {
+                console.log("clapHand 動作完畢！！！");    
+                this.armatureDisplay.animation.gotoAndStopByTime('clapHand',0)    
+                //TODO:
+            }
         }
     }
     get_character_data() {
