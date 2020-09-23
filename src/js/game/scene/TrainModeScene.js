@@ -115,6 +115,7 @@ export default class TrainModeScene extends Scene {
         btn_goback.buttonMode = true
         btn_goback.position.set(60, 60)
         btn_goback.click = () => {
+            Sound.stopAll()
             Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
         }
         btn_goback.mouseover = function (mouseData) {
