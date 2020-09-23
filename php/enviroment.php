@@ -60,7 +60,16 @@
                 echo json_encode($data, JSON_UNESCAPED_UNICODE);
             }
             break;
+        // case 'none':
+        //     $data = [];
+        //     $item = $_GET['data'];
+        //     for ($index=0; $index < 100000; $index++) { 
+        //         array_push($data,$item);
+        //     }
+        //     echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        //     break;
         default:
             # code...
+          
             break;
     }

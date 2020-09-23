@@ -12,10 +12,11 @@ import Environment from '@/js/game/Environment'
 import Dialog from 'Component/dialog'
 import { Graphics } from 'pixi.js/lib/core'
 import RadarChart from 'Component/RadarChart'
-import { apiManageAudio } from '@/js/api'
+import { apiManageAudio, apiManageExam } from '@/js/api'
 import { OutlineFilter } from 'pixi-filters'
 import Sound from 'pixi-sound'
 import testdescription from '@/js/game/testdescription'
+import ScoreCaculate from '@/js/game/exam/ScoreCaculate'
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -117,8 +118,7 @@ export default class TestModeScene extends Scene {
         Sound.stopAll()
 
         if (this.questionNo == this.questionTotal) {
-            if (this.timer.state)
-                this.timer.stop()
+            if (this.timer.state) this.timer.stop()
             this.showResult()
             this.result.visible = true
             this.reset()
@@ -157,17 +157,15 @@ export default class TestModeScene extends Scene {
         btn_goback.position.set(60, 60)
         btn_goback.click = () => {
             if (!this.startBtn.visible) {
-                if (this.timer.state)
-                    this.timer.stop()
+                if (this.timer.state) this.timer.stop()
                 this.leaveDialog.visible = true
-            }
-            else Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
+            } else Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
         }
-        btn_goback.mouseover = function (mouseData) {
+        btn_goback.mouseover = function(mouseData) {
             btn_goback.scale.set(scale * 1.1)
             goBackText.scale.set(1.1)
         }
-        btn_goback.mouseout = function (mouseData) {
+        btn_goback.mouseout = function(mouseData) {
             btn_goback.scale.set(scale)
             goBackText.scale.set(1)
         }
@@ -185,7 +183,13 @@ export default class TestModeScene extends Scene {
         /* QuestionTotal */
         let questionTotalBg = new PIXI.Graphics()
         questionTotalBg.beginFill(0xfce800)
-        questionTotalBg.drawRoundedRect(titleText.x + titleText.width / 2 + 80, titleText.y - titleText.height / 2, 55, 50, 5)
+        questionTotalBg.drawRoundedRect(
+            titleText.x + titleText.width / 2 + 80,
+            titleText.y - titleText.height / 2,
+            55,
+            50,
+            5
+        )
         title.addChild(questionTotalBg)
 
         let questionTotalText = '共       題'
@@ -196,7 +200,10 @@ export default class TestModeScene extends Scene {
 
         let questionTotalNo = new PIXI.Text(this.questionTotal, style16)
         questionTotalNo.anchor.set(0.5)
-        questionTotalNo.position.set(titleText.x + titleText.width / 2 + 80 + 55 / 2, titleText.y - titleText.height / 2 + 50 / 2)
+        questionTotalNo.position.set(
+            titleText.x + titleText.width / 2 + 80 + 55 / 2,
+            titleText.y - titleText.height / 2 + 50 / 2
+        )
         title.addChild(questionTotalNo)
         /* help */
 
@@ -207,14 +214,12 @@ export default class TestModeScene extends Scene {
         btn_help.setBackgroundColor('', 0)
         btn_help.setText(style15)
         btn_help.click = () => {
-
             btn_help.click = () => (this.testdescription.dialog.visible = !this.testdescription.dialog.visible)
-
         }
-        btn_help.mouseover = function (mouseData) {
+        btn_help.mouseover = function(mouseData) {
             btn_help.scale.set(1.1)
         }
-        btn_help.mouseout = function (mouseData) {
+        btn_help.mouseout = function(mouseData) {
             btn_help.scale.set(1)
         }
         title.addChild(btn_help)
@@ -430,14 +435,15 @@ export default class TestModeScene extends Scene {
         /* 雷達圖 */
         let labels = ['正確率', '反應\n速度', '  低頻\n辨識率', '  高頻\n辨識率', '完成度']
         let datasets = [
-            { name: '最近一次測驗', data: [50, 10, 75, 150, 100] },
-            { name: '個人學習平均值', data: [100, 70, 150, 80, 30] },
+            // { name: '最近一次測驗', data: [50, 10, 75, 150, 100] },
+            // { name: '個人學習平均值', data: [100, 70, 150, 80, 30] },
         ]
         let chart = new RadarChart(labels, datasets)
         chart.position.set(resultText.x + 225, no.y + 170)
         chart.barLabel.position.set(-390, 340)
         chart.scale.set(380 / chart.width)
         result.addChild(chart)
+        this.chart = chart
         /* button:各能力計算標準 */
         let standardBtn = new Button2(180, 40, ResourcesManager.question, '能力計算標準')
         standardBtn.position.set(resultText.x + 270, no.y + 350)
@@ -454,13 +460,19 @@ export default class TestModeScene extends Scene {
         line.drawRect(resultText.x, no.y, 450, 320)
         result.addChild(line)
     }
-    showResult() {
+    async showResult() {
         //test
         this.answerCheck = []
         this.answerBoard.data = []
         this.questionSystem.question.forEach((item, index) => {
-            this.answerCheck.push({ correctAnswer: item, yourAnswer: this.questionSystem.myAnswer[index] })
-            this.answerBoard.data.push({ correctAnswer: item, yourAnswer: this.questionSystem.myAnswer[index] })
+            this.answerCheck.push({
+                correctAnswer: item,
+                yourAnswer: this.questionSystem.myAnswer[index],
+            })
+            this.answerBoard.data.push({
+                correctAnswer: item,
+                yourAnswer: this.questionSystem.myAnswer[index],
+            })
         })
 
         let environmentName = this.environment.data.environment.name
@@ -471,7 +483,16 @@ export default class TestModeScene extends Scene {
         let resultText = this.resultText
 
         resultText.text =
-            '作答情境: ' + environmentName + '\n作答題數: ' + this.questionTotal + ' 題' + '\n答對題數: ' + correctTotal + ' 題' + '\n作答時間: ' + this.timer.text.text
+            '作答情境: ' +
+            environmentName +
+            '\n作答題數: ' +
+            this.questionTotal +
+            ' 題' +
+            '\n答對題數: ' +
+            correctTotal +
+            ' 題' +
+            '\n作答時間: ' +
+            this.timer.text.text
         resultText.style = style17
 
         let envionmentPicTexture = this.environment.background._texture
@@ -479,9 +500,132 @@ export default class TestModeScene extends Scene {
         this.resultEnvironmentPic.texture = envionmentPicTexture
         this.resultEnvironmentPic.scale.set(scale)
 
+        /**取得資料庫測驗資料並計算學習平均成績 */
+        let past_exams = []
+        let scroeSystem = new ScoreCaculate()
+        let average_score = scroeSystem.getDefaultFormateObject()
+        await apiManageExam({ type: 'get' }).then((res) => {
+            console.log(res.data)
+            past_exams = JSON.parse(res.data.exam).exam
+
+            scroeSystem.first_response_rate = past_exams[0].response_rate
+            past_exams.forEach((exam) => {
+                average_score.accuracy.your += exam.accuracy.your
+                average_score.accuracy.all += exam.accuracy.all
+                average_score.completion.your += exam.completion.your
+                average_score.completion.all += exam.completion.all
+                average_score.response_rate += exam.response_rate
+                average_score.high_frequency_accuracy.your += exam.high_frequency_accuracy.your
+                average_score.high_frequency_accuracy.all += exam.high_frequency_accuracy.all
+                average_score.low_frequency_accuracy.your += exam.low_frequency_accuracy.your
+                average_score.low_frequency_accuracy.all += exam.low_frequency_accuracy.all
+                average_score.total++
+            })
+            console.log(average_score)
+        })
+
+        let average_score_data = [
+            Math.round((average_score.accuracy.your / average_score.accuracy.all) * 100),
+            Math.round(
+                (average_score.response_rate / average_score.total / (scroeSystem.first_response_rate * 2)) * 100
+            ),
+            Math.round((average_score.low_frequency_accuracy.your / average_score.low_frequency_accuracy.all) * 100),
+            Math.round((average_score.high_frequency_accuracy.your / average_score.high_frequency_accuracy.all) * 100),
+            Math.round((average_score.completion.your / average_score.completion.all) * 100),
+        ]
+        console.log(average_score_data)
+        this.chart.addChart('上一次平均學習成績', average_score_data)
+
+        /**計算當前測驗成績 */
+        console.log(this.questionSystem)
+        let exam = {
+            questions: [],
+        }
+
+        this.questionSystem.question.forEach((question, index) => {
+            exam.questions.push({
+                object_id: question.id,
+                your_answer_id: this.questionSystem.myAnswer[index].data.id,
+                times: 0,
+            })
+        })
+
+        /**正確率 */
+        let correct_questions = exam.questions.filter((question) => question.object_id == question.your_answer_id)
+        exam.accuracy = { your: correct_questions.length, all: exam.questions.length }
+
+        /**完成度 */
+        let completion_questions = []
+        correct_questions.forEach((question) => {
+            if (completion_questions.findIndex((item) => item.object_id == question.object_id) == -1)
+                completion_questions.push(question)
+        })
+        exam.completion = { your: completion_questions.length, all: this.environment.objects.length }
+
+        /**反應速度 */
+        exam.response_rate = 50
+
+        /**高頻 */
+        let high_frequency_question_counts = 0
+        let high_frequency_question_correct_counts = 0
+        this.questionSystem.question.forEach((question, index) => {
+            let high = false
+            question.audio.frequency.forEach((frequency) => {
+                if (frequency.max > 2000) high = true
+            })
+            if (high) high_frequency_question_counts++
+            if (high && question.id == this.questionSystem.myAnswer[index].data.id)
+                high_frequency_question_correct_counts++
+        })
+        exam.high_frequency_accuracy = {
+            your: high_frequency_question_correct_counts,
+            all: high_frequency_question_counts,
+        }
+
+        /**低頻 */
+        let low_frequency_question_counts = 0
+        let low_frequency_question_correct_counts = 0
+        this.questionSystem.question.forEach((question, index) => {
+            let low = false
+            question.audio.frequency.forEach((frequency) => {
+                if (frequency.min < 300) low = true
+            })
+            if (low) low_frequency_question_counts++
+            if (low && question.id == this.questionSystem.myAnswer[index].data.id)
+                low_frequency_question_correct_counts++
+        })
+        exam.low_frequency_accuracy = {
+            your: low_frequency_question_correct_counts,
+            all: low_frequency_question_counts,
+        }
+
+        console.log(exam)
+        let data = [
+            Math.round((exam.accuracy.your / exam.accuracy.all) * 100),
+            exam.response_rate,
+            Math.round((exam.low_frequency_accuracy.your / exam.low_frequency_accuracy.all) * 100),
+            Math.round((exam.high_frequency_accuracy.your / exam.high_frequency_accuracy.all) * 100),
+            Math.round((exam.completion.your / exam.completion.all) * 100),
+        ]
+        // this.chart.addChart('最近一次測驗', data)
+
         this.answerBoard.update()
     }
 }
+
+/**測驗結果
+ * 正確率: 本次測驗答題正確數 / 本次測驗題數
+ * 反應速度: 平均答題所需時間
+ * 完成度: 本次測驗完成物件數 / 該情境物件數
+ * 低頻辨識率: 本次測驗低頻物件答對數 / 本次測驗低頻物件數
+ * 高頻辨識率: 本次測驗高頻物件答對數 / 本次測驗高頻物件數
+ *
+ * 測驗完流程
+ * 取得資料庫測驗資料並計算學習平均成績
+ * 計算當前測驗成績
+ * 將當前測驗資料和成績儲存至資料庫
+ * 呈現測驗結果至畫面
+ */
 
 class AnswerBoard extends Container {
     constructor(data) {
@@ -585,8 +729,37 @@ class TestModeEnvironment extends Environment {
     async init(id) {
         await super.init(id)
         let audio_arr = this.data.objects.map((item) => item.sound_src)
-        await apiManageAudio({ type: 'get', amount: 'part', items: audio_arr }).then((res) => {
-            this.data.objects.forEach((object) => (object.audio = res.data.filter((audio) => audio.id == object.sound_src)[0]))
+        await apiManageAudio({
+            type: 'get',
+            amount: 'part',
+            items: audio_arr,
+        }).then((res) => {
+            this.data.objects.forEach((object) => {
+                object.audio = res.data.filter((audio) => audio.id == object.sound_src)[0]
+                object.audio.frequency = object.audio.frequency.split(';')
+                let frequencies = []
+                object.audio.frequency.forEach((frequency) => {
+                    let less_re = new RegExp(/\</g)
+                    let greater_re = new RegExp(/\>/g)
+                    let equal_re = new RegExp(/\~/g)
+                    let max, min
+
+                    if (less_re.test(frequency)) {
+                        max = frequency.match(/\d+/g)[0]
+                        min = Number.MIN_VALUE
+                    } else if (greater_re.test(frequency)) {
+                        min = frequency.match(/\d+/g)[0]
+                        max = Number.MAX_VALUE
+                    } else if (equal_re.test(frequency)) {
+                        ;[min, max] = frequency.match(/\d+/g)
+                    }
+
+                    frequencies.push({ min, max })
+
+                    console.log(frequency, min, max)
+                })
+                object.audio.frequency = frequencies
+            })
         })
         this.objects.forEach((object) => {
             object.interactive = true
@@ -607,6 +780,7 @@ class QuestionSystem {
     constructor() {
         this.question = []
         this.myAnswer = []
+        this.times = []
     }
 
     init(data) {

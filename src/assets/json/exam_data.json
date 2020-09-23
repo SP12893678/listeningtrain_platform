@@ -1,0 +1,24 @@
+{
+    "exam": [
+        {
+            "enviro_id": 0,
+            "questions": [
+                {
+                    "object_id": 1,
+                    "your_answer_id": 2,
+                    "times": 300
+                },
+                {
+                    "object_id": 1,
+                    "your_answer_id": 2,
+                    "times": 300
+                }
+            ],
+            "accuracy": { "your": 1, "all": 10 },
+            "completion": { "your": 1, "all": 10 },
+            "response_rate": 50,
+            "high_frequency_accuracy": { "your": 1, "all": 3 },
+            "low_frequency_accuracy": { "your": 1, "all": 3 }
+        }
+    ]
+}

@@ -14,7 +14,9 @@
                 hide-details
             ></v-text-field>
             <v-list-item-action>
-                <v-btn data-v-step="Enviroment-dashboard-2"> <v-icon left>mdi-pencil-plus</v-icon>新增 </v-btn>
+                <v-btn @click="test" data-v-step="Enviroment-dashboard-2">
+                    <v-icon left>mdi-pencil-plus</v-icon>新增
+                </v-btn>
             </v-list-item-action>
         </v-list-item>
 
@@ -33,12 +35,24 @@
                 ></v-pagination>
 
                 <!--情境教材卡片骨架裝載器(模擬情境教材載入狀態)-->
-                <v-card v-if="enviro_cards.loading" v-for="(item, index) in 3" :key="index" class="ma-4" height="300" width="300" max-width="300">
+                <v-card
+                    v-if="enviro_cards.loading"
+                    v-for="(item, index) in 3"
+                    :key="index"
+                    class="ma-4"
+                    height="300"
+                    width="300"
+                    max-width="300"
+                >
                     <v-skeleton-loader class="mx-auto" type="card"></v-skeleton-loader>
                 </v-card>
 
                 <!--情境教材卡片-->
-                <v-hover v-for="(item, index) in getEnviroCards" :key="item.id + item.name" v-slot:default="{ hover }">
+                <v-hover
+                    v-for="(item, index) in getEnviroCards"
+                    :key="item.id + item.name"
+                    v-slot:default="{ hover }"
+                >
                     <v-card
                         v-if="!enviro_cards.loading"
                         :elevation="hover ? 10 : 2"
@@ -56,11 +70,11 @@
                                 {{ item.category }}
                             </v-chip>
                         </v-card-title>
-                        <v-card-subtitle class="pb-1">
-                            {{ item.created_time }}
-                        </v-card-subtitle>
+                        <v-card-subtitle class="pb-1">{{ item.created_time }}</v-card-subtitle>
                         <v-card-actions>
-                            <v-btn @click.prevent="goToEditPage(item.id)" color="blue" text> <v-icon left>mdi-image-edit</v-icon>編輯 </v-btn>
+                            <v-btn @click.prevent="goToEditPage(item.id)" color="blue" text>
+                                <v-icon left>mdi-image-edit</v-icon>編輯
+                            </v-btn>
                             <v-spacer></v-spacer>
                             <v-btn @click="enviro_cards.delete_dialog = true" color="red" icon>
                                 <v-icon>mdi-delete</v-icon>
@@ -89,14 +103,14 @@
 </template>
 
 <script>
-import { apiManageEnviroment } from '@/js/api'
+import { apiManageEnviroment } from "@/js/api";
 
 export default {
     data() {
         return {
             enviro: [],
             enviro_cards: {
-                search: '',
+                search: "",
                 loading: true,
                 page: 1,
                 delete_dialog: false,
@@ -105,7 +119,7 @@ export default {
                 {
                     target: '[data-v-step="Enviroment-dashboard-card-0"]',
                     header: {
-                        title: '情境教材卡片',
+                        title: "情境教材卡片",
                     },
                     content: `顯示該情境教材相關資訊，<br>另外可使用編輯和刪除按鈕對該情境教材進行操作`,
                     params: {
@@ -115,7 +129,7 @@ export default {
                 {
                     target: '[data-v-step="Enviroment-dashboard-pagination"]',
                     header: {
-                        title: '情境教材分頁欄',
+                        title: "情境教材分頁欄",
                     },
                     content: ``,
                     params: {
@@ -125,7 +139,7 @@ export default {
                 {
                     target: '[data-v-step="Enviroment-dashboard-search"]',
                     header: {
-                        title: '情境教材搜尋欄',
+                        title: "情境教材搜尋欄",
                     },
                     content: ``,
                     params: {
@@ -135,19 +149,20 @@ export default {
                 {
                     target: '[data-v-step="Enviroment-dashboard-2"]',
                     header: {
-                        title: '幫助選單按鈕',
+                        title: "幫助選單按鈕",
                     },
-                    content: '內有說明手冊、操作導覽、客服詢問功能，可幫助了解管理平台以及解決疑難雜症',
+                    content:
+                        "內有說明手冊、操作導覽、客服詢問功能，可幫助了解管理平台以及解決疑難雜症",
                     params: {
                         enableScrolling: false,
                     },
                 },
             ],
-        }
+        };
     },
     async mounted() {
-        console.log(this.$route.name)
-        await this.getEnviroData()
+        console.log(this.$route.name);
+        await this.getEnviroData();
 
         /**模擬情境數量 */
         // for (let index = 0; index < 10; index++) {
@@ -156,59 +171,106 @@ export default {
 
         /**模擬載入狀態 */
         setTimeout(() => {
-            this.enviro_cards.loading = false
-        }, 1500)
+            this.enviro_cards.loading = false;
+        }, 1500);
     },
     computed: {
         /**取得符合條件(搜尋條件 & 當前分頁)的情境教材物件 */
         getEnviroCards() {
-            var app = this
+            var app = this;
             var tmp = this.enviro.filter((item) => {
                 return (
                     item.name.indexOf(app.enviro_cards.search) >= 0 ||
                     item.category.indexOf(app.enviro_cards.search) >= 0 ||
                     item.created_time.indexOf(app.enviro_cards.search) >= 0
-                )
-            })
+                );
+            });
             return tmp.filter((item, index) => {
-                return index < 10 * app.enviro_cards.page && index >= 10 * (app.enviro_cards.page - 1)
-            })
+                return (
+                    index < 10 * app.enviro_cards.page &&
+                    index >= 10 * (app.enviro_cards.page - 1)
+                );
+            });
         },
         /**取得分頁數量(每頁情境數量以10為限) */
         getPaginationPages() {
-            var app = this
+            var app = this;
             var tmp = this.enviro.filter((item) => {
                 return (
                     item.name.indexOf(app.enviro_cards.search) >= 0 ||
                     item.category.indexOf(app.enviro_cards.search) >= 0 ||
                     item.created_time.indexOf(app.enviro_cards.search) >= 0
-                )
-            })
-            return Math.ceil(tmp.length / 10)
+                );
+            });
+            return Math.ceil(tmp.length / 10);
         },
     },
     methods: {
+        test() {
+            let data = [];
+            for (let index = 0; index < 1; index++) {
+                let obj = {
+                    environ_id: 1,
+                    questions: [
+                        {
+                            audio_id: 1,
+                            your_answer: 1,
+                            time: 300,
+                        },
+                        {
+                            audio_id: 2,
+                            your_answer: 5,
+                            time: 300,
+                        },
+                        {
+                            audio_id: 4,
+                            your_answer: 3,
+                            time: 300,
+                        },
+                        {
+                            audio_id: 7,
+                            your_answer: 2,
+                            time: 300,
+                        },
+                        {
+                            audio_id: 1,
+                            your_answer: 1,
+                            time: 300,
+                        },
+                    ],
+                    accuracy: 50,
+                    completion: 50,
+                    reaction_rate: 50,
+                    high_frequency_accuracy: 60,
+                    low_frequency_accuracy: 60,
+                };
+                data.push(obj);
+            }
+            apiManageEnviroment({ type: "none", data: data }).then((res) => {
+                console.log(res.data);
+            });
+        },
         /**前往該情境教材的編輯頁面 */
         goToEditPage(id) {
-            var obj = { enviro: { id: id } }
-            this.$emit('passdata', obj)
-            this.$router.push('/enviroment-edit')
+            var obj = { enviro: { id: id } };
+            this.$emit("passdata", obj);
+            this.$router.push("/enviroment-edit");
         },
         /**請求後端並取得情境教材
          * @async
          */
         getEnviroData() {
-            return apiManageEnviroment({ type: 'get', amount: 'all' })
+            return apiManageEnviroment({ type: "get", amount: "all" })
                 .then((res) => {
-                    console.log('enviro data', res.data)
-                    this.enviro = res.data
+                    console.log("enviro data", res.data);
+                    this.enviro = res.data;
                 })
                 .catch((error) => {
-                    console.error(error)
-                })
+                    console.error(error);
+                });
         },
     },
-}
+};
 </script>
 
 <style scoped>
