@@ -29,6 +29,9 @@
         case 'delete':
             $id = $_GET['id'];
             $sql = "DELETE FROM enviro WHERE id = '". $id ."'";
+            $result = mysqli_query($con, $sql);
+            $data['result'] = $result;
+            echo json_encode($data, JSON_UNESCAPED_UNICODE);
             break;
         case 'update':
             $data = [];
