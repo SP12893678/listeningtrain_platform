@@ -3,7 +3,7 @@ import { GlowFilter } from 'pixi-filters'
 import { style1, style5, style19, style20 } from '@/js/game/engine/TextStyleManager'
 import { Container, Graphics, Text } from 'pixi.js/lib/core'
 
-export default class RadarChart extends PIXI.Container {
+export default class RadarChart extends Container {
     constructor(labels, datasets = []) {
         super()
         this.value = { min: 0, max: 100 }
@@ -14,12 +14,35 @@ export default class RadarChart extends PIXI.Container {
         this.chart = {}
         this.tabView = new Container()
         this.barLabel = new Container()
+        this.noData = new Container()
         this.drawBaseShape()
         this.setTabView()
-
+        this.showNoData()
         this.datasets.forEach((dataset) => {
             this.addChart(dataset.name, dataset.data)
         })
+    }
+
+    showNoData() {
+        let noData = this.noData
+
+        let sides = this.labels.length
+        let { max } = this.radius
+        let path = this.getPath(max, sides)
+        let polygon = new Graphics()
+        // polygon.lineStyle(2, 0x333333, 0.3)
+        polygon.beginFill(0xffffff, 0.5)
+        polygon.moveTo(path[0].x, path[0].y)
+        path.forEach((point) => polygon.lineTo(point.x, point.y))
+        polygon.closePath()
+        polygon.endFill()
+        noData.addChild(polygon)
+
+        let text = new Text('尚無資料')
+        text.position.set(-text.width / 2, -text.height / 2)
+        noData.addChild(text)
+        this.addChild(noData)
+        noData.visible = true
     }
 
     setDataview() {
@@ -100,6 +123,8 @@ export default class RadarChart extends PIXI.Container {
     }
 
     addChart(id, data) {
+        this.noData.visible = false
+
         let value = this.value
         let labels = this.labels
         let sides = labels.length
