@@ -23,11 +23,12 @@
             }
             break;
         case 'delete':
-
-            // $items = $_GET['items'];
-            // $object_arr = join(",",$items);
-            // echo $object_arr;
-            // $sql = "DELETE FROM data WHERE id IN (".$object_arr.")";
+            $items = $_GET['items'];
+            $object_arr = join(",",$items);
+            $sql = "DELETE FROM object WHERE id IN (".$object_arr.")";
+            $result = mysqli_query($con, $sql);
+            $data['result'] = $result;
+            echo json_encode($data, JSON_UNESCAPED_UNICODE);
             break;
         case 'update':
             $data = [];

@@ -3,7 +3,7 @@ import Scene from '@/js/game/engine/Scene'
 import { Graphics, Container, Sprite, Text } from 'pixi.js/lib/core'
 import Config from '@/js/game/Config'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
-import { apiManageEnviroment, apiManageObject } from '@/js/api'
+import { apiManageEnviroment, apiManageObject, apiManageExam } from '@/js/api'
 import { BlurFilter } from 'pixi.js/lib/filters'
 import HorizontalScroller from '../component/HorizontalScroller'
 import RadarChart from 'Component/RadarChart'
@@ -16,6 +16,7 @@ import Events from '@/js/game/Events'
 import TrainModeScene from 'Scene/TrainModeScene'
 import PracticeModeScene from 'Scene/PracticeModeScene'
 import TestModeScene from 'Scene/TestModeScene'
+import ScoreCaculate from '@/js/game/exam/ScoreCaculate'
 
 gsap.registerPlugin(PixiPlugin)
 PixiPlugin.registerPIXI(PIXI)
@@ -27,12 +28,7 @@ export default class EnviromentDetailScene extends Scene {
         super()
         this.background = new Graphics()
         this.background.beginFill(0xffffff, 1)
-        this.background.drawRect(
-            0,
-            0,
-            Config.screen.width,
-            Config.screen.height
-        )
+        this.background.drawRect(0, 0, Config.screen.width, Config.screen.height)
         this.background.endFill()
         this.addChild(this.background)
 
@@ -74,6 +70,48 @@ export default class EnviromentDetailScene extends Scene {
             this.data.objects = res.data
         })
 
+        /**取得資料庫測驗資料並計算學習平均成績 */
+        let past_exams = []
+        let scroeSystem = new ScoreCaculate()
+        let average_score = scroeSystem.getDefaultFormateObject()
+        await apiManageExam({ type: 'get' }).then((res) => {
+            past_exams = JSON.parse(res.data.exam).exam
+            console.log(past_exams)
+
+            scroeSystem.first_response_rate = past_exams[0].response_rate
+
+            let the_enviro_past_exam = past_exams.filter((exam) => exam.enviro_id == this.data.environment.id)
+            console.log(the_enviro_past_exam)
+
+            the_enviro_past_exam.forEach((exam) => {
+                average_score.accuracy.your += exam.accuracy.your
+                average_score.accuracy.all += exam.accuracy.all
+                average_score.completion.your += exam.completion.your
+                average_score.completion.all += exam.completion.all
+                average_score.response_rate += exam.response_rate
+                average_score.high_frequency_accuracy.your += exam.high_frequency_accuracy.your
+                average_score.high_frequency_accuracy.all += exam.high_frequency_accuracy.all
+                average_score.low_frequency_accuracy.your += exam.low_frequency_accuracy.your
+                average_score.low_frequency_accuracy.all += exam.low_frequency_accuracy.all
+                average_score.total++
+            })
+            this.average_score_data = []
+            if (the_enviro_past_exam.length == 0) return
+            this.average_score_data = [
+                Math.round((average_score.accuracy.your / average_score.accuracy.all) * 100),
+                Math.round(
+                    (average_score.response_rate / average_score.total / (scroeSystem.first_response_rate * 2)) * 100
+                ),
+                Math.round(
+                    (average_score.low_frequency_accuracy.your / average_score.low_frequency_accuracy.all) * 100
+                ),
+                Math.round(
+                    (average_score.high_frequency_accuracy.your / average_score.high_frequency_accuracy.all) * 100
+                ),
+                Math.round((average_score.completion.your / average_score.completion.all) * 100),
+            ]
+        })
+
         this.built()
     }
 
@@ -104,10 +142,8 @@ export default class EnviromentDetailScene extends Scene {
         goBackArea.interactive = true
         goBackArea.buttonMode = true
 
-        goBackArea.mouseover = () =>
-            gsap.to(goBackArea, { pixi: { scale: 1.2 }, duration: 0.5 })
-        goBackArea.mouseout = () =>
-            gsap.to(goBackArea, { pixi: { scale: 1 }, duration: 0.5 })
+        goBackArea.mouseover = () => gsap.to(goBackArea, { pixi: { scale: 1.2 }, duration: 0.5 })
+        goBackArea.mouseout = () => gsap.to(goBackArea, { pixi: { scale: 1 }, duration: 0.5 })
         goBackArea.click = () => ScenesManager.goToScene('enviro_select')
         this.addChild(goBackArea)
     }
@@ -170,20 +206,15 @@ export default class EnviromentDetailScene extends Scene {
         scroller.position.set(136, 444)
         objectList.position.set(136, 358)
 
-        let labels = [
-            '正確率',
-            '完成度',
-            '反應速度',
-            '低頻辨識率',
-            '高頻辨識率',
-        ]
+        let labels = ['正確率', '完成度', '反應速度', '低頻辨識率', '高頻辨識率']
         let datasets = [
-            {
-                name: 'test',
-                data: [100, 20, 60, 150, 90],
-            },
+            // {
+            //     name: 'test',
+            //     data: [100, 20, 60, 40, 90],
+            // },
         ]
         let radar = new RadarChart(labels, datasets)
+        if (this.average_score_data.length != 0) radar.addChart('上一次平均學習成績', this.average_score_data)
         radar.position.set(radar.width / 2 + 800, radar.height / 2 + 100)
         radar.barLabel.position.set(-350, 320)
 
@@ -226,14 +257,8 @@ export default class EnviromentDetailScene extends Scene {
         }
 
         btn_train_mode.position.set(0, 0)
-        btn_practice_mode.position.set(
-            btn_train_mode.position.x + btn_train_mode.width,
-            0
-        )
-        btn_test_mode.position.set(
-            btn_practice_mode.position.x + btn_practice_mode.width,
-            0
-        )
+        btn_practice_mode.position.set(btn_train_mode.position.x + btn_train_mode.width, 0)
+        btn_test_mode.position.set(btn_practice_mode.position.x + btn_practice_mode.width, 0)
 
         gamemodeArea.addChild(btn_train_mode)
         gamemodeArea.addChild(btn_practice_mode)

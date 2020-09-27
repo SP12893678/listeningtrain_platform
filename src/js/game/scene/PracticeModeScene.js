@@ -4,7 +4,7 @@ import Config from '@/js/game/Config'
 import HorizontalScroller from 'Component/HorizontalScroller'
 import Events from '@/js/game/Events'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
-import {style14,style15,style16,style21} from '@/js/game/engine/TextStyleManager'
+import { style14, style15, style16, style21 } from '@/js/game/engine/TextStyleManager'
 import character from '@/js/game/character'
 import Button2 from 'Component/button2'
 import Environment from '@/js/game/Environment'
@@ -42,9 +42,9 @@ export default class PracticeModeScene extends Scene {
         this.startBtn = new Button2(200, 60, ResourcesManager.start, ' 開始   ')
         this.environment = new PracticeModeEnvironment()
         this.screenDown = new Container()
-        this.nextBtn = new Button2(160,50,ResourcesManager.nextQuestion,'下一題')
-        this.listenBtn = new Button2(180,50,ResourcesManager.listen,'再聽一次')
-        this.replayBtn = new Button2(180,50,ResourcesManager.reload,'重新開始')
+        this.nextBtn = new Button2(160, 50, ResourcesManager.nextQuestion, '下一題')
+        this.listenBtn = new Button2(180, 50, ResourcesManager.listen, '再聽一次')
+        this.replayBtn = new Button2(180, 50, ResourcesManager.reload, '重新開始')
         this.replayDialog = new Dialog('確定要重新開始嗎？')
         this.leaveBtn = new Button2(180, 50, ResourcesManager.leave, '結束練習')
         this.leaveDialog = new Dialog('確定要離開練習嗎？')
@@ -163,8 +163,7 @@ export default class PracticeModeScene extends Scene {
         }
         environment.objects.forEach((object) => {
             object.click = () => {
-                if (environment.selected)
-                    environment.selected.filters = [new OutlineFilter(3, 0xf0aaee),]
+                if (environment.selected) environment.selected.filters = [new OutlineFilter(3, 0xf0aaee)]
                 environment.selected = object
                 object.filters = [new OutlineFilter(3, 0x1976d2)]
                 this.nextQuestion()
@@ -208,11 +207,11 @@ export default class PracticeModeScene extends Scene {
             if (!this.startBtn.visible) this.leaveDialog.visible = true
             else Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
         }
-        btn_goback.mouseover = function (mouseData) {
+        btn_goback.mouseover = function(mouseData) {
             btn_goback.scale.set(scale * 1.1)
             goBackText.scale.set(1.1)
         }
-        btn_goback.mouseout = function (mouseData) {
+        btn_goback.mouseout = function(mouseData) {
             btn_goback.scale.set(scale)
             goBackText.scale.set(1)
         }
@@ -229,21 +228,18 @@ export default class PracticeModeScene extends Scene {
         title.addChild(titleText)
         /* help */
 
-        let btn_help = new Button2(150,titleHeight * 0.8,ResourcesManager.help,'說明')
+        let btn_help = new Button2(150, titleHeight * 0.8, ResourcesManager.help, '說明')
         btn_help.pivot.set(150 / 2, titleHeight / 2)
-        btn_help.position.set(
-            Config.screen.width - 70,
-            titleHeight / 2 + titleHeight * 0.1
-        )
+        btn_help.position.set(Config.screen.width - 70, titleHeight / 2 + titleHeight * 0.1)
         btn_help.setBorder(0)
         btn_help.setBackgroundColor('', 0)
         btn_help.setText(style15)
         this.bool = false
-        btn_help.click = () => { }
-        btn_help.mouseover = function (mouseData) {
+        btn_help.click = () => {}
+        btn_help.mouseover = function(mouseData) {
             btn_help.scale.set(1.1)
         }
-        btn_help.mouseout = function (mouseData) {
+        btn_help.mouseout = function(mouseData) {
             btn_help.scale.set(1)
         }
         btn_help.click = () => (this.ptdescription.dialog.visible = !this.ptdescription.dialog.visible)
@@ -318,7 +314,7 @@ export default class PracticeModeScene extends Scene {
         nextBtn.setCornerRadius(15)
         nextBtn.setBackgroundColor(0xf8f9ea)
         nextBtn.setText(style15)
-        nextBtn.update = () => { }
+        nextBtn.update = () => {}
         nextBtn.click = () => this.nextQuestion()
 
         screenDown.addChild(nextBtn)
@@ -346,7 +342,7 @@ export default class PracticeModeScene extends Scene {
         }
         /* replay button */
         let replayBtn = this.replayBtn
-        replayBtn.position.set(this.screen.length - replayBtn.btnWidth * 2 - 10,0)
+        replayBtn.position.set(this.screen.length - replayBtn.btnWidth * 2 - 10, 0)
         replayBtn.setBorder(0)
         replayBtn.setCornerRadius(15)
         replayBtn.setBackgroundColor(0xf8f9ea)
@@ -417,11 +413,19 @@ export default class PracticeModeScene extends Scene {
         this.showNextCover.visible = false
         this.character.action.animationPlayOriginal()
         /* 顯示 */
-        if (!this.environment.selected)this.showAnserDialog.showAnser(this.questionSystem.question[this.questionNo - 1],'')
+        if (!this.environment.selected)
+            this.showAnserDialog.showAnser(this.questionSystem.question[this.questionNo - 1], '')
         else
-            this.showAnserDialog.showAnser(this.questionSystem.question[this.questionNo - 1],this.environment.selected.data)
+            this.showAnserDialog.showAnser(
+                this.questionSystem.question[this.questionNo - 1],
+                this.environment.selected.data
+            )
         /* 判斷是否播放下一題 */
-        let check =!this.environment.selected ||this.environment.selected.data.pic_src ==this.questionSystem.question[this.questionNo - 1].pic_src? true: false
+        let check =
+            !this.environment.selected ||
+            this.environment.selected.data.pic_src == this.questionSystem.question[this.questionNo - 1].pic_src
+                ? true
+                : false
         // let checkColor = (this.environment.selected.data.pic_src == this.questionSystem.question[this.questionNo - 1].pic_src) ? 0xFFFB00 : 0xDD9000
         /* 判斷要播的音效 */
         if (!check) {
@@ -432,7 +436,9 @@ export default class PracticeModeScene extends Scene {
             let emojiAnimation = this.character.armatureDisplay.animation.fadeIn('emoji_sad', 0, 1, 0, 'emoji')
             emojiAnimation.addBoneMask('emoji')
         }
-        if (this.environment.selected && this.environment.selected.data.pic_src == this.questionSystem.question[this.questionNo - 1].pic_src
+        if (
+            this.environment.selected &&
+            this.environment.selected.data.pic_src == this.questionSystem.question[this.questionNo - 1].pic_src
         ) {
             Sound.stopAll()
             Sound.add('correct', '../static/sound/effect/correct.mp3')
@@ -503,25 +509,20 @@ class PracticeModeEnvironment extends Environment {
             items: audio_arr,
         }).then((res) => {
             this.data.objects.forEach((object) => {
-                object.audio = res.data.filter(
-                    (audio) => audio.id == object.sound_src
-                )[0]
+                object.audio = res.data.filter((audio) => audio.id == object.sound_src)[0]
             })
         })
         this.objects.forEach((object) => {
             object.interactive = true
             object.buttonMode = true
             object.mouseover = () => {
-                if (this.selected != object)
-                    object.filters = [new OutlineFilter(3, 0x99ff99)]
+                if (this.selected != object) object.filters = [new OutlineFilter(3, 0x99ff99)]
             }
             object.mouseout = () => {
-                if (this.selected != object)
-                    object.filters = [new OutlineFilter(3, 0xf0aaee)]
+                if (this.selected != object) object.filters = [new OutlineFilter(3, 0xf0aaee)]
             }
             object.click = () => {
-                if (this.selected)
-                    this.selected.filters = [new OutlineFilter(3, 0xf0aaee)]
+                if (this.selected) this.selected.filters = [new OutlineFilter(3, 0xf0aaee)]
                 this.selected = object
                 object.filters = [new OutlineFilter(3, 0x1976d2)]
             }
@@ -557,10 +558,7 @@ class QuestionSystem {
 
     play(index) {
         Sound.stopAll()
-        Sound.add(
-            this.question[index].audio.audio_id,
-            resources[this.question[index].audio.sound_src]
-        )
+        Sound.add(this.question[index].audio.audio_id, resources[this.question[index].audio.sound_src])
         Sound.play(this.question[index].audio.audio_id)
         let test = resources[this.question[index].audio.sound_src].sound
         return test.duration
@@ -638,8 +636,7 @@ class showAnserDialog extends Overlay {
         this.board.addChild(yourAnser)
 
         let correctAnswerIcon = this.correctAnswerIcon
-        correctAnswerIcon.texture =
-            resources[ResourcesManager.correctAnswer].texture
+        correctAnswerIcon.texture = resources[ResourcesManager.correctAnswer].texture
         correctAnswerIcon.width = 40
         correctAnswerIcon.height = 40
         correctAnswerIcon.anchor.set(0.5)
@@ -661,12 +658,12 @@ class showAnserDialog extends Overlay {
 
         this.confirmButton.interactive = true
         this.confirmButton.buttonMode = true
-        this.confirmButton.update = () => { }
+        this.confirmButton.update = () => {}
         this.confirmButton.click = () => {
             this.visible = false
             this.confirmButton.update()
         }
-        this.confirmButton.position.set((500 - this.confirmButton.width) / 2,270)
+        this.confirmButton.position.set((500 - this.confirmButton.width) / 2, 270)
         this.board.addChild(this.confirmButton)
 
         this.answerBoard.position.set(650, 300)
@@ -704,8 +701,7 @@ class showAnserDialog extends Overlay {
         }
         for (let i = 0; i < this.answerRecord.length; i++) {
             let yourAnserBg = new Graphics()
-            let bgColor =
-                this.answerRecord[i] == correctObject.pic_src? 0xc3ffa8 : 0xffccaa - i * 20
+            let bgColor = this.answerRecord[i] == correctObject.pic_src ? 0xc3ffa8 : 0xffccaa - i * 20
             yourAnserBg.beginFill(bgColor, 0.8)
             yourAnserBg.drawRoundedRect(0 + 145 * i, 0, 130, 130, 10)
             yourAnserBg.endFill()
@@ -734,8 +730,7 @@ class showAnserDialog extends Overlay {
             times.position.set(10 + 145 * i, 10)
             yourAnser.addChild(times)
 
-            let checkAnswer =
-                this.answerRecord[i] == correctObject.pic_src ? 'O' : 'X'
+            let checkAnswer = this.answerRecord[i] == correctObject.pic_src ? 'O' : 'X'
             let checkStyle = style15.clone()
             let check = new Text(checkAnswer, checkStyle)
             check.style.fill = checkAnswer == 'O' ? 0x017100 : 0xee220c
@@ -748,20 +743,15 @@ class showAnserDialog extends Overlay {
         if (this.answerRecord.length > 3) {
             yourAnser.position.set(40, 105)
             board.removeChild(board.getChildByName('scroller'))
-            let scroller = new HorizontalScroller(
-                10,
-                this.yourAnser,
-                this.yourAnser_mask
-            )
+            let scroller = new HorizontalScroller(10, this.yourAnser, this.yourAnser_mask)
             scroller.move(1)
             scroller.position.set(30, 95 + 140)
             scroller.name = 'scroller'
             board.addChild(scroller)
-        } else
-            yourAnser.position.set((500 - this.answerRecord.length * 140) / 2,105)
+        } else yourAnser.position.set((500 - this.answerRecord.length * 140) / 2, 105)
 
         correctAnser.texture = resources[correctObject.pic_src].texture
-        let scale = Math.min(100 / correctAnser.width,100 / correctAnser.height)
+        let scale = Math.min(100 / correctAnser.width, 100 / correctAnser.height)
         correctAnser.scale.set(scale)
         correctAnser.anchor.set(0.5)
         correctAnser.position.set(600, 170)

@@ -64,25 +64,67 @@
             // ON DUPLICATE KEY UPDATE Col1=VALUES(Col1),Col2=VALUES(Col2);";
             break;
         case 'delete':
-
-            // $items = $_GET['items'];
-            // $audio_arr = join(",",$items);
-            // echo $audio_arr;
-            // $sql = "DELETE FROM data WHERE id IN (".$audio_arr.")";
+            $items = $_GET['items'];
+            $audio_arr = join(",",$items);
+            $sql = "DELETE FROM data WHERE id IN (".$audio_arr.")";
+            $result = mysqli_query($con, $sql);
+            $data['result'] = $result;
+            echo json_encode($data, JSON_UNESCAPED_UNICODE);
             break;
-        case 'upload':
+        case 'upload': 
+            $file_data = $_GET['data'];
             $data = [];
-            echo count($_FILES['file']['tmp_name']);
-            // if(is_uploaded_file($_FILES['file']['tmp_name'])){
-            //     $upfile=$_FILES["file"]; 
-            //     $data['name']=$upfile["name"];
-            //     $data['type']=$upfile["type"];
-            //     $data['size']=$upfile["size"]; 
-            //     $data['tmp_name']=$upfile["tmp_name"];
-            // }
-            // // if (move_uploaded_file($_FILES["file"]["tmp_name"], $_FILES['file']['name'])){}
-            // echo json_encode($data, JSON_UNESCAPED_UNICODE);
+            for ($index=0; $index < count($_FILES['file']['tmp_name']); $index++) {
+                $file = json_decode($file_data[$index],true);
+                $path = $_FILES['file']['name'][$index];
+                $ext = pathinfo($path, PATHINFO_EXTENSION);
+                $filename = '../static/sound/tmp/' .uniqid(rand(), true) . '.' . $ext;
+                move_uploaded_file($_FILES['file']["tmp_name"][$index], $filename);
+
+                $content = [];
+                $content['index'] = $file['index'];
+                $content['filename'] = $filename;
+                array_push($data,$content);
+            }
+            
+            echo json_encode($data, JSON_UNESCAPED_UNICODE);
             break;
+        case 'update':
+            $data = [];
+            $item = json_decode($_GET['item'],true);
+            $id = $item['id'];
+            $sound_src = $item['sound_src'];
+            $category = implode(";",$item['category']);
+            $name = $item['name'];
+            $frequency = implode(";",$item['frequency']);
+            $waveform = $item['waveform'];
+            $audio_id = $item['audio_id'];
+
+            if ($id == -1) {
+                $sql = "INSERT INTO `data` 
+                (`sound_src`,`category`,`name`,`frequency`,`waveform`,`audio_id`) 
+                VALUES ('$sound_src','$category','$name','$frequency','$waveform','$audio_id')";
+                $result = mysqli_query($con, $sql);
+                $data['result'] = $result;
+                $data['id'] = $con -> insert_id;
+                echo json_encode($data, JSON_UNESCAPED_UNICODE);
+            }
+            else{
+                $sql = "UPDATE `data` SET 
+                sound_src = '$sound_src',
+                category = '$category',
+                name = '$name',
+                frequency = '$frequency',
+                waveform = '$waveform',
+                audio_id = '$audio_id'
+                 WHERE `id` = $id";
+                $result = mysqli_query($con, $sql);
+                $data['result'] = $result;
+                $data['id'] = $id;
+                $data['sql'] = $sql;
+                echo json_encode($data, JSON_UNESCAPED_UNICODE);
+            }
+            break;  
         default:
             # code...
             break;
