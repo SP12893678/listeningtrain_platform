@@ -1,5 +1,4 @@
 import * as PIXI from 'pixi.js'
-import dragonBones from 'pixi-dragonbones';
 import { apiManageRoleData } from '@/js/api'
 import { GlowFilter} from 'pixi-filters'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'

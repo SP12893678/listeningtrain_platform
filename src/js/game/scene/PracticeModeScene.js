@@ -96,6 +96,8 @@ export default class PracticeModeScene extends Scene {
             this.showNext.x = 425
             this.showNextCover.visible = true
             this.showNext.visible = true
+            this.listenBtn.interactive = false //鎖
+            this.nextBtn.interactive = false //鎖
             gsap.to(this.showNextCover, { pixi: { alpha: 1 }, duration: 1.5 })
             gsap.to(this.showNext, {
                 pixi: { text: '開始練習 ', alpha: 1, x: this.showNext.x + 100 },
@@ -121,10 +123,19 @@ export default class PracticeModeScene extends Scene {
                 duration: 1,
                 delay: 5,
             })
+            let time = 0
             gsap.delayedCall(6.5, () => {
-                this.questionSystem.play(this.questionNo - 1) //播放 after 3 seconds
+                this.listenBtn.interactive = true
+                this.nextBtn.interactive = true
+                time = this.questionSystem.play(this.questionNo - 1) //播放 after 3 seconds
                 this.showNextCover.visible = false
                 this.showNext.scale.set(1, 1)
+                this.character.armatureDisplay.animation.play('listen_up', 1)
+                gsap.delayedCall(time, () => {
+                    if (!this.character.armatureDisplay.animation.isPlaying) {
+                        this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen', 15, 1)
+                    } //聽完前都沒有點擊物件的話 手再放下
+                })
             })
         }
         screen.addChild(startBtn)
@@ -142,13 +153,24 @@ export default class PracticeModeScene extends Scene {
         screen.addChild(showNext)
 
         let listenBtn = this.listenBtn
-        listenBtn.click = () => questionSystem.play(this.questionNo - 1)
-
+        listenBtn.click = () => {
+            Sound.stopAll()
+            gsap.globalTimeline.clear()
+            this.character.action.animationPlayOriginal()
+            let time = this.questionSystem.play(this.questionNo - 1)
+            gsap.delayedCall(0, () => {
+                this.character.armatureDisplay.animation.play('listen_up', 1)
+                gsap.delayedCall(time, () => {
+                    this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen', 15, 1)
+                })
+            })
+        }
         environment.objects.forEach((object) => {
             object.click = () => {
                 if (environment.selected) environment.selected.filters = [new OutlineFilter(3, 0xf0aaee)]
                 environment.selected = object
                 object.filters = [new OutlineFilter(3, 0x1976d2)]
+                gsap.globalTimeline.clear()
                 this.nextQuestion()
             }
         })
@@ -365,7 +387,9 @@ export default class PracticeModeScene extends Scene {
         Sound.stopAll()
         gsap.globalTimeline.clear()
         this.showNext.visible = false
+        this.showNext.scale.set(1, 1)
         this.showNextCover.visible = false
+        this.character.action.animationPlayOriginal()
 
         // this.questionTotalNo = this.questionTotal
 
@@ -388,6 +412,10 @@ export default class PracticeModeScene extends Scene {
 
     nextQuestion() {
         Sound.stopAll()
+        gsap.globalTimeline.clear()
+        this.showNext.visible = false
+        this.showNextCover.visible = false
+        this.character.action.animationPlayOriginal()
         /* 顯示 */
         if (!this.environment.selected)
             this.showAnserDialog.showAnser(this.questionSystem.question[this.questionNo - 1], '')
@@ -408,7 +436,9 @@ export default class PracticeModeScene extends Scene {
             Sound.stopAll()
             Sound.add('wrong', '../static/sound/effect/wrong.mp3')
             Sound.play('wrong')
-            this.character.armatureDisplay.animation.fadeIn('emoji_sad', 0, 1, 1, 'emoji')
+            this.character.action.animationPlayOriginal()
+            let emojiAnimation = this.character.armatureDisplay.animation.fadeIn('emoji_sad', 0, 1, 0, 'emoji')
+            emojiAnimation.addBoneMask('emoji')
         }
         if (
             this.environment.selected &&
@@ -417,6 +447,7 @@ export default class PracticeModeScene extends Scene {
             Sound.stopAll()
             Sound.add('correct', '../static/sound/effect/correct.mp3')
             Sound.play('correct')
+            this.character.action.animationPlayOriginal()
             this.character.armatureDisplay.animation.fadeIn('clapHand', 0, 1, 1, 'hand')
             this.character.armatureDisplay.animation.fadeIn('emoji_fighting', 0, 1, 1, 'emoji')
             // animationName,fadeInTime,playTimes,layer,group,fadeOutMode
@@ -434,6 +465,8 @@ export default class PracticeModeScene extends Scene {
             this.showNext.x = 425
             this.showNextCover.visible = true
             this.showNext.visible = true
+            this.listenBtn.interactive = false
+            this.nextBtn.interactive = false
             gsap.to(this.showNextCover, { pixi: { alpha: 1 }, duration: 0.5 })
             gsap.to(this.showNext, {
                 pixi: { alpha: 1, x: this.showNext.x + 100 },
@@ -449,13 +482,19 @@ export default class PracticeModeScene extends Scene {
                 duration: 1,
                 delay: 1.5,
             })
+            let time = 0
             gsap.delayedCall(2.5, () => {
-                this.questionSystem.play(this.questionNo - 1) //播放 after 3 seconds
+                time = this.questionSystem.play(this.questionNo - 1) //播放 after 3 seconds
                 this.showNextCover.visible = false
-                this.character.armatureDisplay.animation.fadeIn('listen_up', 0, 1, 1)
-            })
-            gsap.delayedCall(4.5, () => {
-                this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen', 15, 1)
+                this.listenBtn.interactive = true
+                this.nextBtn.interactive = true
+                // this.character.action.animationPlayOriginal()
+                this.character.armatureDisplay.animation.play('listen_up', 1)
+                gsap.delayedCall(time, () => {
+                    if (!this.character.armatureDisplay.animation.isPlaying) {
+                        this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen', 15, 1)
+                    } //聽完前都沒有點擊物件的話 手再放下
+                })
             })
         }
     }
@@ -527,6 +566,8 @@ class QuestionSystem {
         Sound.stopAll()
         Sound.add(this.question[index].audio.audio_id, resources[this.question[index].audio.sound_src])
         Sound.play(this.question[index].audio.audio_id)
+        let test = resources[this.question[index].audio.sound_src].sound
+        return test.duration
     }
 }
 
