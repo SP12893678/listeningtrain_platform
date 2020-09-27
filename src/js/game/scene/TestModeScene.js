@@ -433,7 +433,7 @@ export default class TestModeScene extends Scene {
         result.addChild(answerBoard)
 
         /* 雷達圖 */
-        let labels = ['正確率', '反應\n速度', '  低頻\n辨識率', '  高頻\n辨識率', '完成度']
+        let labels = ['正確率', '反應\n速度', '  聲音頻率<300\n的正確率', '  聲音頻率>6000\n的正確率', '完成度']
         let datasets = [
             // { name: '最近一次測驗', data: [50, 10, 75, 150, 100] },
             // { name: '個人學習平均值', data: [100, 70, 150, 80, 30] },
@@ -502,14 +502,17 @@ export default class TestModeScene extends Scene {
 
         /**取得資料庫測驗資料並計算學習平均成績 */
         let past_exams = []
+        let the_enviro_past_exam
         let scroeSystem = new ScoreCaculate()
         let average_score = scroeSystem.getDefaultFormateObject()
+
         await apiManageExam({ type: 'get' }).then((res) => {
             console.log(res.data)
             past_exams = JSON.parse(res.data.exam).exam
 
+            the_enviro_past_exam = past_exams.filter((exam) => exam.enviro_id == this.environment.data.environment.id)
             scroeSystem.first_response_rate = past_exams[0].response_rate
-            past_exams.forEach((exam) => {
+            the_enviro_past_exam.forEach((exam) => {
                 average_score.accuracy.your += exam.accuracy.your
                 average_score.accuracy.all += exam.accuracy.all
                 average_score.completion.your += exam.completion.your
@@ -534,7 +537,7 @@ export default class TestModeScene extends Scene {
             Math.round((average_score.completion.your / average_score.completion.all) * 100),
         ]
         console.log(average_score_data)
-        this.chart.addChart('上一次平均學習成績', average_score_data)
+        if (the_enviro_past_exam.length != 0) this.chart.addChart('過去次平均學習成績', average_score_data)
 
         /**計算當前測驗成績 */
         console.log(this.questionSystem)
