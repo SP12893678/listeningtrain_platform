@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js'
 import dragonBones from 'pixi-dragonbones';
 import talkBubble from 'Component/talkBubble'
+import Sound from 'pixi-sound'
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -29,6 +30,9 @@ export default class Action{
                 case 'clapHand':
                     this.armatureDisplay.animation.gotoAndStopByTime('clapHand',0)
                     break
+                case 'shekeHand':
+                    this.animationPlayOriginal()
+                    break
                 default://TODO:
                     break
             }
@@ -40,20 +44,25 @@ export default class Action{
                 this.talkBubble.position.set(this.armatureDisplay.x,this.armatureDisplay.y-250)
                 this.armatureDisplay.parent.addChild(this.talkBubble)
             }
+            let gender = (this.armatureDisplay.armature.name == 'Boy')?'boy':'girl'
             switch(event.animationState.name){
                 case 'emoji_sad':
-                    this.talkBubble.talkMessage('Bad',event.animationState.totalTime)
+                    this.talkBubble.talkMessage('答錯了再接再厲',event.animationState.totalTime)
                     // this.talkBubble.talkMessage('好棒喔！',5)
-                    console.log('test start')
+                    Sound.add('no', '../static/sound/effect/wrong_'+gender+'.mp3')
+                    Sound.play('no')
                     break
                 case 'clapHand':
-                    this.talkBubble.talkMessage('Good',event.animationState.totalTime)
+                    this.talkBubble.talkMessage('恭喜你答對了',event.animationState.totalTime)
                     // this.talkBubble.talkMessage('好棒喔！',5)
-                    console.log('test start')
+                    Sound.add('bingo', '../static/sound/effect/correct_'+gender+'.mp3')
+                    Sound.play('bingo')
                     break
                 case 'shakeHand':
-                    this.talkBubble.talkMessage('Hello',event.animationState.totalTime)
-                    console.log('shake Hand start')
+                    this.talkBubble.talkMessage('你好',event.animationState.totalTime)
+                    Sound.stopAll()
+                    Sound.add('hello', '../static/sound/effect/hello_'+gender+'.mp3')
+                    Sound.play('hello')
                     break
                 default://TODO:
                     break

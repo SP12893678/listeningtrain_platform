@@ -32,6 +32,7 @@ export default class PracticeModeScene extends Scene {
         this.character = new character()
         // this.questionTotal = 10
         this.questionNo = 1
+        this.questionCorrectTotal = 0
         this.screenUp = new Container()
         this.questionNoShow = new Text(this.questionNo, style15)
         // this.starCheck = new Container()
@@ -48,6 +49,7 @@ export default class PracticeModeScene extends Scene {
         this.replayDialog = new Dialog('確定要重新開始嗎？')
         this.leaveBtn = new Button2(180, 50, ResourcesManager.leave, '結束練習')
         this.leaveDialog = new Dialog('確定要離開練習嗎？')
+        this.showTotalDialog = new Dialog('',2)
         this.questionSystem = new QuestionSystem()
         this.showAnserDialog = new showAnserDialog()
         this.ptdescription = new ptdescription()
@@ -351,6 +353,23 @@ export default class PracticeModeScene extends Scene {
             replayDialog.visible = true
         }
         screenDown.addChild(replayBtn)
+
+        /* showTotal dialog */
+        let showTotalDialog = this.showTotalDialog
+        showTotalDialog.visible = false
+        this.addChild(showTotalDialog)
+        // showTotalDialog.setBackgroundColor(color,alpha)
+        showTotalDialog.yesBtn.setBorder(0)
+        showTotalDialog.yesBtn.scale.set(0.8)
+        showTotalDialog.yesBtn.position.set(showTotalDialog.yesBtn.x,showTotalDialog.yesBtn.y+50)
+
+
+        showTotalDialog.yesBtn.click = () => {
+            /* yesBtn action */
+            Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
+            showTotalDialog.visible = false
+        }
+
         /* leave dialog */
         let leaveDialog = this.leaveDialog
         leaveDialog.visible = false
@@ -358,9 +377,19 @@ export default class PracticeModeScene extends Scene {
 
         leaveDialog.yesBtn.click = () => {
             /* yesBtn action */
-            this.reset()
-            Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
+            // Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
             leaveDialog.visible = false
+            showTotalDialog.visible = !leaveDialog.visible
+            showTotalDialog.text.text =
+            '作答情境: ' +
+            this.environment.data.environment.name +
+            '\n\n練習題數: ' +
+            this.questionNo +
+            ' 題' +
+            '\n答對題數: ' +
+            this.questionCorrectTotal +
+            ' 題'
+            this.reset()
         }
         leaveDialog.cancelBtn.click = () => {
             /* cancelBtn action */
@@ -391,6 +420,7 @@ export default class PracticeModeScene extends Scene {
 
         this.questionNo = 1
         this.questionNoShow.text = this.questionNo
+        this.questionCorrectTotal = 0
 
         // let starCheck = this.starCheck.children
         // starCheck.forEach((star) => {
@@ -440,6 +470,7 @@ export default class PracticeModeScene extends Scene {
             this.environment.selected &&
             this.environment.selected.data.pic_src == this.questionSystem.question[this.questionNo - 1].pic_src
         ) {
+            this.questionCorrectTotal++
             Sound.stopAll()
             Sound.add('correct', '../static/sound/effect/correct.mp3')
             Sound.play('correct')
