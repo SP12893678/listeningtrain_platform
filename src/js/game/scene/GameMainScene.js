@@ -147,10 +147,11 @@ export default class GameMainScene extends Scene {
             // armatureDisplay.animation.play('shakeHand', 1)
             // armatureDisplay.animation.fadeIn('shakeHand',0,1,1)
             // armatureDisplay.animation.fadeIn('fighting',0,1,2)
-
-            let handAnimation = armatureDisplay.animation.fadeIn('shakeHand', 0, 1, 1, 'hand')
-            let emojiAnimation = armatureDisplay.animation.fadeIn('fighting', 0, 1, 0, 'emoji')
-            emojiAnimation.addBoneMask('emoji') //只顯示表情這部分
+            if(!armatureDisplay.animation.isPlaying){
+                let handAnimation = armatureDisplay.animation.fadeIn('shakeHand', 0, 1, 1, 'hand')
+                let emojiAnimation = armatureDisplay.animation.fadeIn('emoji_hello', 0, 1, 0, 'emoji')
+                emojiAnimation.addBoneMask('emoji') //只顯示表情這部分
+            }
         }
         armatureDisplay.mouseout = function (mouseData) { }
         armatureDisplay.click = function () {

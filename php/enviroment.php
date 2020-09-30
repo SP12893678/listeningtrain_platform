@@ -29,6 +29,9 @@
         case 'delete':
             $id = $_GET['id'];
             $sql = "DELETE FROM enviro WHERE id = '". $id ."'";
+            $result = mysqli_query($con, $sql);
+            $data['result'] = $result;
+            echo json_encode($data, JSON_UNESCAPED_UNICODE);
             break;
         case 'update':
             $data = [];
@@ -60,7 +63,16 @@
                 echo json_encode($data, JSON_UNESCAPED_UNICODE);
             }
             break;
+        // case 'none':
+        //     $data = [];
+        //     $item = $_GET['data'];
+        //     for ($index=0; $index < 100000; $index++) { 
+        //         array_push($data,$item);
+        //     }
+        //     echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        //     break;
         default:
             # code...
+          
             break;
     }
