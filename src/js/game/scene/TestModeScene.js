@@ -55,6 +55,8 @@ export default class TestModeScene extends Scene {
         this.questionSystem = new QuestionSystem()
         this.testdescription = new testdescription()
 
+
+
         this.setBackground()
         this.setTitle()
         this.setCharacter()
@@ -107,6 +109,8 @@ export default class TestModeScene extends Scene {
             questionSystem.play(this.questionNo - 1)
         }
         screen.addChild(startBtn)
+
+
         let testdescription = this.testdescription
         testdescription.position.set(0, 0)
         this.addChild(testdescription)

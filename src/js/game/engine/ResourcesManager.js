@@ -65,7 +65,7 @@ import circle_go001 from '@/assets/images/circle_go001.png'
 import gear_inside from '@/assets/images/gear-inside.png'
 import gear_center from '@/assets/images/gear-center.png'
 import gear_outside from '@/assets/images/gear-outside.png'
-
+// import ptvideo from '@/assets/video/practicemode.mp4'
 
 const resources = {
     loading_bg: loadingBackground,
@@ -130,7 +130,7 @@ const resources = {
     correctAnswer: correctAnswer,
     yourAnswer: yourAnswer,
     check: check,
-
+    // ptvideo: ptvideo,
 }
 
 export default resources

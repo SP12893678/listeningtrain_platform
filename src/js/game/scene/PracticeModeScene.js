@@ -4,7 +4,7 @@ import Config from '@/js/game/Config'
 import HorizontalScroller from 'Component/HorizontalScroller'
 import Events from '@/js/game/Events'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
-import {style14,style15,style16,style21} from '@/js/game/engine/TextStyleManager'
+import { style14, style15, style16, style21 } from '@/js/game/engine/TextStyleManager'
 import character from '@/js/game/character'
 import Button2 from 'Component/button2'
 import Environment from '@/js/game/Environment'
@@ -16,6 +16,7 @@ import { Graphics, Container, Sprite, Text } from 'pixi.js/lib/core'
 import Sound from 'pixi-sound'
 import { apiManageAudio } from '@/js/api'
 import ptdescription from '@/js/game/ptdescription'
+import video from '@/js/game/video'
 import { gsap } from 'gsap'
 import { PixiPlugin } from 'gsap/PixiPlugin'
 
@@ -28,6 +29,8 @@ let resources = PIXI.loader.resources
 export default class PracticeModeScene extends Scene {
     constructor() {
         super()
+        this.cover = new PIXI.Graphics()
+        this.cover2 = new PIXI.Graphics()
         this.background = new Graphics()
         this.title = new Container()
         this.character = new character()
@@ -43,15 +46,19 @@ export default class PracticeModeScene extends Scene {
         this.startBtn = new Button2(200, 60, ResourcesManager.start, ' 開始   ')
         this.environment = new PracticeModeEnvironment()
         this.screenDown = new Container()
-        this.nextBtn = new Button2(160,50,ResourcesManager.nextQuestion,'下一題')
-        this.listenBtn = new Button2(180,50,ResourcesManager.listen,'再聽一次')
-        this.replayBtn = new Button2(180,50,ResourcesManager.reload,'重新開始')
+        this.nextBtn = new Button2(160, 50, ResourcesManager.nextQuestion, '下一題')
+        this.listenBtn = new Button2(180, 50, ResourcesManager.listen, '再聽一次')
+        this.replayBtn = new Button2(180, 50, ResourcesManager.reload, '重新開始')
         this.replayDialog = new Dialog('確定要重新開始嗎？')
         this.leaveBtn = new Button2(180, 50, ResourcesManager.leave, '結束練習')
         this.leaveDialog = new Dialog('確定要離開練習嗎？')
         this.questionSystem = new QuestionSystem()
         this.showAnserDialog = new showAnserDialog()
         this.ptdescription = new ptdescription()
+        this.video = new video()
+        this.btn_guide = new Button2(150, 70, ResourcesManager.help, '導覽')
+        this.btn_guidestep = new Button2(150, 70, ResourcesManager.help, '下一步')
+        this.btn_guideend = new Button2(150, 70, ResourcesManager.help, '完成')
 
         this.setBackground()
         this.setTitle()
@@ -93,6 +100,7 @@ export default class PracticeModeScene extends Scene {
             startBtn.visible = false
             screenCover.visible = false
             this.screenDown.visible = true
+            guidecircle.visible = false
 
             this.showNext.x = 425
             this.showNextCover.visible = true
@@ -131,19 +139,125 @@ export default class PracticeModeScene extends Scene {
                 time = this.questionSystem.play(this.questionNo - 1) //播放 after 3 seconds
                 this.showNextCover.visible = false
                 this.showNext.scale.set(1, 1)
-                this.character.armatureDisplay.animation.play('listen_up',1)
-                gsap.delayedCall(time , () => {
-                    if(!this.character.armatureDisplay.animation.isPlaying){
-                        this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen',15,1)
+                this.character.armatureDisplay.animation.play('listen_up', 1)
+                gsap.delayedCall(time, () => {
+                    if (!this.character.armatureDisplay.animation.isPlaying) {
+                        this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen', 15, 1)
                     }//聽完前都沒有點擊物件的話 手再放下
                 })
             })
         }
         screen.addChild(startBtn)
 
+        let cover = this.cover
+        cover.beginFill(0xffffff, 0);
+        cover.drawRect(0, 0, 1, 1)
+        cover.endFill();
+
+        let cover2 = this.cover2
+        cover2.beginFill(0xffffff, 0);
+        cover2.drawRect(0, 0, this.screen.length - this.leaveBtn.btnWidth, this.screenDown.height)
+        cover2.endFill();
+
+        let guidecircle = new Graphics()
+        guidecircle.lineStyle(5, 0xFF0000, 1);
+        guidecircle.drawCircle(screen.length / 2, screen.height / 2, 120);
+        guidecircle.endFill();
+        guidecircle.visible = false
+        screen.addChild(guidecircle)
+
+
+        /* guide  */
+        let guide = new PIXI.Text('點擊開始後尋找答案吧', style15)
+        guide.position.set(100, 350)
+        guide.visible = false
+
+        let btn_guide = this.btn_guide
+        btn_guide.pivot.set(btn_guide.btnWidth / 2, btn_guide.btnHeight / 2)
+        btn_guide.position.set(250, 350)
+        btn_guide.setBorder(0)
+        btn_guide.setBackgroundColor('', 0)
+        btn_guide.setText(style15)
+        btn_guide.mouseover = function (mouseData) {
+            btn_guide.scale.set(1.1)
+        }
+        btn_guide.mouseout = function (mouseData) {
+            btn_guide.scale.set(1)
+        }
+        btn_guide.visible = true
+        btn_guide.click = () => {
+            this.reset()
+            guidecircle.visible = true
+            btn_guide.visible = false
+            guide.visible = true
+            this.screenDown.mask = cover
+
+            window.setTimeout((() => btn_guidestep.visible = true), 12000);
+
+        }
+
+        let btn_guidestep = this.btn_guidestep
+        btn_guidestep.pivot.set(btn_guidestep.btnWidth / 2, btn_guidestep.btnHeight / 2)
+        btn_guidestep.position.set(250, 250)
+        btn_guidestep.setBorder(0)
+        btn_guidestep.setBackgroundColor('', 0)
+        btn_guidestep.setText(style15)
+        btn_guidestep.visible = false
+        btn_guidestep.mouseover = function (mouseData) {
+            btn_guidestep.scale.set(1.1)
+        }
+        btn_guidestep.mouseout = function (mouseData) {
+            btn_guidestep.scale.set(1)
+        }
+        btn_guidestep.click = () => {
+            btn_guidestep.visible = false
+            this.screenDown.mask = cover2
+            guide.setText('發現情境下的按鈕了嗎?\n快試試他們的功能吧!')
+            window.setTimeout((() => btn_guideend.visible = true), 10000);
+
+
+        }
+
+        let btn_guideend = this.btn_guideend
+        btn_guideend.pivot.set(btn_guideend.btnWidth / 2, btn_guideend.btnHeight / 2)
+        btn_guideend.position.set(250, 250)
+        btn_guideend.setBorder(0)
+        btn_guideend.setBackgroundColor('', 0)
+        btn_guideend.setText(style15)
+        btn_guideend.visible = false
+        btn_guideend.mouseover = function (mouseData) {
+            btn_guideend.scale.set(1.1)
+        }
+        btn_guideend.mouseout = function (mouseData) {
+            btn_guideend.scale.set(1)
+        }
+        btn_guideend.click = () => {
+            guidecircle.visible = false
+            btn_guideend.visible = false
+            btn_guide.visible = true
+            this.screenDown.mask = null
+            guide.setText('點擊開始後尋找答案吧')
+            guide.visible = false
+
+            this.reset()
+        }
+
+        this.addChild(btn_guide)
+        this.addChild(btn_guidestep)
+        this.addChild(btn_guideend)
+        this.addChild(guide)
+        this.screenDown.addChild(cover)
+        this.screenDown.addChild(cover2)
+        /* guide end */
+
+
         let ptdescription = this.ptdescription
         ptdescription.position.set(0, 0)
         this.addChild(ptdescription)
+
+        let video = this.video
+        video.position.set(0, 0)
+        this.addChild(video)
 
         let showNext = this.showNext
         showNext.style = style21
@@ -160,9 +274,9 @@ export default class PracticeModeScene extends Scene {
             this.character.action.animationPlayOriginal()
             let time = this.questionSystem.play(this.questionNo - 1)
             gsap.delayedCall(0, () => {
-                this.character.armatureDisplay.animation.play('listen_up',1)
-                gsap.delayedCall(time , () => {
-                    this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen',15,1)
+                this.character.armatureDisplay.animation.play('listen_up', 1)
+                gsap.delayedCall(time, () => {
+                    this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen', 15, 1)
                 })
             })
         }
@@ -235,7 +349,7 @@ export default class PracticeModeScene extends Scene {
         title.addChild(titleText)
         /* help */
 
-        let btn_help = new Button2(150,titleHeight * 0.8,ResourcesManager.help,'說明')
+        let btn_help = new Button2(150, titleHeight * 0.8, ResourcesManager.help, '說明')
         btn_help.pivot.set(150 / 2, titleHeight / 2)
         btn_help.position.set(
             Config.screen.width - 70,
@@ -254,6 +368,22 @@ export default class PracticeModeScene extends Scene {
         }
         btn_help.click = () => (this.ptdescription.dialog.visible = !this.ptdescription.dialog.visible)
         title.addChild(btn_help)
+
+        /* video */
+        let btn_video = new Button2(150, titleHeight * 0.8, ResourcesManager.help, '影片導覽')
+        btn_video.pivot.set(150 / 2, titleHeight / 2)
+        btn_video.position.set(Config.screen.width - 230, titleHeight / 2 + titleHeight * 0.1)
+        btn_video.setBorder(0)
+        btn_video.setBackgroundColor('', 0)
+        btn_video.setText(style15)
+        btn_video.mouseover = function (mouseData) {
+            btn_video.scale.set(1.1)
+        }
+        btn_video.mouseout = function (mouseData) {
+            btn_video.scale.set(1)
+        }
+        btn_video.click = () => (this.video.dialog.visible = !this.video.dialog.visible)
+        title.addChild(btn_video)
 
         this.addChild(title)
     }
@@ -352,7 +482,7 @@ export default class PracticeModeScene extends Scene {
         }
         /* replay button */
         let replayBtn = this.replayBtn
-        replayBtn.position.set(this.screen.length - replayBtn.btnWidth * 2 - 10,0)
+        replayBtn.position.set(this.screen.length - replayBtn.btnWidth * 2 - 10, 0)
         replayBtn.setBorder(0)
         replayBtn.setCornerRadius(15)
         replayBtn.setBackgroundColor(0xf8f9ea)
@@ -422,11 +552,11 @@ export default class PracticeModeScene extends Scene {
         this.showNextCover.visible = false
         this.character.action.animationPlayOriginal()
         /* 顯示 */
-        if (!this.environment.selected)this.showAnserDialog.showAnser(this.questionSystem.question[this.questionNo - 1],'')
+        if (!this.environment.selected) this.showAnserDialog.showAnser(this.questionSystem.question[this.questionNo - 1], '')
         else
-            this.showAnserDialog.showAnser(this.questionSystem.question[this.questionNo - 1],this.environment.selected.data)
+            this.showAnserDialog.showAnser(this.questionSystem.question[this.questionNo - 1], this.environment.selected.data)
         /* 判斷是否播放下一題 */
-        let check =!this.environment.selected ||this.environment.selected.data.pic_src ==this.questionSystem.question[this.questionNo - 1].pic_src? true: false
+        let check = !this.environment.selected || this.environment.selected.data.pic_src == this.questionSystem.question[this.questionNo - 1].pic_src ? true : false
         // let checkColor = (this.environment.selected.data.pic_src == this.questionSystem.question[this.questionNo - 1].pic_src) ? 0xFFFB00 : 0xDD9000
         /* 判斷要播的音效 */
         if (!check) {
@@ -484,10 +614,10 @@ export default class PracticeModeScene extends Scene {
                 this.listenBtn.interactive = true
                 this.nextBtn.interactive = true
                 // this.character.action.animationPlayOriginal()
-                this.character.armatureDisplay.animation.play('listen_up',1)
-                gsap.delayedCall(time , () => {
-                    if(!this.character.armatureDisplay.animation.isPlaying){
-                        this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen',15,1)
+                this.character.armatureDisplay.animation.play('listen_up', 1)
+                gsap.delayedCall(time, () => {
+                    if (!this.character.armatureDisplay.animation.isPlaying) {
+                        this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen', 15, 1)
                     }//聽完前都沒有點擊物件的話 手再放下
                 })
             })
@@ -673,7 +803,7 @@ class showAnserDialog extends Overlay {
             this.visible = false
             this.confirmButton.update()
         }
-        this.confirmButton.position.set((500 - this.confirmButton.width) / 2,270)
+        this.confirmButton.position.set((500 - this.confirmButton.width) / 2, 270)
         this.board.addChild(this.confirmButton)
 
         this.answerBoard.position.set(650, 300)
@@ -712,7 +842,7 @@ class showAnserDialog extends Overlay {
         for (let i = 0; i < this.answerRecord.length; i++) {
             let yourAnserBg = new Graphics()
             let bgColor =
-                this.answerRecord[i] == correctObject.pic_src? 0xc3ffa8 : 0xffccaa - i * 20
+                this.answerRecord[i] == correctObject.pic_src ? 0xc3ffa8 : 0xffccaa - i * 20
             yourAnserBg.beginFill(bgColor, 0.8)
             yourAnserBg.drawRoundedRect(0 + 145 * i, 0, 130, 130, 10)
             yourAnserBg.endFill()
@@ -765,10 +895,10 @@ class showAnserDialog extends Overlay {
             scroller.name = 'scroller'
             board.addChild(scroller)
         } else
-            yourAnser.position.set((500 - this.answerRecord.length * 140) / 2,105)
+            yourAnser.position.set((500 - this.answerRecord.length * 140) / 2, 105)
 
         correctAnser.texture = resources[correctObject.pic_src].texture
-        let scale = Math.min(100 / correctAnser.width,100 / correctAnser.height)
+        let scale = Math.min(100 / correctAnser.width, 100 / correctAnser.height)
         correctAnser.scale.set(scale)
         correctAnser.anchor.set(0.5)
         correctAnser.position.set(600, 170)
