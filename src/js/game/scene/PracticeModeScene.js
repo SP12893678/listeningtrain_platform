@@ -167,7 +167,7 @@ export default class PracticeModeScene extends Scene {
 
         /* guide  */
         let guide = new PIXI.Text('點擊開始後尋找答案吧', style15)
-        guide.position.set(100, 350)
+        guide.position.set(100, 300)
         guide.visible = false
 
         let btn_guide = this.btn_guide

@@ -135,7 +135,7 @@ export default class TrainModeScene extends Scene {
 
         /* guide  */
         let guide = new PIXI.Text('請點選情境中的物件\n就能聽到聲音喔', style15)
-        guide.position.set(120, 350)
+        guide.position.set(120, 300)
         guide.visible = false
 
         let btn_guide = this.btn_guide
