@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js'
 import dragonBones from 'pixi-dragonbones';
 import { apiManageRoleData } from '@/js/api'
 import clothing from './clothing'
+import action from './action'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
 import character_tex_json from '@/assets/json/Character_tex.json'
 import character_ske_json from '@/assets/json/Character_ske.json'
@@ -38,18 +39,17 @@ export default class Character{
         // this.armatureDisplay.addEventListener(dragonBones.EventObject.COMPLETE,()=>{
         //     this.armatureDisplay.animation.gotoAndStopByTime('clapHand',0)
         // })
-        this.armatureDisplay.armature.eventDispatcher.addDBEventListener(dragonBones.EventObject.COMPLETE, this.animationEventHandler,this)
         if(this.clothing != null)this.clothing.change_character_clothing(this.armatureDisplay,this.factory,gender);
     }
-    animationEventHandler(event) {
-        if (event.type === dragonBones.EventObject.COMPLETE) {
-            if (event.animationState.name === "clapHand") {
-                console.log("clapHand 動作完畢！！！");    
-                this.armatureDisplay.animation.gotoAndStopByTime('clapHand',0)    
-                //TODO:
-            }
-        }
-    }
+    // animationEventHandler(event) {
+    //     if (event.type === dragonBones.EventObject.COMPLETE) {
+    //         if (event.animationState.name === "clapHand") {
+    //             console.log("clapHand 動作完畢！！！");    
+    //             this.armatureDisplay.animation.gotoAndStopByTime('clapHand',0)    
+    //             //TODO:
+    //         }
+    //     }
+    // }
     get_character_data() {
         return apiManageRoleData({ type: 'getData'})
         .then((res) => {
@@ -71,7 +71,8 @@ export default class Character{
     async check_if_has_data(){
         await this.get_character_data();
         await this.show_character(this.gender);
-        this.clothing = new clothing(this.armatureDisplay,this.factory,this.gender,this.account);
+        this.clothing = new clothing(this.armatureDisplay,this.factory,this.gender);
+        this.action = new action(this.armatureDisplay)
         if(this.clothing_data != null){
             await this.clothing.changeClothes(this.clothing_data);
         }

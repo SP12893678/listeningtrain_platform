@@ -4,12 +4,7 @@ import Config from '@/js/game/Config'
 import HorizontalScroller from 'Component/HorizontalScroller'
 import Events from '@/js/game/Events'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
-import {
-    style14,
-    style15,
-    style16,
-    style21,
-} from '@/js/game/engine/TextStyleManager'
+import { style14, style15, style16, style21 } from '@/js/game/engine/TextStyleManager'
 import character from '@/js/game/character'
 import Button2 from 'Component/button2'
 import Environment from '@/js/game/Environment'
@@ -27,7 +22,6 @@ import { PixiPlugin } from 'gsap/PixiPlugin'
 gsap.registerPlugin(PixiPlugin)
 PixiPlugin.registerPIXI(PIXI)
 
-
 let resources = PIXI.loader.resources
 
 export default class PracticeModeScene extends Scene {
@@ -38,6 +32,7 @@ export default class PracticeModeScene extends Scene {
         this.character = new character()
         // this.questionTotal = 10
         this.questionNo = 1
+        this.questionCorrectTotal = 0
         this.screenUp = new Container()
         this.questionNoShow = new Text(this.questionNo, style15)
         // this.starCheck = new Container()
@@ -48,30 +43,17 @@ export default class PracticeModeScene extends Scene {
         this.startBtn = new Button2(200, 60, ResourcesManager.start, ' 開始   ')
         this.environment = new PracticeModeEnvironment()
         this.screenDown = new Container()
-        this.nextBtn = new Button2(
-            160,
-            50,
-            ResourcesManager.nextQuestion,
-            '下一題'
-        )
-        this.listenBtn = new Button2(
-            180,
-            50,
-            ResourcesManager.listen,
-            '再聽一次'
-        )
-        this.replayBtn = new Button2(
-            180,
-            50,
-            ResourcesManager.reload,
-            '重新開始'
-        )
+        this.nextBtn = new Button2(160, 50, ResourcesManager.nextQuestion, '下一題')
+        this.listenBtn = new Button2(180, 50, ResourcesManager.listen, '再聽一次')
+        this.replayBtn = new Button2(180, 50, ResourcesManager.reload, '重新開始')
         this.replayDialog = new Dialog('確定要重新開始嗎？')
         this.leaveBtn = new Button2(180, 50, ResourcesManager.leave, '結束練習')
         this.leaveDialog = new Dialog('確定要離開練習嗎？')
+        this.showTotalDialog = new Dialog('',2)
         this.questionSystem = new QuestionSystem()
         this.showAnserDialog = new showAnserDialog()
         this.ptdescription = new ptdescription()
+        this.timeline = gsap.timeline()
 
         this.setBackground()
         this.setTitle()
@@ -117,36 +99,43 @@ export default class PracticeModeScene extends Scene {
             this.showNext.x = 425
             this.showNextCover.visible = true
             this.showNext.visible = true
-            gsap.to(this.showNextCover, { pixi: { alpha: 1 }, duration: 1.5 })
-            gsap.to(this.showNext, {
+            this.listenBtn.interactive = false//鎖
+            this.nextBtn.interactive = false//鎖
+            this.timeline.to(this.showNextCover, { pixi: { alpha: 1 }, duration: 1.5 })
+            this.timeline.to(this.showNext, {
                 pixi: { text: '開始練習 ', alpha: 1, x: this.showNext.x + 100 },
                 duration: 1.5,
             })
-            gsap.to(this.showNext, {
+            this.timeline.to(this.showNext, {
                 pixi: { x: this.showNext.x + 200, alpha: 0 },
                 duration: 1,
-                delay: 1.5,
             })
-            gsap.to(this.showNext, {
+            this.timeline.to(this.showNext, {
                 pixi: { x: 525, text: 'Ready go! ', alpha: 1, scale: 1 },
                 duration: 1.5,
-                delay: 3,
             })
-            gsap.to(this.showNext, {
+            this.timeline.to(this.showNext, {
                 pixi: { scale: 2, alpha: 0 },
                 duration: 1,
-                delay: 5,
             })
-            gsap.to(this.showNextCover, {
+            this.timeline.to(this.showNextCover, {
                 pixi: { alpha: 0 },
                 duration: 1,
-                delay: 5,
             })
-            gsap.delayedCall(6.5, () => {
-                this.questionSystem.play(this.questionNo - 1) //播放 after 3 seconds
+            let time = 0
+            this.timeline.add(gsap.delayedCall(0.2, () => {
+                this.listenBtn.interactive = true
+                this.nextBtn.interactive = true
                 this.showNextCover.visible = false
                 this.showNext.scale.set(1, 1)
-            })
+                this.character.armatureDisplay.animation.play('listen_up',1)
+                time = this.questionSystem.play(this.questionNo - 1)
+                this.timeline.add(gsap.delayedCall(time , () => {
+                    if(!this.character.armatureDisplay.animation.isPlaying){
+                        this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen',15,1)
+                    }//聽完前都沒有點擊物件的話 手再放下
+                }))
+            }))
         }
         screen.addChild(startBtn)
 
@@ -163,14 +152,20 @@ export default class PracticeModeScene extends Scene {
         screen.addChild(showNext)
 
         let listenBtn = this.listenBtn
-        listenBtn.click = () => questionSystem.play(this.questionNo - 1)
-
+        listenBtn.click = () => {
+            Sound.stopAll()
+            this.timeline.clear()
+            this.timeline.add(gsap.delayedCall(0.2, () => {
+                this.character.armatureDisplay.animation.play('listen_up',1)
+                let time = this.questionSystem.play(this.questionNo - 1)
+                this.timeline.add(gsap.delayedCall(time , () => {
+                    this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen',15,1)
+                }))
+            }))
+        }
         environment.objects.forEach((object) => {
             object.click = () => {
-                if (environment.selected)
-                    environment.selected.filters = [
-                        new OutlineFilter(3, 0xf0aaee),
-                    ]
+                if (environment.selected) environment.selected.filters = [new OutlineFilter(3, 0xf0aaee)]
                 environment.selected = object
                 object.filters = [new OutlineFilter(3, 0x1976d2)]
                 this.nextQuestion()
@@ -214,11 +209,11 @@ export default class PracticeModeScene extends Scene {
             if (!this.startBtn.visible) this.leaveDialog.visible = true
             else Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
         }
-        btn_goback.mouseover = function (mouseData) {
+        btn_goback.mouseover = function(mouseData) {
             btn_goback.scale.set(scale * 1.1)
             goBackText.scale.set(1.1)
         }
-        btn_goback.mouseout = function (mouseData) {
+        btn_goback.mouseout = function(mouseData) {
             btn_goback.scale.set(scale)
             goBackText.scale.set(1)
         }
@@ -235,26 +230,18 @@ export default class PracticeModeScene extends Scene {
         title.addChild(titleText)
         /* help */
 
-        let btn_help = new Button2(
-            150,
-            titleHeight * 0.8,
-            ResourcesManager.help,
-            '說明'
-        )
+        let btn_help = new Button2(150, titleHeight * 0.8, ResourcesManager.help, '說明')
         btn_help.pivot.set(150 / 2, titleHeight / 2)
-        btn_help.position.set(
-            Config.screen.width - 70,
-            titleHeight / 2 + titleHeight * 0.1
-        )
+        btn_help.position.set(Config.screen.width - 70, titleHeight / 2 + titleHeight * 0.1)
         btn_help.setBorder(0)
         btn_help.setBackgroundColor('', 0)
         btn_help.setText(style15)
         this.bool = false
-        btn_help.click = () => { }
-        btn_help.mouseover = function (mouseData) {
+        btn_help.click = () => {}
+        btn_help.mouseover = function(mouseData) {
             btn_help.scale.set(1.1)
         }
-        btn_help.mouseout = function (mouseData) {
+        btn_help.mouseout = function(mouseData) {
             btn_help.scale.set(1)
         }
         btn_help.click = () => (this.ptdescription.dialog.visible = !this.ptdescription.dialog.visible)
@@ -329,7 +316,7 @@ export default class PracticeModeScene extends Scene {
         nextBtn.setCornerRadius(15)
         nextBtn.setBackgroundColor(0xf8f9ea)
         nextBtn.setText(style15)
-        nextBtn.update = () => { }
+        nextBtn.update = () => {}
         nextBtn.click = () => this.nextQuestion()
 
         screenDown.addChild(nextBtn)
@@ -357,10 +344,7 @@ export default class PracticeModeScene extends Scene {
         }
         /* replay button */
         let replayBtn = this.replayBtn
-        replayBtn.position.set(
-            this.screen.length - replayBtn.btnWidth * 2 - 10,
-            0
-        )
+        replayBtn.position.set(this.screen.length - replayBtn.btnWidth * 2 - 10, 0)
         replayBtn.setBorder(0)
         replayBtn.setCornerRadius(15)
         replayBtn.setBackgroundColor(0xf8f9ea)
@@ -369,6 +353,23 @@ export default class PracticeModeScene extends Scene {
             replayDialog.visible = true
         }
         screenDown.addChild(replayBtn)
+
+        /* showTotal dialog */
+        let showTotalDialog = this.showTotalDialog
+        showTotalDialog.visible = false
+        this.addChild(showTotalDialog)
+        // showTotalDialog.setBackgroundColor(color,alpha)
+        showTotalDialog.yesBtn.setBorder(0)
+        showTotalDialog.yesBtn.scale.set(0.8)
+        showTotalDialog.yesBtn.position.set(showTotalDialog.yesBtn.x,showTotalDialog.yesBtn.y+50)
+
+
+        showTotalDialog.yesBtn.click = () => {
+            /* yesBtn action */
+            Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
+            showTotalDialog.visible = false
+        }
+
         /* leave dialog */
         let leaveDialog = this.leaveDialog
         leaveDialog.visible = false
@@ -376,9 +377,19 @@ export default class PracticeModeScene extends Scene {
 
         leaveDialog.yesBtn.click = () => {
             /* yesBtn action */
-            this.reset()
-            Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
+            // Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
             leaveDialog.visible = false
+            showTotalDialog.visible = !leaveDialog.visible
+            showTotalDialog.text.text =
+            '作答情境: ' +
+            this.environment.data.environment.name +
+            '\n\n練習題數: ' +
+            this.questionNo +
+            ' 題' +
+            '\n答對題數: ' +
+            this.questionCorrectTotal +
+            ' 題'
+            this.reset()
         }
         leaveDialog.cancelBtn.click = () => {
             /* cancelBtn action */
@@ -398,14 +409,18 @@ export default class PracticeModeScene extends Scene {
     }
     reset() {
         Sound.stopAll()
-        gsap.globalTimeline.clear()
+        this.timeline.clear()
         this.showNext.visible = false
+        this.showNext.scale.set(1, 1)
         this.showNextCover.visible = false
+        this.character.action.talkBubble.alpha = 0
+        this.character.action.animationPlayOriginal()
 
         // this.questionTotalNo = this.questionTotal
 
         this.questionNo = 1
         this.questionNoShow.text = this.questionNo
+        this.questionCorrectTotal = 0
 
         // let starCheck = this.starCheck.children
         // starCheck.forEach((star) => {
@@ -423,12 +438,13 @@ export default class PracticeModeScene extends Scene {
 
     nextQuestion() {
         Sound.stopAll()
+        this.timeline.clear()
+        this.showNext.visible = false
+        this.showNextCover.visible = false
+        this.character.action.animationPlayOriginal()
         /* 顯示 */
         if (!this.environment.selected)
-            this.showAnserDialog.showAnser(
-                this.questionSystem.question[this.questionNo - 1],
-                ''
-            )
+            this.showAnserDialog.showAnser(this.questionSystem.question[this.questionNo - 1], '')
         else
             this.showAnserDialog.showAnser(
                 this.questionSystem.question[this.questionNo - 1],
@@ -437,8 +453,7 @@ export default class PracticeModeScene extends Scene {
         /* 判斷是否播放下一題 */
         let check =
             !this.environment.selected ||
-                this.environment.selected.data.pic_src ==
-                this.questionSystem.question[this.questionNo - 1].pic_src
+            this.environment.selected.data.pic_src == this.questionSystem.question[this.questionNo - 1].pic_src
                 ? true
                 : false
         // let checkColor = (this.environment.selected.data.pic_src == this.questionSystem.question[this.questionNo - 1].pic_src) ? 0xFFFB00 : 0xDD9000
@@ -447,16 +462,19 @@ export default class PracticeModeScene extends Scene {
             Sound.stopAll()
             Sound.add('wrong', '../static/sound/effect/wrong.mp3')
             Sound.play('wrong')
-            this.character.armatureDisplay.animation.fadeIn('emoji_sad', 0, 1, 1, 'emoji')
+            this.character.action.animationPlayOriginal()
+            let emojiAnimation = this.character.armatureDisplay.animation.fadeIn('emoji_sad', 0, 1, 0, 'emoji')
+            emojiAnimation.addBoneMask('emoji')
         }
         if (
             this.environment.selected &&
-            this.environment.selected.data.pic_src ==
-            this.questionSystem.question[this.questionNo - 1].pic_src
+            this.environment.selected.data.pic_src == this.questionSystem.question[this.questionNo - 1].pic_src
         ) {
+            this.questionCorrectTotal++
             Sound.stopAll()
             Sound.add('correct', '../static/sound/effect/correct.mp3')
             Sound.play('correct')
+            this.character.action.animationPlayOriginal()
             this.character.armatureDisplay.animation.fadeIn('clapHand', 0, 1, 1, 'hand')
             this.character.armatureDisplay.animation.fadeIn('emoji_fighting', 0, 1, 1, 'emoji')
             // animationName,fadeInTime,playTimes,layer,group,fadeOutMode
@@ -474,29 +492,35 @@ export default class PracticeModeScene extends Scene {
             this.showNext.x = 425
             this.showNextCover.visible = true
             this.showNext.visible = true
-            gsap.to(this.showNextCover, { pixi: { alpha: 1 }, duration: 0.5 })
-            gsap.to(this.showNext, {
+            this.listenBtn.interactive = false
+            this.nextBtn.interactive = false
+            this.timeline.to(this.showNextCover, { pixi: { alpha: 1 }, duration: 0.5 })
+            this.timeline.to(this.showNext, {
                 pixi: { alpha: 1, x: this.showNext.x + 100 },
                 duration: 1.5,
             })
-            gsap.to(this.showNext, {
+            this.timeline.to(this.showNext, {
                 pixi: { x: this.showNext.x + 200, alpha: 0 },
                 duration: 1,
-                delay: 1.5,
             })
-            gsap.to(this.showNextCover, {
+            this.timeline.to(this.showNextCover, {
                 pixi: { alpha: 0 },
                 duration: 1,
-                delay: 1.5,
             })
-            gsap.delayedCall(2.5, () => {
-                this.questionSystem.play(this.questionNo - 1) //播放 after 3 seconds
+            let time = 0
+            this.timeline.add(gsap.delayedCall(0.2, () => { 
                 this.showNextCover.visible = false
-                this.character.armatureDisplay.animation.fadeIn('listen_up', 0, 1, 1)
-            })
-            gsap.delayedCall(4.5, () => {
-                this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen',15,1)
-            })
+                this.listenBtn.interactive = true
+                this.nextBtn.interactive = true
+                // this.character.action.animationPlayOriginal()
+                this.character.armatureDisplay.animation.play('listen_up',1)
+                time = this.questionSystem.play(this.questionNo - 1)
+                this.timeline.add(gsap.delayedCall(time , () => {
+                    if(!this.character.armatureDisplay.animation.isPlaying){
+                        this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen',15,1)
+                    }//聽完前都沒有點擊物件的話 手再放下
+                }))
+            }))
         }
     }
 }
@@ -516,25 +540,20 @@ class PracticeModeEnvironment extends Environment {
             items: audio_arr,
         }).then((res) => {
             this.data.objects.forEach((object) => {
-                object.audio = res.data.filter(
-                    (audio) => audio.id == object.sound_src
-                )[0]
+                object.audio = res.data.filter((audio) => audio.id == object.sound_src)[0]
             })
         })
         this.objects.forEach((object) => {
             object.interactive = true
             object.buttonMode = true
             object.mouseover = () => {
-                if (this.selected != object)
-                    object.filters = [new OutlineFilter(3, 0x99ff99)]
+                if (this.selected != object) object.filters = [new OutlineFilter(3, 0x99ff99)]
             }
             object.mouseout = () => {
-                if (this.selected != object)
-                    object.filters = [new OutlineFilter(3, 0xf0aaee)]
+                if (this.selected != object) object.filters = [new OutlineFilter(3, 0xf0aaee)]
             }
             object.click = () => {
-                if (this.selected)
-                    this.selected.filters = [new OutlineFilter(3, 0xf0aaee)]
+                if (this.selected) this.selected.filters = [new OutlineFilter(3, 0xf0aaee)]
                 this.selected = object
                 object.filters = [new OutlineFilter(3, 0x1976d2)]
             }
@@ -570,11 +589,10 @@ class QuestionSystem {
 
     play(index) {
         Sound.stopAll()
-        Sound.add(
-            this.question[index].audio.audio_id,
-            resources[this.question[index].audio.sound_src]
-        )
+        Sound.add(this.question[index].audio.audio_id, resources[this.question[index].audio.sound_src])
         Sound.play(this.question[index].audio.audio_id)
+        let test = resources[this.question[index].audio.sound_src].sound
+        return test.duration
     }
 }
 
@@ -649,8 +667,7 @@ class showAnserDialog extends Overlay {
         this.board.addChild(yourAnser)
 
         let correctAnswerIcon = this.correctAnswerIcon
-        correctAnswerIcon.texture =
-            resources[ResourcesManager.correctAnswer].texture
+        correctAnswerIcon.texture = resources[ResourcesManager.correctAnswer].texture
         correctAnswerIcon.width = 40
         correctAnswerIcon.height = 40
         correctAnswerIcon.anchor.set(0.5)
@@ -672,15 +689,12 @@ class showAnserDialog extends Overlay {
 
         this.confirmButton.interactive = true
         this.confirmButton.buttonMode = true
-        this.confirmButton.update = () => { }
+        this.confirmButton.update = () => {}
         this.confirmButton.click = () => {
             this.visible = false
             this.confirmButton.update()
         }
-        this.confirmButton.position.set(
-            (500 - this.confirmButton.width) / 2,
-            270
-        )
+        this.confirmButton.position.set((500 - this.confirmButton.width) / 2, 270)
         this.board.addChild(this.confirmButton)
 
         this.answerBoard.position.set(650, 300)
@@ -718,10 +732,7 @@ class showAnserDialog extends Overlay {
         }
         for (let i = 0; i < this.answerRecord.length; i++) {
             let yourAnserBg = new Graphics()
-            let bgColor =
-                this.answerRecord[i] == correctObject.pic_src
-                    ? 0xc3ffa8
-                    : 0xffccaa - i * 20
+            let bgColor = this.answerRecord[i] == correctObject.pic_src ? 0xc3ffa8 : 0xffccaa - i * 20
             yourAnserBg.beginFill(bgColor, 0.8)
             yourAnserBg.drawRoundedRect(0 + 145 * i, 0, 130, 130, 10)
             yourAnserBg.endFill()
@@ -750,8 +761,7 @@ class showAnserDialog extends Overlay {
             times.position.set(10 + 145 * i, 10)
             yourAnser.addChild(times)
 
-            let checkAnswer =
-                this.answerRecord[i] == correctObject.pic_src ? 'O' : 'X'
+            let checkAnswer = this.answerRecord[i] == correctObject.pic_src ? 'O' : 'X'
             let checkStyle = style15.clone()
             let check = new Text(checkAnswer, checkStyle)
             check.style.fill = checkAnswer == 'O' ? 0x017100 : 0xee220c
@@ -764,26 +774,15 @@ class showAnserDialog extends Overlay {
         if (this.answerRecord.length > 3) {
             yourAnser.position.set(40, 105)
             board.removeChild(board.getChildByName('scroller'))
-            let scroller = new HorizontalScroller(
-                10,
-                this.yourAnser,
-                this.yourAnser_mask
-            )
+            let scroller = new HorizontalScroller(10, this.yourAnser, this.yourAnser_mask)
             scroller.move(1)
             scroller.position.set(30, 95 + 140)
             scroller.name = 'scroller'
             board.addChild(scroller)
-        } else
-            yourAnser.position.set(
-                (500 - this.answerRecord.length * 140) / 2,
-                105
-            )
+        } else yourAnser.position.set((500 - this.answerRecord.length * 140) / 2, 105)
 
         correctAnser.texture = resources[correctObject.pic_src].texture
-        let scale = Math.min(
-            100 / correctAnser.width,
-            100 / correctAnser.height
-        )
+        let scale = Math.min(100 / correctAnser.width, 100 / correctAnser.height)
         correctAnser.scale.set(scale)
         correctAnser.anchor.set(0.5)
         correctAnser.position.set(600, 170)

@@ -8,7 +8,11 @@ export const apiTest = (data) => userRequest.get('/test.php', { params: data })
 export const apiManageEnviroment = (data) => userRequest.get('/enviroment.php', { params: data })
 export const apiManageObject = (data) => userRequest.get('/object.php', { params: data })
 export const apiManageAudio = (data) => userRequest.get('/audio.php', { params: data })
-export const apiPostAudio = (file, data) => userRequest.post('/audio.php', file, { params: data })
+export const apiPostAudio = (file, data, loader) =>
+    userRequest.post('/audio.php', file, {
+        params: data,
+        onUploadProgress: loader,
+    })
 export const apiManageExcel = (file, data, loader) =>
     userRequest.post('/excel.php', file, {
         params: data,
@@ -26,3 +30,4 @@ export const apiManageFile = (file, data, loader) =>
         params: data,
         onUploadProgress: loader,
     })
+export const apiManageExam = (data) => userRequest.get('/exam.php', { params: data })

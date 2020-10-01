@@ -8,6 +8,7 @@ import Audio_editpage from 'Manage/Audio-editpage.vue'
 import Student_dashboard from 'Manage/Student-dashboard.vue'
 import Student_editpage from 'Manage/Student-editpage.vue'
 import Consultant_dashboard from 'Manage/Consultant-dashboard.vue'
+import Error from 'Manage/Error.vue'
 
 Vue.use(Router)
 
@@ -21,5 +22,7 @@ export default new Router({
         { path: '/student-dashboard', name: 'student-dashboard', component: Student_dashboard },
         { path: '/student-edit', name: 'student-edit', component: Student_editpage },
         { path: '/consultant-dashboard', name: 'consultant-dashboard', component: Consultant_dashboard },
+        { path: '/404', name: 'error', component: Error },
+        { path: '*', redirect: '/404' },
     ],
 })
