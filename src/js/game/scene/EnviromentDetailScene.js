@@ -71,18 +71,15 @@ export default class EnviromentDetailScene extends Scene {
         })
 
         /**取得資料庫測驗資料並計算學習平均成績 */
+        this.average_score_data = []
         let past_exams = []
         let scroeSystem = new ScoreCaculate()
         let average_score = scroeSystem.getDefaultFormateObject()
         await apiManageExam({ type: 'get' }).then((res) => {
+            if (res.data == null) return
             past_exams = JSON.parse(res.data.exam).exam
-            console.log(past_exams)
-
             scroeSystem.first_response_rate = past_exams[0].response_rate
-
             let the_enviro_past_exam = past_exams.filter((exam) => exam.enviro_id == this.data.environment.id)
-            console.log(the_enviro_past_exam)
-
             the_enviro_past_exam.forEach((exam) => {
                 average_score.accuracy.your += exam.accuracy.your
                 average_score.accuracy.all += exam.accuracy.all
@@ -95,7 +92,6 @@ export default class EnviromentDetailScene extends Scene {
                 average_score.low_frequency_accuracy.all += exam.low_frequency_accuracy.all
                 average_score.total++
             })
-            this.average_score_data = []
             if (the_enviro_past_exam.length == 0) return
             this.average_score_data = [
                 Math.round((average_score.accuracy.your / average_score.accuracy.all) * 100),
