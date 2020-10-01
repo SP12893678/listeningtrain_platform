@@ -280,8 +280,8 @@ export default class profile extends PIXI.Container {
             '完成度',
         ]
         let datasets = [
-            { name: '最近一次測驗', data: [50, 10, 75, 150, 100] },
-            { name: '個人學習平均值', data: [100, 70, 150, 80, 30] },
+            { name: '最近一次測驗', data: [50, 10, 75, 30, 80] },
+            { name: '個人學習平均值', data: [100, 70, 20, 80, 50] },
         ]
         let chart = new RadarChart(labels, datasets)
         chart.position.set(175, 275)
