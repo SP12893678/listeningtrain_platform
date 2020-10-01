@@ -32,6 +32,7 @@ export default class PracticeModeScene extends Scene {
         this.character = new character()
         // this.questionTotal = 10
         this.questionNo = 1
+        this.questionCorrectTotal = 0
         this.screenUp = new Container()
         this.questionNoShow = new Text(this.questionNo, style15)
         // this.starCheck = new Container()
@@ -48,9 +49,11 @@ export default class PracticeModeScene extends Scene {
         this.replayDialog = new Dialog('確定要重新開始嗎？')
         this.leaveBtn = new Button2(180, 50, ResourcesManager.leave, '結束練習')
         this.leaveDialog = new Dialog('確定要離開練習嗎？')
+        this.showTotalDialog = new Dialog('',2)
         this.questionSystem = new QuestionSystem()
         this.showAnserDialog = new showAnserDialog()
         this.ptdescription = new ptdescription()
+        this.timeline = gsap.timeline()
 
         this.setBackground()
         this.setTitle()
@@ -96,47 +99,43 @@ export default class PracticeModeScene extends Scene {
             this.showNext.x = 425
             this.showNextCover.visible = true
             this.showNext.visible = true
-            this.listenBtn.interactive = false //鎖
-            this.nextBtn.interactive = false //鎖
-            gsap.to(this.showNextCover, { pixi: { alpha: 1 }, duration: 1.5 })
-            gsap.to(this.showNext, {
+            this.listenBtn.interactive = false//鎖
+            this.nextBtn.interactive = false//鎖
+            this.timeline.to(this.showNextCover, { pixi: { alpha: 1 }, duration: 1.5 })
+            this.timeline.to(this.showNext, {
                 pixi: { text: '開始練習 ', alpha: 1, x: this.showNext.x + 100 },
                 duration: 1.5,
             })
-            gsap.to(this.showNext, {
+            this.timeline.to(this.showNext, {
                 pixi: { x: this.showNext.x + 200, alpha: 0 },
                 duration: 1,
-                delay: 1.5,
             })
-            gsap.to(this.showNext, {
+            this.timeline.to(this.showNext, {
                 pixi: { x: 525, text: 'Ready go! ', alpha: 1, scale: 1 },
                 duration: 1.5,
-                delay: 3,
             })
-            gsap.to(this.showNext, {
+            this.timeline.to(this.showNext, {
                 pixi: { scale: 2, alpha: 0 },
                 duration: 1,
-                delay: 5,
             })
-            gsap.to(this.showNextCover, {
+            this.timeline.to(this.showNextCover, {
                 pixi: { alpha: 0 },
                 duration: 1,
-                delay: 5,
             })
             let time = 0
-            gsap.delayedCall(6.5, () => {
+            this.timeline.add(gsap.delayedCall(0.2, () => {
                 this.listenBtn.interactive = true
                 this.nextBtn.interactive = true
-                time = this.questionSystem.play(this.questionNo - 1) //播放 after 3 seconds
                 this.showNextCover.visible = false
                 this.showNext.scale.set(1, 1)
-                this.character.armatureDisplay.animation.play('listen_up', 1)
-                gsap.delayedCall(time, () => {
-                    if (!this.character.armatureDisplay.animation.isPlaying) {
-                        this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen', 15, 1)
-                    } //聽完前都沒有點擊物件的話 手再放下
-                })
-            })
+                this.character.armatureDisplay.animation.play('listen_up',1)
+                time = this.questionSystem.play(this.questionNo - 1)
+                this.timeline.add(gsap.delayedCall(time , () => {
+                    if(!this.character.armatureDisplay.animation.isPlaying){
+                        this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen',15,1)
+                    }//聽完前都沒有點擊物件的話 手再放下
+                }))
+            }))
         }
         screen.addChild(startBtn)
 
@@ -155,22 +154,20 @@ export default class PracticeModeScene extends Scene {
         let listenBtn = this.listenBtn
         listenBtn.click = () => {
             Sound.stopAll()
-            gsap.globalTimeline.clear()
-            this.character.action.animationPlayOriginal()
-            let time = this.questionSystem.play(this.questionNo - 1)
-            gsap.delayedCall(0, () => {
-                this.character.armatureDisplay.animation.play('listen_up', 1)
-                gsap.delayedCall(time, () => {
-                    this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen', 15, 1)
-                })
-            })
+            this.timeline.clear()
+            this.timeline.add(gsap.delayedCall(0.2, () => {
+                this.character.armatureDisplay.animation.play('listen_up',1)
+                let time = this.questionSystem.play(this.questionNo - 1)
+                this.timeline.add(gsap.delayedCall(time , () => {
+                    this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen',15,1)
+                }))
+            }))
         }
         environment.objects.forEach((object) => {
             object.click = () => {
                 if (environment.selected) environment.selected.filters = [new OutlineFilter(3, 0xf0aaee)]
                 environment.selected = object
                 object.filters = [new OutlineFilter(3, 0x1976d2)]
-                gsap.globalTimeline.clear()
                 this.nextQuestion()
             }
         })
@@ -356,6 +353,23 @@ export default class PracticeModeScene extends Scene {
             replayDialog.visible = true
         }
         screenDown.addChild(replayBtn)
+
+        /* showTotal dialog */
+        let showTotalDialog = this.showTotalDialog
+        showTotalDialog.visible = false
+        this.addChild(showTotalDialog)
+        // showTotalDialog.setBackgroundColor(color,alpha)
+        showTotalDialog.yesBtn.setBorder(0)
+        showTotalDialog.yesBtn.scale.set(0.8)
+        showTotalDialog.yesBtn.position.set(showTotalDialog.yesBtn.x,showTotalDialog.yesBtn.y+50)
+
+
+        showTotalDialog.yesBtn.click = () => {
+            /* yesBtn action */
+            Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
+            showTotalDialog.visible = false
+        }
+
         /* leave dialog */
         let leaveDialog = this.leaveDialog
         leaveDialog.visible = false
@@ -363,9 +377,19 @@ export default class PracticeModeScene extends Scene {
 
         leaveDialog.yesBtn.click = () => {
             /* yesBtn action */
-            this.reset()
-            Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
+            // Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
             leaveDialog.visible = false
+            showTotalDialog.visible = !leaveDialog.visible
+            showTotalDialog.text.text =
+            '作答情境: ' +
+            this.environment.data.environment.name +
+            '\n\n練習題數: ' +
+            this.questionNo +
+            ' 題' +
+            '\n答對題數: ' +
+            this.questionCorrectTotal +
+            ' 題'
+            this.reset()
         }
         leaveDialog.cancelBtn.click = () => {
             /* cancelBtn action */
@@ -385,16 +409,18 @@ export default class PracticeModeScene extends Scene {
     }
     reset() {
         Sound.stopAll()
-        gsap.globalTimeline.clear()
+        this.timeline.clear()
         this.showNext.visible = false
         this.showNext.scale.set(1, 1)
         this.showNextCover.visible = false
+        this.character.action.talkBubble.alpha = 0
         this.character.action.animationPlayOriginal()
 
         // this.questionTotalNo = this.questionTotal
 
         this.questionNo = 1
         this.questionNoShow.text = this.questionNo
+        this.questionCorrectTotal = 0
 
         // let starCheck = this.starCheck.children
         // starCheck.forEach((star) => {
@@ -412,7 +438,7 @@ export default class PracticeModeScene extends Scene {
 
     nextQuestion() {
         Sound.stopAll()
-        gsap.globalTimeline.clear()
+        this.timeline.clear()
         this.showNext.visible = false
         this.showNextCover.visible = false
         this.character.action.animationPlayOriginal()
@@ -444,6 +470,7 @@ export default class PracticeModeScene extends Scene {
             this.environment.selected &&
             this.environment.selected.data.pic_src == this.questionSystem.question[this.questionNo - 1].pic_src
         ) {
+            this.questionCorrectTotal++
             Sound.stopAll()
             Sound.add('correct', '../static/sound/effect/correct.mp3')
             Sound.play('correct')
@@ -467,35 +494,33 @@ export default class PracticeModeScene extends Scene {
             this.showNext.visible = true
             this.listenBtn.interactive = false
             this.nextBtn.interactive = false
-            gsap.to(this.showNextCover, { pixi: { alpha: 1 }, duration: 0.5 })
-            gsap.to(this.showNext, {
+            this.timeline.to(this.showNextCover, { pixi: { alpha: 1 }, duration: 0.5 })
+            this.timeline.to(this.showNext, {
                 pixi: { alpha: 1, x: this.showNext.x + 100 },
                 duration: 1.5,
             })
-            gsap.to(this.showNext, {
+            this.timeline.to(this.showNext, {
                 pixi: { x: this.showNext.x + 200, alpha: 0 },
                 duration: 1,
-                delay: 1.5,
             })
-            gsap.to(this.showNextCover, {
+            this.timeline.to(this.showNextCover, {
                 pixi: { alpha: 0 },
                 duration: 1,
-                delay: 1.5,
             })
             let time = 0
-            gsap.delayedCall(2.5, () => {
-                time = this.questionSystem.play(this.questionNo - 1) //播放 after 3 seconds
+            this.timeline.add(gsap.delayedCall(0.2, () => { 
                 this.showNextCover.visible = false
                 this.listenBtn.interactive = true
                 this.nextBtn.interactive = true
                 // this.character.action.animationPlayOriginal()
-                this.character.armatureDisplay.animation.play('listen_up', 1)
-                gsap.delayedCall(time, () => {
-                    if (!this.character.armatureDisplay.animation.isPlaying) {
-                        this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen', 15, 1)
-                    } //聽完前都沒有點擊物件的話 手再放下
-                })
-            })
+                this.character.armatureDisplay.animation.play('listen_up',1)
+                time = this.questionSystem.play(this.questionNo - 1)
+                this.timeline.add(gsap.delayedCall(time , () => {
+                    if(!this.character.armatureDisplay.animation.isPlaying){
+                        this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen',15,1)
+                    }//聽完前都沒有點擊物件的話 手再放下
+                }))
+            }))
         }
     }
 }

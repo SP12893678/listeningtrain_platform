@@ -131,7 +131,7 @@ export default class Dialog extends Overlay {
         this.addChild(this.overlay)
         this.dialogWidth = width
         this.dialogHeight = height
-        this.settingDialog(Config.screen.width,Config.screen.height)
+        this.settingDialog()
     }
     setBackgroundColor(color,alpha){
         this.dialogBgColor = color;

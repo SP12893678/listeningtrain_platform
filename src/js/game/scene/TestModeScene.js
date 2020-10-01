@@ -42,8 +42,8 @@ export default class TestModeScene extends Scene {
         this.startBtn = new Button2(200, 60, ResourcesManager.start, ' 開始   ')
         this.environment = new TestModeEnvironment()
         this.screenDown = new Container()
-        this.leaveBtn = new Button2(180, 50, ResourcesManager.leave, '結束測驗')
-        this.leaveDialog = new Dialog('確定要離開測驗嗎？')
+        this.leaveBtn = new Button2(180, 50, ResourcesManager.leave, '中斷測驗')
+        this.leaveDialog = new Dialog('確定要中斷測驗嗎？')
         this.answerCheck = [
             { correctAnswer: '1', yourAnswer: '2' },
             { correctAnswer: '2', yourAnswer: '2' },
@@ -550,8 +550,8 @@ export default class TestModeScene extends Scene {
                 if (frequency.max > 2000) high = true
             })
             if (high) high_frequency_question_counts++
-            if (high && question.id == this.questionSystem.myAnswer[index].data.id) high_frequency_quest
-            ion_correct_counts++
+            if (high && question.id == this.questionSystem.myAnswer[index].data.id)
+                high_frequency_question_correct_counts++
         })
         exam.high_frequency_accuracy = {
             your: high_frequency_question_correct_counts,
