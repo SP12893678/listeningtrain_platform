@@ -648,6 +648,9 @@ export default {
                         if (res.data == 1) {
                             this.pwr = null;
                             this.pwr2 = null;
+                            this.name = null;
+                            this.mail = null;
+                            this.identity = null;
                             this.msg = true;
                             this.card = "註冊成功";
                             this.dialog2 = false;

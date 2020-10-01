@@ -31,7 +31,7 @@ let Application = PIXI.Application,
     Container = PIXI.Container,
     Sprite = PIXI.Sprite
 
-export default class trdescription extends PIXI.Container {
+export default class ptdescription extends PIXI.Container {
     constructor() {
         super()
         this.dialog = new Dialog('', 1)
@@ -93,10 +93,10 @@ export default class trdescription extends PIXI.Container {
         let standard = [
             { data: '進入練習模式後，點擊開始系統將開始撥放題目的聲音，' },
             { data: '接著我們該去情境內找找是什麼東西會有這樣的聲音呢?' },
-            { data: '找到之後，先點選他再去按下一題的按鈕,就會知道你的答案是不是對摟，' },
+            { data: '找到之後點選他,就會知道你的答案是不是對摟，' },
+            { data: '想跳到下一題就直接按下一題的按鈕就可以，' },
             { data: '如果聽不清楚也可以選擇再聽一次，' },
-            { data: '想休息的話就點選左上方的返回或右下方的結束練習就可以' },
-            { data: '好了!事不宜遲,趕快去練習看看吧!' },
+            { data: '想休息的話就點選左上方的返回或右下方的結束練習就可以了' },
         ]
         let index = 1
         standard.forEach((standard) => {

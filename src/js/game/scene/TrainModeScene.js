@@ -16,6 +16,7 @@ import Sound from 'pixi-sound'
 import { gsap } from 'gsap'
 import { PixiPlugin } from 'gsap/PixiPlugin'
 import trdescription from '@/js/game/traindescription'
+import video from '@/js/game/video'
 import * as dat from 'dat.gui'
 
 gsap.registerPlugin(PixiPlugin)
@@ -27,16 +28,26 @@ export default class TrainModeScene extends Scene {
     constructor() {
         super()
         this.background = new PIXI.Graphics()
+        this.cover = new PIXI.Graphics()
+        this.screenCover = new PIXI.Graphics()
+        this.environment_mask = new PIXI.Graphics()
         this.title = new Container()
         this.character = new character()
         this.environmentArea = new Container()
         this.objectList = new ObjectList()
         this.gearlocking = new GearLocking()
         this.trdescription = new trdescription()
+        this.video = new video()
+        this.btn_guide = new Button2(150, 70, ResourcesManager.help, '導覽')
+        this.btn_guidestep = new Button2(150, 70, ResourcesManager.help, '下一步')
+        this.btn_guideend = new Button2(150, 70, ResourcesManager.help, '完成')
+
+
 
         this.setBackground()
         this.setTitle()
         this.setCharacter()
+
 
     }
 
@@ -45,6 +56,7 @@ export default class TrainModeScene extends Scene {
         await environment.init(id)
         let scale = 1000 / environment.width
         environment.scale.set(scale, scale)
+
 
         let objectList = this.objectList
         objectList.objects = []
@@ -64,6 +76,7 @@ export default class TrainModeScene extends Scene {
                 gearlocking.position.set(x - gearlocking.xxx / 2, y - gearlocking.yyy / 2)
                 let objectList_object = objectList.objects.filter((o) => o.id == object.data.id)[0]
                 objectList.selectListItem(objectList_object)
+
             }
         })
 
@@ -79,15 +92,140 @@ export default class TrainModeScene extends Scene {
         let trdescription = this.trdescription
         trdescription.position.set(0, 0)
 
+        let video = this.video
+        video.position.set(0, 0)
 
+        // var { x, y } = environment.objects[4].position
+        // let screenCover = this.screenCover
+        // screenCover.beginFill(0x000000, 0.5)
+        // screenCover.drawRoundedRect(0, 0, 1000, 625)
+        // screenCover.endFill()
+        // // screenCover.beginHole()
+        // screenCover.beginFill(0xff0000, 0)
+        // screenCover.drawCircle(x, y, 110)
+        // // screenCover.endHole()
+        // screenCover.endFill()
+        // environment.addChild(screenCover)
+
+        let cover = this.cover
+        var { x, y } = environment.objects[4].position
+        cover.beginFill(0xffffff, 0);
+        cover.drawCircle(x, y, 110);
+        cover.endFill();
+        environment.addChild(cover)
+
+
+
+
+
+
+
+
+
+        let environment_mask = this.environment_mask
+        environment_mask.beginFill(0x000000, 0)
+        environment_mask.drawRect(0, 0, 1000, 625)
+        environment_mask.endFill()
+        environment.addChild(environment_mask)
 
         environment.position.set(500, 100)
-
         environment.addChild(gearlocking)
+
+
+
+        /* guide  */
+        let guide = new PIXI.Text('請點選情境中的物件\n就能聽到聲音喔', style15)
+        guide.position.set(120, 300)
+        guide.visible = false
+
+        let btn_guide = this.btn_guide
+        btn_guide.pivot.set(btn_guide.btnWidth / 2, btn_guide.btnHeight / 2)
+        btn_guide.position.set(250, 350)
+        btn_guide.setBorder(0)
+        btn_guide.setBackgroundColor('', 0)
+        btn_guide.setText(style15)
+        btn_guide.mouseover = function (mouseData) {
+            btn_guide.scale.set(1.1)
+        }
+        btn_guide.mouseout = function (mouseData) {
+            btn_guide.scale.set(1)
+        }
+        btn_guide.visible = true
+        btn_guide.click = () => {
+
+            btn_guide.visible = false
+            guide.visible = true
+            environment.mask = cover
+            // screenCover.visible = true
+            objectList.visible = false
+            scroller.visible = false
+
+            gsap.delayedCall(5, () => {
+                btn_guidestep.visible = true
+            })
+
+        }
+
+        let btn_guidestep = this.btn_guidestep
+        btn_guidestep.pivot.set(btn_guidestep.btnWidth / 2, btn_guidestep.btnHeight / 2)
+        btn_guidestep.position.set(250, 250)
+        btn_guidestep.setBorder(0)
+        btn_guidestep.setBackgroundColor('', 0)
+        btn_guidestep.setText(style15)
+        btn_guidestep.visible = false
+        btn_guidestep.mouseover = function (mouseData) {
+            btn_guidestep.scale.set(1.1)
+        }
+        btn_guidestep.mouseout = function (mouseData) {
+            btn_guidestep.scale.set(1)
+        }
+        btn_guidestep.click = () => {
+
+            btn_guidestep.visible = false
+            environment.mask = environment_mask
+            // screenCover.visible = true
+            objectList.visible = true
+            scroller.visible = true
+            environment.visible = false
+            guide.setText('接下來點點看下面的表單\n一樣能聽到他的聲音喔')
+            gsap.delayedCall(5, () => {
+                btn_guideend.visible = true
+            })
+        }
+
+        let btn_guideend = this.btn_guideend
+        btn_guideend.pivot.set(btn_guideend.btnWidth / 2, btn_guideend.btnHeight / 2)
+        btn_guideend.position.set(250, 250)
+        btn_guideend.setBorder(0)
+        btn_guideend.setBackgroundColor('', 0)
+        btn_guideend.setText(style15)
+        btn_guideend.visible = false
+        btn_guideend.mouseover = function (mouseData) {
+            btn_guideend.scale.set(1.1)
+        }
+        btn_guideend.mouseout = function (mouseData) {
+            btn_guideend.scale.set(1)
+        }
+        btn_guideend.click = () => {
+            environment.visible = true
+            btn_guideend.visible = false
+            btn_guide.visible = true
+            guide.setText('請點選情境中的物件\n就能聽到聲音喔')
+
+            guide.visible = false
+        }
+        /* guide end */
+
+
         this.addChild(environment)
         this.addChild(objectList)
         this.addChild(scroller)
+        this.addChild(btn_guide)
+        this.addChild(btn_guidestep)
+        this.addChild(btn_guideend)
+        this.addChild(guide)
         this.addChild(trdescription)
+        this.addChild(video)
     }
 
     setBackground() {
@@ -98,6 +236,7 @@ export default class TrainModeScene extends Scene {
         this.addChild(background)
     }
     setTitle() {
+
         let title = this.title
         /* titlePanel */
         let titlePanel = new PIXI.Graphics()
@@ -145,7 +284,6 @@ export default class TrainModeScene extends Scene {
         btn_help.setBorder(0)
         btn_help.setBackgroundColor('', 0)
         btn_help.setText(style15)
-        btn_help.click = () => { }
         btn_help.mouseover = function (mouseData) {
             btn_help.scale.set(1.1)
         }
@@ -154,9 +292,27 @@ export default class TrainModeScene extends Scene {
         }
         btn_help.click = () => (this.trdescription.dialog.visible = !this.trdescription.dialog.visible)
         title.addChild(btn_help)
+        /* video */
+        let btn_video = new Button2(150, titleHeight * 0.8, ResourcesManager.help, '影片導覽')
+        btn_video.pivot.set(150 / 2, titleHeight / 2)
+        btn_video.position.set(Config.screen.width - 230, titleHeight / 2 + titleHeight * 0.1)
+        btn_video.setBorder(0)
+        btn_video.setBackgroundColor('', 0)
+        btn_video.setText(style15)
+        btn_video.mouseover = function (mouseData) {
+            btn_video.scale.set(1.1)
+        }
+        btn_video.mouseout = function (mouseData) {
+            btn_video.scale.set(1)
+        }
+        btn_video.click = () => (this.video.dialog.visible = !this.video.dialog.visible)
+        title.addChild(btn_video)
+
 
         this.addChild(title)
     }
+
+
     /* 建立角色 */
     async setCharacter() {
         /* Character */

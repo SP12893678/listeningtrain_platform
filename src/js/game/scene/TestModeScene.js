@@ -17,6 +17,7 @@ import { OutlineFilter } from 'pixi-filters'
 import Sound from 'pixi-sound'
 import testdescription from '@/js/game/testdescription'
 import ScoreCaculate from '@/js/game/exam/ScoreCaculate'
+import * as dat from 'dat.gui'
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -55,6 +56,8 @@ export default class TestModeScene extends Scene {
         this.answerBoard = new AnswerBoard(this.answerCheck)
         this.questionSystem = new QuestionSystem()
         this.testdescription = new testdescription()
+
+
 
         this.setBackground()
         this.setTitle()
@@ -108,6 +111,8 @@ export default class TestModeScene extends Scene {
             questionSystem.play(this.questionNo - 1)
         }
         screen.addChild(startBtn)
+
+
         let testdescription = this.testdescription
         testdescription.position.set(0, 0)
         this.addChild(testdescription)
@@ -283,35 +288,6 @@ export default class TestModeScene extends Scene {
         screen.height = 630
         screen.position.set(480, this.screenUp.y + 65)
         this.addChild(screen)
-
-        // let environment = this.environment
-        // await environment.init('1')
-        // let scale = screen.length / environment.width
-        // environment.scale.set(scale, scale)
-        // screen.height = environment.height
-        // screen.addChild(environment)
-
-        // let screenCover = this.screenCover
-        // screenCover.beginFill(0xffffff, 0.8)
-        // screenCover.drawRoundedRect(0, 0, screen.length, environment.height, 10)
-        // screenCover.endFill()
-        // screen.addChild(screenCover)
-
-        // /* start button */
-        // let startBtn = this.startBtn
-        // startBtn.pivot.set(startBtn.btnWidth / 2, startBtn.btnHeight / 2)
-        // startBtn.position.set(screen.length / 2, screen.height / 2)
-        // startBtn.setBorder(0)
-        // startBtn.setBackgroundColor(0xf8f9ea)
-        // startBtn.setText(style15)
-        // startBtn.click = () => {
-        //     this.screenUp.visible = !this.screenUp.visible
-        //     startBtn.visible = !startBtn.visible
-        //     screenCover.visible = !screenCover.visible
-        //     this.screenDown.visible = !this.screenDown.visible
-        //     this.timer.start()
-        // }
-        // screen.addChild(startBtn)
     }
     setScreenDown() {
         let screenDown = this.screenDown
@@ -395,7 +371,7 @@ export default class TestModeScene extends Scene {
         result.addChild(EnvironmentPic)
         /* result text */
         let resultText = this.resultText
-        resultText.position.set(600, 115)
+        resultText.position.set(550, 60)
         result.addChild(resultText)
         /* answerCheck*/
         let no = new PIXI.Text('題數', style15)
@@ -439,14 +415,14 @@ export default class TestModeScene extends Scene {
             // { name: '個人學習平均值', data: [100, 70, 150, 80, 30] },
         ]
         let chart = new RadarChart(labels, datasets)
-        chart.position.set(resultText.x + 225, no.y + 170)
+        chart.position.set(780, 570)
         chart.barLabel.position.set(-390, 340)
         chart.scale.set(380 / chart.width)
         result.addChild(chart)
         this.chart = chart
         /* button:各能力計算標準 */
         let standardBtn = new Button2(180, 40, ResourcesManager.question, '能力計算標準')
-        standardBtn.position.set(resultText.x + 270, no.y + 350)
+        standardBtn.position.set(820, 740)
         standardBtn.setText(style8)
         standardBtn.setBorder(0)
         standardBtn.setCornerRadius(10)
@@ -457,8 +433,23 @@ export default class TestModeScene extends Scene {
 
         let line = new PIXI.Graphics()
         line.lineStyle(2, 0x000000)
-        line.drawRect(resultText.x, no.y, 450, 320)
+        line.drawRect(0, 0, 450, 350)
+        line.position.set(550, 375)
         result.addChild(line)
+
+        // const gui = new dat.GUI()
+        // var effectController = {
+        //     chart: { X: 550, Y: 70 },
+        // }
+
+        // var chartgui = gui.addFolder('chart')
+        // chartgui.add(effectController.chart, 'X', 0, 1600, 1).onChange(countChange)
+        // chartgui.add(effectController.chart, 'Y', 0, 900, 1).onChange(countChange)
+        // chartgui.open()
+
+        // function countChange() {
+        //     chart.position.set(effectController.chart.X, effectController.chart.Y)
+        // }
     }
     async showResult() {
         //test
@@ -479,21 +470,6 @@ export default class TestModeScene extends Scene {
         let correct = this.answerCheck.filter((check) => {
             return check.correctAnswer.id == check.yourAnswer.data.id
         })
-        let correctTotal = correct.length
-        let resultText = this.resultText
-
-        resultText.text =
-            '作答情境: ' +
-            environmentName +
-            '\n作答題數: ' +
-            this.questionTotal +
-            ' 題' +
-            '\n答對題數: ' +
-            correctTotal +
-            ' 題' +
-            '\n作答時間: ' +
-            this.timer.text.text
-        resultText.style = style17
 
         let envionmentPicTexture = this.environment.background._texture
         let scale = Math.max(450 / envionmentPicTexture.width, 280 / envionmentPicTexture.height)
@@ -501,13 +477,14 @@ export default class TestModeScene extends Scene {
         this.resultEnvironmentPic.scale.set(scale)
 
         /**取得資料庫測驗資料並計算學習平均成績 */
+        this.average_score_data = []
         let past_exams = []
-        let the_enviro_past_exam
+        let the_enviro_past_exam = []
         let scroeSystem = new ScoreCaculate()
         let average_score = scroeSystem.getDefaultFormateObject()
 
         await apiManageExam({ type: 'get' }).then((res) => {
-            console.log(res.data)
+            if (res.data == null) return
             past_exams = JSON.parse(res.data.exam).exam
 
             the_enviro_past_exam = past_exams.filter((exam) => exam.enviro_id == this.environment.data.environment.id)
@@ -603,15 +580,32 @@ export default class TestModeScene extends Scene {
         }
 
         console.log(exam)
-        let data = [
-            Math.round((exam.accuracy.your / exam.accuracy.all) * 100),
-            exam.response_rate,
-            Math.round((exam.low_frequency_accuracy.your / exam.low_frequency_accuracy.all) * 100),
-            Math.round((exam.high_frequency_accuracy.your / exam.high_frequency_accuracy.all) * 100),
-            Math.round((exam.completion.your / exam.completion.all) * 100),
-        ]
-        // this.chart.addChart('最近一次測驗', data)
+        exam.enviro_id = this.environment.data.environment.id
+        apiManageExam({ type: 'update', data: exam }).then((res) => {
+            console.log(res.data)
+        })
 
+        let correctTotal = correct.length
+        let resultText = this.resultText
+
+        resultText.text =
+            '作答情境: ' +
+            environmentName +
+            '\n作答題數: ' +
+            this.questionTotal +
+            ' 題' +
+            '\n答對題數: ' +
+            correctTotal +
+            ' 題' +
+            '\n作答時間: ' +
+            this.timer.text.text +
+            '\n完成物件數: ' +
+            exam.completion.your +
+            '\n聲音頻率>6000正確題數: ' +
+            exam.high_frequency_accuracy.your +
+            '\n聲音頻率<300正確題數: ' +
+            exam.low_frequency_accuracy.your
+        resultText.style = style17
         this.answerBoard.update()
     }
 }
