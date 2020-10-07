@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js'
 import { OutlineFilter } from 'pixi-filters'
+import { Text } from 'pixi.js/lib/core'
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -14,17 +15,35 @@ export class Environment {
         this.enviro_data = enviro_data
         this.object_data = object_data
         this.enviro_container = new Container()
+        this.enviro_bg = new Sprite()
         this.setup()
     }
 
     setup() {
+        this.drawText()
         this.creat_Background()
         this.creat_Objects()
     }
 
+    drawText() {
+        let text = new Text('請使用右側編輯區功能匯入情境背景與物件')
+        const style = new PIXI.TextStyle({
+            fontFamily: 'jf-openhuninn',
+            fontSize: 36,
+            fill: '#ffffff',
+        })
+        text.style = style
+        text.position.set((1000 - text.width) / 2, (625 - text.height) / 2)
+        this.enviro_container.addChild(text)
+    }
+
     creat_Background() {
         // 新增情境背景並設定大小
-        this.enviro_bg = new Sprite(resources[this.enviro_data.background_src].texture)
+        this.enviro_bg = new Sprite()
+        if (this.enviro_data.background_src != undefined) {
+            let texture = resources[this.enviro_data.background_src].texture
+            this.enviro_bg.texture = texture
+        }
         var scale = this.app.screen.width / this.enviro_bg.width
         this.enviro_bg.scale.set(scale, scale)
         this.enviro_container.addChild(this.enviro_bg)

@@ -12,6 +12,7 @@ import profile from '@/js/game/profile'
 import set from '@/js/game/set'
 import * as particles from 'pixi-particles'
 import emitter2 from '@/assets/json/emitter2.json'
+import MissionBoard from '../component/MissionBoard'
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -24,30 +25,35 @@ export default class GameMainScene extends Scene {
     constructor() {
         super()
         this.background = new Sprite()
-        this.container = new Container()//for bubble
+        this.container = new Container() //for bubble
         this.character = new character(this.account)
         this.profile = new profile(this.account)
         this.set = new set()
+        this.missionBoard = new MissionBoard()
         this.button = new RoundedButton(400, 80, '出征')
         this.btn_profile = new RoundedButton(120, 60, '個人資訊')
         this.btn_backpack = new RoundedButton(120, 60, '背包')
         this.btn_set = new RoundedButton(120, 60, '其他')
+        this.btn_mission = new RoundedButton(120, 60, '任務')
         this.test = new Sprite()
 
         this.init()
     }
     async init() {
         this.setBackground()
-        this.doParticles()
+        // this.doParticles()
         this.setButtonsBg()
         this.setProfileButton()
         this.setButton()
         this.setBackPackButton()
         this.setSetButton()
+        this.setMissionButton()
         this.setGetButton()
         await this.setCharacter()
         this.setProfile()
         this.setSet()
+        this.addChild(this.missionBoard)
+        this.missionBoard.visible = false
     }
     setBackground() {
         let background = new Sprite(resources[ResourcesManager.game_main_bg].texture)
@@ -81,17 +87,17 @@ export default class GameMainScene extends Scene {
         emitter.emit = true
         update()
     }
-    setButtonsBg(){
+    setButtonsBg() {
         let btnsBg = new PIXI.Graphics()
-        btnsBg.beginFill(0xFF96D7,0.18)
-        btnsBg.drawRoundedRect(800, 270, 500, 300, 50)
+        btnsBg.beginFill(0xff96d7, 0.18)
+        btnsBg.drawRoundedRect(800, 270, 500, 400, 50)
         btnsBg.endFill()
         this.addChild(btnsBg)
     }
     setButton() {
         let button = this.button
         button.setBorder(0)
-        button.setBackgroundColor(0x8B8DFF,0.8)
+        button.setBackgroundColor(0x8b8dff, 0.8)
         let style = style7.clone()
         style.fontSize = 36
         button.setText(style)
@@ -102,7 +108,7 @@ export default class GameMainScene extends Scene {
     setProfileButton() {
         let btn_profile = this.btn_profile
         btn_profile.setBorder(0)
-        btn_profile.setBackgroundColor(0xFF968D)
+        btn_profile.setBackgroundColor(0xff968d)
         btn_profile.setText(style7)
         btn_profile.position.set(850, 440)
         btn_profile.click = () => (this.profile.dialog.visible = !this.profile.dialog.visible)
@@ -111,7 +117,7 @@ export default class GameMainScene extends Scene {
     setBackPackButton() {
         let btn_backpack = this.btn_backpack
         btn_backpack.setBorder(0)
-        btn_backpack.setBackgroundColor(0xFF968D)
+        btn_backpack.setBackgroundColor(0xff968d)
         btn_backpack.setText(style7)
         btn_backpack.position.set(990, 440)
         btn_backpack.click = () => Events.emit('goto', { id: 'backpack', animate: 'fadeIn' })
@@ -121,11 +127,21 @@ export default class GameMainScene extends Scene {
     setSetButton() {
         let btn_set = this.btn_set
         btn_set.setBorder(0)
-        btn_set.setBackgroundColor(0xFF968D)
+        btn_set.setBackgroundColor(0xff968d)
         btn_set.setText(style7)
         btn_set.position.set(1130, 440)
         btn_set.click = () => (this.set.dialog.visible = !this.set.dialog.visible)
         this.addChild(btn_set)
+    }
+
+    setMissionButton() {
+        let btn_mission = this.btn_mission
+        btn_mission.setBorder(0)
+        btn_mission.setBackgroundColor(0xff968d)
+        btn_mission.setText(style7)
+        btn_mission.position.set(850, 520)
+        btn_mission.click = () => (this.missionBoard.visible = true)
+        this.addChild(btn_mission)
     }
 
     setGetButton() {
@@ -143,7 +159,7 @@ export default class GameMainScene extends Scene {
         temp.click = () => {
             temp.texture = resources[ResourcesManager.gift_open].texture
             let category = 'clothes'
-            let no = (this.character.gender == 'gg') ? 5 : 6
+            let no = this.character.gender == 'gg' ? 5 : 6
             if (this.dialog == null) {
                 let dialog = new Dialog('恭喜你獲得', 2)
                 dialog.setSize(400, 300)
@@ -158,7 +174,7 @@ export default class GameMainScene extends Scene {
                     temp.texture = resources[ResourcesManager.gift].texture
                     let check = this.character.clothing.addWardrobeClothes(category, no)
                     this.dialog.visible = false
-                    check.then(success => {
+                    check.then((success) => {
                         Events.emit('warning', { no: success })
                     })
                 }
@@ -174,9 +190,9 @@ export default class GameMainScene extends Scene {
 
         let style = style7.clone()
         style.fill = 0x000000
-        let text = new PIXI.Text('新手禮包',style)
+        let text = new PIXI.Text('新手禮包', style)
         text.anchor.set(0.5)
-        text.position.set(1500,115)
+        text.position.set(1500, 115)
         this.addChild(text)
     }
     /* 建立角色 */
@@ -192,18 +208,18 @@ export default class GameMainScene extends Scene {
         this.addChild(armatureDisplay)
         armatureDisplay.interactive = true
         armatureDisplay.buttonMode = true
-        armatureDisplay.mouseover = function (mouseData) {
+        armatureDisplay.mouseover = function(mouseData) {
             // armatureDisplay.animation.play('shakeHand', 1)
             // armatureDisplay.animation.fadeIn('shakeHand',0,1,1)
             // armatureDisplay.animation.fadeIn('fighting',0,1,2)
-            if(!armatureDisplay.animation.isPlaying){
+            if (!armatureDisplay.animation.isPlaying) {
                 let handAnimation = armatureDisplay.animation.fadeIn('shakeHand', 0, 1, 1, 'hand')
                 let emojiAnimation = armatureDisplay.animation.fadeIn('emoji_hello', 0, 1, 0, 'emoji')
                 emojiAnimation.addBoneMask('emoji') //只顯示表情這部分
             }
         }
-        armatureDisplay.mouseout = function (mouseData) { }
-        armatureDisplay.click = function () {
+        armatureDisplay.mouseout = function(mouseData) {}
+        armatureDisplay.click = function() {
             t.profile.dialog.visible = !t.profile.dialog.visible
         }
         //this.armatureDisplay.animation.play('shakeHand',1);
