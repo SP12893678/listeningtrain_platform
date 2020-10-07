@@ -43,6 +43,7 @@ import goBack from '@/assets/images/icon/goBack.png'
 import help from '@/assets/images/icon/help.png'
 import clock from '@/assets/images/icon/clock.png'
 import start from '@/assets/images/icon/start.png'
+import pause from '@/assets/images/icon/pause.png'
 import nextQuestion from '@/assets/images/icon/nextQuestion.png'
 import reload from '@/assets/images/icon/reload.png'
 import leave from '@/assets/images/icon/leave.png'
@@ -65,7 +66,7 @@ import circle_go001 from '@/assets/images/circle_go001.png'
 import gear_inside from '@/assets/images/gear-inside.png'
 import gear_center from '@/assets/images/gear-center.png'
 import gear_outside from '@/assets/images/gear-outside.png'
-// import ptvideo from '@/assets/video/practicemode.mp4'
+// import practicevideo from '@/assets/video/practicemode.mp4'
 
 const resources = {
     loading_bg: loadingBackground,
@@ -109,6 +110,7 @@ const resources = {
     help: help,
     clock: clock,
     start: start,
+    pause: pause,
     nextQuestion: nextQuestion,
     reload: reload,
     leave: leave,
@@ -130,7 +132,7 @@ const resources = {
     correctAnswer: correctAnswer,
     yourAnswer: yourAnswer,
     check: check,
-    // ptvideo: ptvideo,
+    // practicevideo: practicevideo,
 }
 
 export default resources
