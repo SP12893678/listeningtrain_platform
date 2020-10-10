@@ -11,7 +11,7 @@ import Environment from '@/js/game/Environment'
 import { OutlineFilter, ShockwaveFilter, GlowFilter } from 'pixi-filters'
 import { Graphics, Container, Sprite, Text } from 'pixi.js/lib/core'
 import HorizontalScroller from 'Component/HorizontalScroller'
-import { apiManageAudio } from '@/js/api'
+import { apiManageAudio,apiManageLearning } from '@/js/api'
 import Sound from 'pixi-sound'
 import { gsap } from 'gsap'
 import { PixiPlugin } from 'gsap/PixiPlugin'
@@ -351,7 +351,15 @@ class TrainModeEnvironment extends Environment {
     objectClick(object) {
         Sound.stopAll()
         Sound.add(object.data.audio.audio_id, resources[object.data.audio.sound_src])
-        Sound.play(object.data.audio.audio_id)
+        Sound.play(object.data.audio.audio_id,{complete:()=>{
+            console.log('complete',object.data.audio.audio_id)
+            let date = new Date()
+            let item = {
+                id: object.data.audio.id,
+                time:`${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+            };
+            apiManageLearning({type:'update',mode:'train',item:item}).then(res=>{console.log(res.data)})
+        }})
         object.update()
     }
 }
