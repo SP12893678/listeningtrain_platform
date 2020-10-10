@@ -4,18 +4,22 @@ import RoundedButton from 'Component/button3'
 import VerticalScroller from 'Component/VerticalScroller'
 import Overlay from './overlay'
 import Config from '@/js/game/Config'
-import { style7, style1 } from '@/js/game/engine/TextStyleManager'
+import { style1,style7, style23,style22 } from '@/js/game/engine/TextStyleManager'
 import GraphicsTool from 'Component/GraphicsTool'
-import { OutlineFilter, ShockwaveFilter, GlowFilter } from 'pixi-filters'
+import { OutlineFilter, ShockwaveFilter, GlowFilter,DropShadowFilter } from 'pixi-filters'
+import { apiManageMission } from "@/js/api";
+import ResourcesManager from '@/js/game/engine/ResourcesManager'
 import { gsap } from 'gsap'
 import { PixiPlugin } from 'gsap/PixiPlugin'
 
 gsap.registerPlugin(PixiPlugin)
 PixiPlugin.registerPIXI(PIXI)
+let resources = PIXI.loader.resources
 
 export default class MissionBoardDialog extends Overlay {
     constructor() {
         super()
+        this.missions = []
         this.missionBoard = new MissionBoard()
         this.missionBoard.position.set(
             (Config.screen.width - this.missionBoard.width) / 2,
@@ -24,9 +28,27 @@ export default class MissionBoardDialog extends Overlay {
         this.addChild(this.missionBoard)
     }
 
-    async init() {}
+    async init() {
+        this.missions = []
+        this.missionBoard = new MissionBoard()
+        this.missionBoard.position.set(
+            (Config.screen.width - this.missionBoard.width) / 2,
+            (Config.screen.height - this.missionBoard.height) / 2
+        )
+        this.addChild(this.missionBoard)
+        await apiManageMission({type:'get',amount:'all'}).then(res=>{
+            this.missions = res.data
+            this.missions.forEach(mission=>{
+                mission.required = JSON.parse(mission.required)
+                mission.rewards = JSON.parse(mission.rewards)
+                this.missionBoard.missionList.addListitem(mission)
+            })
+            console.log('mission',this.missions)
+        })
+    }
 
-    show() {
+    async show() {
+        await this.init()
         this.visible = true
     }
 }
@@ -37,12 +59,14 @@ class MissionBoard extends Container {
         this.background = new Graphics()
         this.closeBtn = new Container()
         this.missionBtn = new RoundedButton(300, 100, '每日任務')
-        this.missionList = new Container()
+        this.missionBtn2 = new RoundedButton(300, 100, '成長任務')
+        this.missionList = new MissionList()
         // this.scroller = new VerticalScroller()
 
         this.setBackground()
         this.setCloseButton()
         this.setMissionButton()
+        this.setMissionList()
     }
 
     setBackground() {
@@ -78,14 +102,39 @@ class MissionBoard extends Container {
         let missionBtn = this.missionBtn
         missionBtn.setBorder(0)
         missionBtn.setBackgroundColor(0xffffff, 0.5)
-        missionBtn.setText(style7)
+        missionBtn.setText(style23)
+        missionBtn.click = ()=>{
+            this.missionList.content.removeChildren()
+            let missions = this.parent.missions.filter(mission => mission.type == '每日任務')
+            missions.forEach(mission=> this.missionList.addListitem(mission))
+        }
         missionBtn.position.set(50, 100)
         this.addChild(missionBtn)
+
+        let missionBtn2 = this.missionBtn2
+        missionBtn2.setBorder(0)
+        missionBtn2.setBackgroundColor(0xffffff, 0.5)
+        missionBtn2.setText(style23)
+        missionBtn2.click = ()=>{
+            this.missionList.content.removeChildren()
+            let missions = this.parent.missions.filter(mission => mission.type == '成長任務')
+            missions.forEach(mission=> this.missionList.addListitem(mission))
+        }
+
+        missionBtn2.position.set(50, 225)
+        this.addChild(missionBtn2)
+    }
+
+    setMissionList(){
+        let missionList = this.missionList
+        missionList.position.set(400,100)
+        this.addChild(missionList)
     }
 }
 
 class MissionList extends Container {
     constructor() {
+        super()
         this.content = new Container()
         this.content_mask = new Graphics()
         this.content_mask.beginFill(0x000000, 1)
@@ -102,7 +151,8 @@ class MissionList extends Container {
         let content_mask = this.content_mask
 
         let item = new MissionListItem(data)
-        item.position.set(0, 0)
+        item.position.set(0, (content.children.length) * 150)
+        console.log(content.children.length)
         content.addChild(item)
     }
 }
@@ -110,5 +160,110 @@ class MissionList extends Container {
 class MissionListItem extends Container {
     constructor(data) {
         super()
+        this.mission = data
+        this.complete = false
+        this.background = new Graphics()
+        this.title = new Text()
+        this.description = new Text()
+        this.rewards = new Container()
+        this.actionBtn = new Container()
+        this.requiredCounter = new Text()
+
+        this.setBackground()
+        this.setTitle()
+        this.setDescription()
+        this.setActionButton()
+        this.setRewards()
+        this.setRequiredCounter()
+    }
+
+    setBackground() {
+        let background = this.background
+        background.beginFill(0xffffff,1)
+        background.drawRoundedRect(0,0,800,135,12)
+        background.endFill()
+        background.filters = [new DropShadowFilter()]
+        this.addChild(background)
+    }
+
+    setTitle() {
+        let title = this.title
+        title.text = this.mission.title
+        title.style = style23
+        title.position.set(20,25)
+        this.addChild(title)
+    }
+    
+    setDescription() {
+        let description = this.description
+        description.text = this.mission.description
+        description.style = style22
+        description.position.set(20,70)
+        this.addChild(description)
+    }
+
+    setRewards(){
+        let rewards = this.rewards
+        for (let index = 0; index < 3; index++) {
+            let item = new Container()
+            let background = new Graphics()
+            background.beginFill(0xFFD36B,0.5)
+            background.drawRoundedRect(0,0,80,80,10)
+            background.endFill()
+            // background.filters = [new DropShadowFilter()]
+            item.addChild(background)
+
+            let icon = new Sprite()
+            icon.texture = resources[ResourcesManager.money_bag].texture
+            let scale = 60 / icon.width
+            icon.scale.set(scale)
+            icon.position.set((item.width-icon.width)/2,(item.height-icon.height)/2)
+            item.addChild(icon)
+
+            item.position.set(index*95,0)
+            rewards.addChild(item)
+        }
+
+        rewards.position.set(300+20+15,35)
+        this.addChild(rewards)
+    }
+
+    setActionButton(){
+        let actionBtn = this.actionBtn
+        let canvas = document.createElement('canvas');
+        canvas.width  = 200;
+        canvas.height = 60;
+        let ctx = canvas.getContext('2d');
+        let gradient = ctx.createLinearGradient(0, 0, 0, 50);
+        gradient.addColorStop(0, "#FFBE3B");
+        gradient.addColorStop(1, "#F58F4B");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        let background = new PIXI.Sprite(PIXI.Texture.fromCanvas(canvas));
+        let background_mask = new Graphics()
+        background_mask.beginFill(0x000000,1)
+        background_mask.drawRoundedRect(0,0,150,50,25)
+        background_mask.endFill()
+        background.mask = background_mask
+        actionBtn.addChild(background)
+        actionBtn.addChild(background_mask)
+
+        let text = new Text()
+        text.text = '領取獎勵'
+        text.style = style7
+        text.anchor.set(0.5,0.5)
+        text.position.set(actionBtn.width/2,actionBtn.height/2)
+        actionBtn.addChild(text)
+
+        actionBtn.position.set(630,70)
+        this.addChild(actionBtn)
+    }
+
+    setRequiredCounter(){
+        let requiredCounter = new Text()
+        requiredCounter.text = `0 / ${this.mission.required.times}`
+        requiredCounter.position.set(670,30)
+        this.addChild(requiredCounter)
     }
 }

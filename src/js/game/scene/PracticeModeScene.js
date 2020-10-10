@@ -508,6 +508,9 @@ export default class PracticeModeScene extends Scene {
         leaveDialog.yesBtn.click = () => {
             /* yesBtn action */
             // Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
+
+            console.log(this.questionSystem)
+
             leaveDialog.visible = false
             showTotalDialog.visible = !leaveDialog.visible
             showTotalDialog.text.text =

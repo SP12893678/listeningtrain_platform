@@ -156,6 +156,19 @@ const style21 = new TextStyle({
     fontWeight: "bold",
     strokeThickness: 8
 })//for show next
+const style22 = new TextStyle({
+    fontFamily: 'jf-openhuninn',
+    fontSize: 20,
+    fill: '0x000000',
+    breakWords: true,
+    wordWrap: true,
+    wordWrapWidth: 300,
+})
+const style23 = new TextStyle({
+    fontFamily: 'jf-openhuninn',
+    fontSize: 24,
+    fill: '#000000',
+})
 export {
     style1,
     style2,
@@ -178,4 +191,6 @@ export {
     style19,
     style20,
     style21,
+    style22,
+    style23,
 }

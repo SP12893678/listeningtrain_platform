@@ -69,6 +69,7 @@ import circle_go001 from '@/assets/images/circle_go001.png'
 import gear_inside from '@/assets/images/gear-inside.png'
 import gear_center from '@/assets/images/gear-center.png'
 import gear_outside from '@/assets/images/gear-outside.png'
+import money_bag from '@/assets/images/money-bag.png'
 // import ptvideo from '@/assets/video/practicemode.mp4'
 
 const resources = {
@@ -136,7 +137,8 @@ const resources = {
     check: check,
     gift: gift,
     gift_open: gift_open,
-    game_main_bg: game_main_bg
+    game_main_bg: game_main_bg,
+    money_bag:money_bag
     // ptvideo: ptvideo,
 }
 

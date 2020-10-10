@@ -144,7 +144,7 @@ export default class GameMainScene extends Scene {
         btn_mission.setBackgroundColor(0xff968d)
         btn_mission.setText(style7)
         btn_mission.position.set(850, 520)
-        btn_mission.click = () => (this.missionBoard.visible = true)
+        btn_mission.click = async () => (this.missionBoard.show())
         this.addChild(btn_mission)
     }
 
