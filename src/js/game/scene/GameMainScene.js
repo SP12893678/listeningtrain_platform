@@ -35,6 +35,8 @@ export default class GameMainScene extends Scene {
         this.btn_backpack = new RoundedButton(120, 60, '背包')
         this.btn_set = new RoundedButton(120, 60, '其他')
         this.btn_mission = new RoundedButton(120, 60, '任務')
+        this.btn_shop = new RoundedButton(120, 60, '商城')
+        this.btn_achievement = new RoundedButton(120, 60, '成就')
         this.test = new Sprite()
 
         this.init()
@@ -48,6 +50,8 @@ export default class GameMainScene extends Scene {
         this.setBackPackButton()
         this.setSetButton()
         this.setMissionButton()
+        this.setShopButton()
+        this.setAchievementButton()
         this.setGetButton()
         await this.setCharacter()
         this.setProfile()
@@ -142,6 +146,24 @@ export default class GameMainScene extends Scene {
         btn_mission.position.set(850, 520)
         btn_mission.click = () => (this.missionBoard.visible = true)
         this.addChild(btn_mission)
+    }
+
+    setShopButton() {
+        let btn_shop = this.btn_shop
+        btn_shop.setBorder(0)
+        btn_shop.setBackgroundColor(0xff968d)
+        btn_shop.setText(style7)
+        btn_shop.position.set(990, 520)
+        this.addChild(btn_shop)
+    }
+
+    setAchievementButton() {
+        let btn_achievement = this.btn_achievement
+        btn_achievement.setBorder(0)
+        btn_achievement.setBackgroundColor(0xff968d)
+        btn_achievement.setText(style7)
+        btn_achievement.position.set(1130, 520)
+        this.addChild(btn_achievement)
     }
 
     setGetButton() {
