@@ -8,6 +8,8 @@
             $account = $_SESSION['account'];
             $sql = "SELECT * FROM learning where account='$account'";
             $result = mysqli_query($con, $sql);
+            // $data['count'] = mysqli_num_rows($result);
+            echo json_encode(mysqli_fetch_array($result), JSON_UNESCAPED_UNICODE);
             break;
         case 'update':
             $data = [];
@@ -37,6 +39,29 @@
                     $data['sql'] = $sql;
                     echo json_encode($data, JSON_UNESCAPED_UNICODE);
                     break;
+                case 'test':
+                    $account = $_SESSION['account'];
+                    $item = $_GET['item'];
+                    $sql = "SELECT * FROM `learning` where account='$account'";
+                    $result = mysqli_query($con, $sql);
+                    if(mysqli_num_rows($result)<1) insertEmptyTable($con);
+
+                    $sql = "SELECT * FROM `learning` where account='$account'";
+                    $result = mysqli_query($con, $sql);
+                    $passdata = mysqli_fetch_array($result);
+                    $items = json_decode($passdata['test'], true);               
+                    $item = json_decode($item, true);
+                    array_push($items['test'],$item);
+                    
+                    $items = json_encode($items, JSON_UNESCAPED_UNICODE);
+                    $sql = "UPDATE `learning` SET 
+                    test = '$items'
+                    WHERE `account` = '$account'";
+                    $result = mysqli_query($con, $sql);
+                    $data['result'] = $result;
+                    $data['sql'] = $sql;
+                    echo json_encode($data, JSON_UNESCAPED_UNICODE);
+                    break;
                 default:
                     # code...
                     break;
@@ -49,10 +74,16 @@
 
 function insertEmptyTable($con)
 {
-    $past_data = [];
-    $past_data['train'] = [];
+    $train = [];
+    $train['train'] = [];
+    $practice = [];
+    $practice['practice'] = [];
+    $test = [];
+    $test['test'] = [];
     $account = $_SESSION['account'];
-    $past_data = json_encode($past_data, JSON_UNESCAPED_UNICODE);
-    $sql = "INSERT INTO `learning` (`account`,`train`) VALUES ('$account','$past_data')";
+    $train = json_encode($train, JSON_UNESCAPED_UNICODE);
+    $practice = json_encode($practice, JSON_UNESCAPED_UNICODE);
+    $test = json_encode($test, JSON_UNESCAPED_UNICODE);
+    $sql = "INSERT INTO `learning` (`account`,`train`,`practice`,`test`) VALUES ('$account','$train','$practice','$test')";
     $result = mysqli_query($con, $sql);
 }

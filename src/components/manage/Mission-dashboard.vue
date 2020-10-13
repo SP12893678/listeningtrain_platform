@@ -48,8 +48,12 @@
                         loading-text
                         show-select
                         multi-sort
+                        single-expand
                         show-expand
                     >
+                        <template v-slot:expanded-item="{ headers, item }">
+                            <td :colspan="headers.length">More info about {{ item.title }}</td>
+                        </template>
                     </v-data-table>
                 </v-skeleton-loader>
             </v-list-item-content>
@@ -63,18 +67,18 @@ import { apiManageEnviroment, apiManageObject,apiManageMission } from "@/js/api"
 export default {
     data(){
         return{
-             mission_data_table: {
+            mission_data_table: {
                 header: [
                     { text: "名稱", align: "start", value: "title" },
                     { text: "敘述", value: "description" },
                     { text: "類型", value: "type" },
-                    { text: '', value: 'data-table-expand' },
+                    { text: '', value: 'data-table-expand' }
                 ],
                 selected: [],
                 search: "",
                 loading: true,
             },
-            missions:[]
+            missions:[],
         }
     },
     async mounted(){
@@ -89,6 +93,8 @@ export default {
                 .then((res) => {
                     console.log("missions", res.data);
                     this.missions = res.data;
+                    // this.missions.push(...res.data)
+                    // this.missions.push(...res.data)
                 })
                 .catch((error) => {
                     console.error(error);

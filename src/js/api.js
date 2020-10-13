@@ -33,3 +33,4 @@ export const apiManageFile = (file, data, loader) =>
 export const apiManageExam = (data) => userRequest.get('/exam.php', { params: data })
 export const apiManageMission = (data) => userRequest.get('/mission.php', { params: data })
 export const apiManageLearning = (data) => userRequest.get('/learning.php', { params: data })
+export const apiManageGame = (data) => userRequest.get('/game.php', { params: data })

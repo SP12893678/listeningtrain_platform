@@ -3,7 +3,7 @@ import Scene from '@/js/game/engine/Scene'
 import { Graphics, Container, Sprite, Text } from 'pixi.js/lib/core'
 import Config from '@/js/game/Config'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
-import { apiManageEnviroment, apiManageObject, apiManageExam } from '@/js/api'
+import { apiManageEnviroment, apiManageObject, apiManageLearning } from '@/js/api'
 import { BlurFilter } from 'pixi.js/lib/filters'
 import HorizontalScroller from '../component/HorizontalScroller'
 import RadarChart from 'Component/RadarChart'
@@ -75,9 +75,10 @@ export default class EnviromentDetailScene extends Scene {
         let past_exams = []
         let scroeSystem = new ScoreCaculate()
         let average_score = scroeSystem.getDefaultFormateObject()
-        await apiManageExam({ type: 'get' }).then((res) => {
+        await apiManageLearning({ type: 'get' }).then((res) => {
             if (res.data == null) return
-            past_exams = JSON.parse(res.data.exam).exam
+            past_exams = JSON.parse(res.data.test).test
+            if (past_exams.length < 1) return
             scroeSystem.first_response_rate = past_exams[0].response_rate
             let the_enviro_past_exam = past_exams.filter((exam) => exam.enviro_id == this.data.environment.id)
             the_enviro_past_exam.forEach((exam) => {

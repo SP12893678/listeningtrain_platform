@@ -20,8 +20,6 @@
             $past_data = [];
             $past_data['exam'] = [];
             if($data_count == 0){
-                
-                // $past_data['exam'] = $data;
                 array_push($past_data['exam'],json_decode($data, true));
                 $past_data = json_encode($past_data, JSON_UNESCAPED_UNICODE);
                 $sql = "INSERT INTO `test`(`account`, `exam`) VALUES ('$account','$past_data')";
@@ -34,8 +32,6 @@
                 $sql = "UPDATE `test` SET `exam`='$past_data' WHERE account = '$account'";
             }
             $result = mysqli_query($con, $sql);
-            
-            // print_r($past_data);
             $text = [];
             $past_data = json_decode($row['exam'], true);
             $text['data'] = $past_data;
