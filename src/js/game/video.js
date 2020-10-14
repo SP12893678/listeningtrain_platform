@@ -25,8 +25,8 @@ import {
     style20,
 } from '@/js/game/engine/TextStyleManager'
 import Button2 from 'Component/button2'
-import trainmodevideo from '-!file-loader!@/assets/video/trainmode.mp4'
-import practicemodevideo from '-!file-loader!@/assets/video/practicemode.mp4'
+import trainmodevideo from '@/assets/video/trainmode.mp4'
+import practicemodevideo from '@/assets/video/practicemode.mp4'
 
 
 
@@ -37,6 +37,7 @@ let Application = PIXI.Application,
 export default class video extends PIXI.Container {
     constructor(type = 0) {
         super()
+        console.log("vedio", trainmodevideo)
         this.type = type
         this.trainmodevideo = trainmodevideo
         this.dialog = new Dialog('', 3)
@@ -81,7 +82,7 @@ export default class video extends PIXI.Container {
         dialog.setBackgroundColor(0x2894FF, 0.95)
         dialog.setCloseBtnBackgroundColor(0xf8ba00, 0.95)
         // dialog.closeBtn.click = () => {
-
+        //     // this.videoSource.pause();
         //     dialog.visible = false
         // }
         this.addChild(dialog)
