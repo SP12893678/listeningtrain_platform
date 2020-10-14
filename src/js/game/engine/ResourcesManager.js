@@ -24,6 +24,10 @@ import genderBoy from '@/assets/images/genderBoy.png'
 import Character_tex from '@/assets/images/Character_tex.png'
 import bubble from '@/assets/images/bubble.png'
 
+import game_main_bg from '@/assets/images/game_main_bg.png'
+import gift from '@/assets/images/icon/gift.png'
+import gift_open from '@/assets/images/icon/gift_open.png'
+
 import edit from '@/assets/images/icon/edit.png'
 import save from '@/assets/images/icon/save.png'
 import profileBg from '@/assets/images/profileBg.png'
@@ -132,7 +136,10 @@ const resources = {
     correctAnswer: correctAnswer,
     yourAnswer: yourAnswer,
     check: check,
-    // practicevideo: practicevideo,
+    gift: gift,
+    gift_open: gift_open,
+    game_main_bg: game_main_bg
+    // ptvideo: ptvideo,
 }
 
 export default resources

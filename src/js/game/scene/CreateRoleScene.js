@@ -25,7 +25,6 @@ export default class CreateRoleScene extends Scene {
     constructor() {
         super()
         this.container = new Container()//for bubble
-        this.addChild(this.container)
         this.character = new character()
         this.init()
     }
@@ -59,6 +58,7 @@ export default class CreateRoleScene extends Scene {
     }
     /* 背景泡泡 */
     doParticles() {
+        this.addChild(this.container)
         emitter2.pos.x = 0
         emitter2.pos.y = 0
         var emitter = new particles.Emitter(this.container, [PIXI.Texture.fromImage(ResourcesManager.bubble)], emitter2)

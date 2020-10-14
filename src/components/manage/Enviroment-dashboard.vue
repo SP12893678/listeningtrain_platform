@@ -15,14 +15,14 @@
                 single-line
                 hide-details
             ></v-text-field>
-            <v-list-item-action>
+            <!-- <v-list-item-action>
                 <v-btn
                     @click="goToNewEditPage(-1)"
                     data-v-step="Enviroment-dashboard-2"
                 >
                     <v-icon left>mdi-pencil-plus</v-icon>新增
                 </v-btn>
-            </v-list-item-action>
+            </v-list-item-action> -->
         </v-list-item>
 
         <v-divider></v-divider>
@@ -54,6 +54,40 @@
                         type="card"
                     ></v-skeleton-loader>
                 </v-card>
+
+                <v-hover
+                    v-if="!enviro_cards.loading"
+                    v-slot:default="{ hover }"
+                >
+                    <v-card
+                        @click="goToNewEditPage(-1, -1)"
+                        :elevation="hover ? 10 : 2"
+                        :ripple="{ class: 'white--text' }"
+                        class="ma-4"
+                        max-width="300"
+                        height="308"
+                        :data-v-step="`Enviroment-dashboard-card-${index}`"
+                    >
+                        <v-row justify="center" align-self="center">
+                            <v-col md="auto">
+                                <v-row justify="center" align-self="center">
+                                    <v-img
+                                        :src="
+                                            require('@/assets/images/add.png')
+                                        "
+                                        height="230"
+                                        contain
+                                    ></v-img>
+                                </v-row>
+                                <v-row justify="center" align-self="center">
+                                    <v-card-title
+                                        >使用空白範本新增</v-card-title
+                                    >
+                                </v-row>
+                            </v-col>
+                        </v-row>
+                    </v-card>
+                </v-hover>
 
                 <!--情境教材卡片-->
                 <v-hover
@@ -158,14 +192,14 @@
 </template>
 
 <script>
-import { apiManageEnviroment, apiManageObject } from '@/js/api'
+import { apiManageEnviroment, apiManageObject } from "@/js/api";
 
 export default {
     data() {
         return {
             enviro: [],
             enviro_cards: {
-                search: '',
+                search: "",
                 loading: true,
                 page: 1,
                 delete_dialog: false,
@@ -176,7 +210,7 @@ export default {
                 {
                     target: '[data-v-step="Enviroment-dashboard-card-0"]',
                     header: {
-                        title: '情境教材卡片',
+                        title: "情境教材卡片",
                     },
                     content: `顯示該情境教材相關資訊，<br>另外可使用編輯和刪除按鈕對該情境教材進行操作`,
                     params: {
@@ -186,7 +220,7 @@ export default {
                 {
                     target: '[data-v-step="Enviroment-dashboard-pagination"]',
                     header: {
-                        title: '情境教材分頁欄',
+                        title: "情境教材分頁欄",
                     },
                     content: ``,
                     params: {
@@ -196,7 +230,7 @@ export default {
                 {
                     target: '[data-v-step="Enviroment-dashboard-search"]',
                     header: {
-                        title: '情境教材搜尋欄',
+                        title: "情境教材搜尋欄",
                     },
                     content: ``,
                     params: {
@@ -206,20 +240,20 @@ export default {
                 {
                     target: '[data-v-step="Enviroment-dashboard-2"]',
                     header: {
-                        title: '幫助選單按鈕',
+                        title: "幫助選單按鈕",
                     },
                     content:
-                        '內有說明手冊、操作導覽、客服詢問功能，可幫助了解管理平台以及解決疑難雜症',
+                        "內有說明手冊、操作導覽、客服詢問功能，可幫助了解管理平台以及解決疑難雜症",
                     params: {
                         enableScrolling: false,
                     },
                 },
             ],
-        }
+        };
     },
     async mounted() {
-        console.log(this.$route.name)
-        await this.getEnviroData()
+        console.log(this.$route.name);
+        await this.getEnviroData();
 
         /**模擬情境數量 */
         // for (let index = 0; index < 10; index++) {
@@ -228,43 +262,43 @@ export default {
 
         /**模擬載入狀態 */
         setTimeout(() => {
-            this.enviro_cards.loading = false
-        }, 1500)
+            this.enviro_cards.loading = false;
+        }, 1500);
     },
     computed: {
         /**取得符合條件(搜尋條件 & 當前分頁)的情境教材物件 */
         getEnviroCards() {
-            var app = this
+            var app = this;
             var tmp = this.enviro.filter((item) => {
                 return (
                     item.name.indexOf(app.enviro_cards.search) >= 0 ||
                     item.category.indexOf(app.enviro_cards.search) >= 0 ||
                     item.created_time.indexOf(app.enviro_cards.search) >= 0
-                )
-            })
+                );
+            });
             return tmp.filter((item, index) => {
                 return (
                     index < 10 * app.enviro_cards.page &&
                     index >= 10 * (app.enviro_cards.page - 1)
-                )
-            })
+                );
+            });
         },
         /**取得分頁數量(每頁情境數量以10為限) */
         getPaginationPages() {
-            var app = this
+            var app = this;
             var tmp = this.enviro.filter((item) => {
                 return (
                     item.name.indexOf(app.enviro_cards.search) >= 0 ||
                     item.category.indexOf(app.enviro_cards.search) >= 0 ||
                     item.created_time.indexOf(app.enviro_cards.search) >= 0
-                )
-            })
-            return Math.ceil(tmp.length / 10)
+                );
+            });
+            return Math.ceil(tmp.length / 10);
         },
     },
     methods: {
         test() {
-            let data = []
+            let data = [];
             for (let index = 0; index < 1; index++) {
                 let obj = {
                     environ_id: 1,
@@ -300,66 +334,66 @@ export default {
                     reaction_rate: 50,
                     high_frequency_accuracy: 60,
                     low_frequency_accuracy: 60,
-                }
-                data.push(obj)
+                };
+                data.push(obj);
             }
-            apiManageEnviroment({ type: 'none', data: data }).then((res) => {
-                console.log(res.data)
-            })
+            apiManageEnviroment({ type: "none", data: data }).then((res) => {
+                console.log(res.data);
+            });
         },
         /**前往該情境教材的編輯頁面 */
         goToEditPage(id) {
-            var obj = { enviro: { id: id } }
-            this.$emit('passdata', obj)
-            this.$router.push('/enviroment-edit')
+            var obj = { enviro: { id: id } };
+            this.$emit("passdata", obj);
+            this.$router.push("/enviroment-edit");
         },
         goToNewEditPage(id, simple_id = this.enviro[0].id) {
-            var obj = { enviro: { id: id, simple_id: simple_id } }
-            this.$emit('passdata', obj)
-            this.$router.push('/enviroment-edit')
+            var obj = { enviro: { id: id, simple_id: simple_id } };
+            this.$emit("passdata", obj);
+            this.$router.push("/enviroment-edit");
         },
         /**請求後端並取得情境教材
          * @async
          */
         getEnviroData() {
-            return apiManageEnviroment({ type: 'get', amount: 'all' })
+            return apiManageEnviroment({ type: "get", amount: "all" })
                 .then((res) => {
-                    console.log('enviro data', res.data)
-                    this.enviro = res.data
+                    console.log("enviro data", res.data);
+                    this.enviro = res.data;
                 })
                 .catch((error) => {
-                    console.error(error)
-                })
+                    console.error(error);
+                });
         },
         askDeleteDialog(delete_id) {
-            this.enviro_cards.delete_id = delete_id
-            this.enviro_cards.delete_dialog = true
+            this.enviro_cards.delete_id = delete_id;
+            this.enviro_cards.delete_dialog = true;
         },
         async deleteEnviro() {
-            let id = this.enviro_cards.delete_id
+            let id = this.enviro_cards.delete_id;
 
             let obj_str = this.enviro.filter((enviro) => enviro.id == id)[0]
-                .object
-            let obj_arr = obj_str.split(',')
-            await apiManageObject({ type: 'delete', items: obj_arr })
+                .object;
+            let obj_arr = obj_str.split(",");
+            await apiManageObject({ type: "delete", items: obj_arr });
 
-            await apiManageEnviroment({ type: 'delete', id: id })
+            await apiManageEnviroment({ type: "delete", id: id })
                 .then((res) => {
-                    console.log('delete', res.data)
-                    this.enviro_cards.delete_dialog = false
+                    console.log("delete", res.data);
+                    this.enviro_cards.delete_dialog = false;
                     this.snackbar.text = res.data.result
-                        ? '刪除成功'
-                        : '刪除失敗'
-                    this.snackbar.body = true
+                        ? "刪除成功"
+                        : "刪除失敗";
+                    this.snackbar.body = true;
                 })
                 .catch((error) => {
-                    console.error(error)
-                })
+                    console.error(error);
+                });
 
-            await this.getEnviroData()
+            await this.getEnviroData();
         },
     },
-}
+};
 </script>
 
 <style scoped>

@@ -855,16 +855,19 @@ export default {
         console.log(this.passdata);
         this.getCloudBackgroundImages();
         this.getCloudObjectImages();
+        console.log("1");
 
         let simple_id =
             this.passdata.enviro.id == -1
                 ? this.passdata.enviro.simple_id
                 : this.passdata.enviro.id;
         await this.requestDataAndLoad(simple_id);
+        console.log("2");
         this.enviro.id = this.passdata.enviro.id;
         if (this.passdata.enviro.id == -1)
             this.objects.forEach((object) => (object.id = -1));
         this.getAudiotypes();
+        console.log("3");
     },
     computed: {
         /**取得符合該聲音類別的聲音資源 */
@@ -900,6 +903,7 @@ export default {
                 height: 625,
                 antialias: true,
                 transparent: false,
+
                 resolution: 1,
                 view: document.getElementById("enviro"),
             });
@@ -913,10 +917,12 @@ export default {
         },
         requestDataAndLoad: async function (enviro_name) {
             var app = this;
-            await this.get_enviro_data(enviro_name);
-            await this.get_object_data(this.enviro.object.split(","));
-            await this.getAudioData();
 
+            if (enviro_name != -1) {
+                await this.get_enviro_data(enviro_name);
+                await this.get_object_data(this.enviro.object.split(","));
+            }
+            await this.getAudioData();
             /**將聲音分類字串轉陣列 */
             this.audio.forEach((item) => {
                 item.category = item.category.split(";");
@@ -928,7 +934,6 @@ export default {
                     if (object.sound_src == audio.id) object.audio = audio;
                 });
             });
-
             this.loadResourses();
         },
         /**判定資源是否已載入過，若無則放入陣列中，最後載入資源並執行情境建立與設定 */
@@ -944,7 +949,10 @@ export default {
             )
                 load_arr.push("../static/images/enviro/object/object.png");
 
-            if (!PIXI.loader.resources[this.enviro.background_src])
+            if (
+                this.enviro.background_src != undefined &&
+                !PIXI.loader.resources[this.enviro.background_src]
+            )
                 load_arr.push(this.enviro.background_src);
 
             this.objects.forEach((object) => {
@@ -958,8 +966,10 @@ export default {
             // });
 
             // 判定有無資源須加載，並執行情境建立與設定
+            console.log("2.3", load_arr);
             if (load_arr.length <= 0) this.creatEnvrioment();
             else PIXI.loader.add(load_arr).load(this.creatEnvrioment);
+            console.log("2.4");
         },
         /**請求後端並取得該情境教材資料
          * @async
@@ -1096,8 +1106,7 @@ export default {
             var app = this;
             var bg_texture = PIXI.Texture.from(select_img);
             bg_texture.baseTexture.on("loaded", function () {
-                var scale =
-                    app.environment.getBackground().width / bg_texture.width;
+                var scale = 1000 / bg_texture.width;
                 app.environment.getBackground().scale.set(scale, scale);
                 app.environment.getBackground().texture = bg_texture;
                 app.background_img_profile.dialog = false;
@@ -1330,10 +1339,7 @@ export default {
         select_object: {
             handler(val) {
                 var app = this;
-                var i = -1;
-                this.objects.forEach((object, index) => {
-                    if (object.id == app.select_object.id) i = index;
-                });
+                var i = this.model;
                 this.sprite.position.x = this.select_object.position.x;
                 this.sprite.position.y = this.select_object.position.y;
                 this.sprite.rotation =

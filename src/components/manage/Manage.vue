@@ -2,7 +2,10 @@
     <v-app id="inspire">
         <div>
             <v-app-bar color="deep-purple" dark>
-                <v-app-bar-nav-icon @click="nav_drawer = true" data-v-step="0"></v-app-bar-nav-icon>
+                <v-app-bar-nav-icon
+                    @click="nav_drawer = true"
+                    data-v-step="0"
+                ></v-app-bar-nav-icon>
                 <v-toolbar-title>情境式環境音管理平台</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-menu
@@ -27,20 +30,32 @@
                             <v-list-item-group>
                                 <v-list-item>
                                     <v-list-item-content>
-                                        <v-list-item-title>問題標題</v-list-item-title>
-                                        <v-list-item-subtitle>提問者</v-list-item-subtitle>
+                                        <v-list-item-title
+                                            >問題標題</v-list-item-title
+                                        >
+                                        <v-list-item-subtitle
+                                            >提問者</v-list-item-subtitle
+                                        >
                                     </v-list-item-content>
                                     <v-list-item-action>
-                                        <v-list-item-action-text>2020/07/24</v-list-item-action-text>
+                                        <v-list-item-action-text
+                                            >2020/07/24</v-list-item-action-text
+                                        >
                                     </v-list-item-action>
                                 </v-list-item>
                                 <v-list-item>
                                     <v-list-item-content>
-                                        <v-list-item-title>Question title</v-list-item-title>
-                                        <v-list-item-subtitle>Name</v-list-item-subtitle>
+                                        <v-list-item-title
+                                            >Question title</v-list-item-title
+                                        >
+                                        <v-list-item-subtitle
+                                            >Name</v-list-item-subtitle
+                                        >
                                     </v-list-item-content>
                                     <v-list-item-action>
-                                        <v-list-item-action-text>2020/07/24</v-list-item-action-text>
+                                        <v-list-item-action-text
+                                            >2020/07/24</v-list-item-action-text
+                                        >
                                     </v-list-item-action>
                                 </v-list-item>
                             </v-list-item-group>
@@ -78,23 +93,38 @@
                 </v-menu>
             </v-app-bar>
 
-            <v-navigation-drawer v-model="nav_drawer" absolute temporary width="280">
+            <v-navigation-drawer
+                v-model="nav_drawer"
+                absolute
+                temporary
+                width="280"
+            >
                 <v-list nav class="py-0">
                     <v-list-item class="mb-0" two-line>
                         <v-list-item-avatar>
-                            <v-img :src="require('@/assets/images/avatar-default.png')"></v-img>
+                            <v-img
+                                :src="
+                                    require('@/assets/images/avatar-default.png')
+                                "
+                            ></v-img>
                         </v-list-item-avatar>
 
                         <v-list-item-content>
-                            <v-list-item-title>{{ user.name }}</v-list-item-title>
-                            <v-list-item-subtitle>{{ user.identity }}</v-list-item-subtitle>
+                            <v-list-item-title>{{
+                                user.name
+                            }}</v-list-item-title>
+                            <v-list-item-subtitle>{{
+                                user.identity
+                            }}</v-list-item-subtitle>
                         </v-list-item-content>
                     </v-list-item>
 
                     <v-divider></v-divider>
                 </v-list>
                 <v-list nav>
-                    <v-list-item-group active-class="deep-purple--text text--accent-4">
+                    <v-list-item-group
+                        active-class="deep-purple--text text--accent-4"
+                    >
                         <v-list-item to="/">
                             <v-list-item-icon>
                                 <v-icon>mdi-home</v-icon>
@@ -129,20 +159,34 @@
                             </v-list-item-icon>
                             <v-list-item-title>客服諮詢管理</v-list-item-title>
                         </v-list-item>
+
+                        <v-list-item to="/mission-dashboard">
+                            <v-list-item-icon>
+                                <v-icon>mdi-clipboard-list</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-title>任務系統管理</v-list-item-title>
+                        </v-list-item>
                     </v-list-item-group>
                 </v-list>
             </v-navigation-drawer>
         </div>
-        <router-view :passdata="passdata" @passdata="passdata = $event"></router-view>
-        <v-description-manual :dialog.sync="dialog" v-on:getDialog="changeDialog"></v-description-manual>
+        <router-view
+            :passdata="passdata"
+            @passdata="passdata = $event"
+        ></router-view>
+        <v-description-manual
+            :dialog.sync="dialog"
+            v-on:getDialog="changeDialog"
+        ></v-description-manual>
         <v-tour name="homepage" :steps="steps"></v-tour>
         <v-dialog v-model="alert_dialog.dialog" max-width="400" persistent>
             <v-card>
-                <v-card-title>{{alert_dialog.title}}</v-card-title>
-                <v-card-text>{{alert_dialog.text}}</v-card-text>
+                <v-card-title>{{ alert_dialog.title }}</v-card-title>
+                <v-card-text>{{ alert_dialog.text }}</v-card-text>
                 <v-card-actions>
                     <v-btn @click="goToIndexPage" text block>
-                        <v-icon left>mdi-checkbox-marked-circle-outline</v-icon>確定
+                        <v-icon left>mdi-checkbox-marked-circle-outline</v-icon
+                        >確定
                     </v-btn>
                 </v-card-actions>
             </v-card>
