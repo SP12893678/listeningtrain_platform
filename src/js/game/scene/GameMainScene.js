@@ -34,17 +34,18 @@ export default class GameMainScene extends Scene {
         this.btn_set = new RoundedButton(120, 60, '其他')
         this.test = new Sprite()
 
-        this.init()
-    }
-    async init() {
         this.setBackground()
-        this.doParticles()
+        // this.doParticles()
         this.setButtonsBg()
         this.setProfileButton()
         this.setButton()
         this.setBackPackButton()
         this.setSetButton()
         this.setGetButton()
+
+        this.init()
+    }
+    async init() {
         await this.setCharacter()
         this.setProfile()
         this.setSet()
