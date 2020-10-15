@@ -31,3 +31,4 @@ export const apiManageFile = (file, data, loader) =>
         onUploadProgress: loader,
     })
 export const apiManageExam = (data) => userRequest.get('/exam.php', { params: data })
+export const apiManageMission = (data) => userRequest.get('/mission.php', { params: data })

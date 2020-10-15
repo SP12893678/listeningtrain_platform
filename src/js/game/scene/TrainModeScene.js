@@ -37,7 +37,7 @@ export default class TrainModeScene extends Scene {
         this.objectList = new ObjectList()
         this.gearlocking = new GearLocking()
         this.trdescription = new trdescription()
-        this.video = new video()
+        this.video = new video(0)
         this.btn_guide = new Button2(150, 70, ResourcesManager.help, '導覽')
         this.btn_guidestep = new Button2(150, 70, ResourcesManager.help, '下一步')
         this.btn_guideend = new Button2(150, 70, ResourcesManager.help, '完成')
@@ -95,17 +95,19 @@ export default class TrainModeScene extends Scene {
         let video = this.video
         video.position.set(0, 0)
 
-        // var { x, y } = environment.objects[4].position
-        // let screenCover = this.screenCover
+        var { x, y } = environment.objects[1].position
+        let screenCover = this.screenCover
         // screenCover.beginFill(0x000000, 0.5)
         // screenCover.drawRoundedRect(0, 0, 1000, 625)
-        // screenCover.endFill()
-        // // screenCover.beginHole()
-        // screenCover.beginFill(0xff0000, 0)
-        // screenCover.drawCircle(x, y, 110)
-        // // screenCover.endHole()
-        // screenCover.endFill()
-        // environment.addChild(screenCover)
+        screenCover.beginFill(0x000000, 0.9)
+            .drawPolygon(0, 0, 1000, 0, 1000, 625, 0, 625)
+            .drawPolygon(x - 55, y - 55, x + 55, y - 55, x + 55, y + 55, x - 55, y + 55)
+            .addHole();
+        screenCover.endFill()
+        screenCover.interactive = true
+        screenCover.visible = false
+        environment.addChild(screenCover)
+
 
         let cover = this.cover
         var { x, y } = environment.objects[4].position
@@ -113,10 +115,6 @@ export default class TrainModeScene extends Scene {
         cover.drawCircle(x, y, 110);
         cover.endFill();
         environment.addChild(cover)
-
-
-
-
 
 
 
@@ -155,8 +153,9 @@ export default class TrainModeScene extends Scene {
 
             btn_guide.visible = false
             guide.visible = true
-            environment.mask = cover
-            // screenCover.visible = true
+            // environment.mask = cover
+            screenCover.visible = true
+
             objectList.visible = false
             scroller.visible = false
 
@@ -183,7 +182,7 @@ export default class TrainModeScene extends Scene {
 
             btn_guidestep.visible = false
             environment.mask = environment_mask
-            // screenCover.visible = true
+            screenCover.visible = false
             objectList.visible = true
             scroller.visible = true
             environment.visible = false

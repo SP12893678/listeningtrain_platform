@@ -71,6 +71,23 @@ module.exports = {
                 ],
             },
             {
+                test: /\.(mp4|webm|ogg|mp3|wav)(\?.*)?$/,
+                use: [
+                    {
+                        loader: 'url-loader',
+                        options: {
+                            limit: 1024,
+                            fallback: {
+                                loader: 'file-loader',
+                                options: {
+                                    name: 'assets/video/[name].[hash:7].[ext]'
+                                }
+                            }
+                        }
+                    }
+                ]
+            },
+            {
                 test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
                 use: [
                     {
