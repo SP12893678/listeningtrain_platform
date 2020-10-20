@@ -73,17 +73,19 @@ export default class Timer extends PIXI.Container {
         console.log('reset')
     }
     start(){
-        this.state = true
-        let text = this.text
-        this.timer = setInterval(() => {
-            this.startTime()
-            text.text = this.time
-        }, 10)
+        if(!this.state){
+            this.state = true
+            let text = this.text
+            this.timer = setInterval(() => {
+                this.startTime()
+                text.text = this.time
+            }, 10)
+        }
         console.log('start')
     }
     stop(){
         this.state = false
-        clearInterval(this.timer); 
+        clearInterval(this.timer)
         console.log('stop')
     }
     countTimes(count){
@@ -96,14 +98,18 @@ export default class Timer extends PIXI.Container {
     }
     differ(time1,time2){
         if(!time1)time1 = "00:00.00"
+        if(!time2)time2 = "00:00.00"
         let a = time1.split(/[:]|\./)
         let b = time2.split(/[:]|\./)
         let count = ((b[0]*60+b[1])*1000+b[2]*10) - ((a[0]*60+a[1])*1000+a[2]*10)
-        
-        return this.countTimes(count)
+        if(count>0)
+            return this.countTimes(count)
+        else
+            return "00:00.00"
     }
     average(time,amount){
         if(!time)time = "00:00.00"
+        if(amount <= 0) amount=1
         let a = time.split(/[:]|\./)
         let count = Math.ceil(((a[0]*60+a[1])*1000+a[2]*10) / amount)
 

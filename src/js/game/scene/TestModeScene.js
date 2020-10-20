@@ -396,14 +396,16 @@ export default class TestModeScene extends Scene {
 
         leaveDialog.yesBtn.click = () => {
             /* yesBtn action */
-            this.reset()
-            Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
+            this.timer.stop()
+            this.showResult()
+            this.result.visible = true
+            // Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
             leaveDialog.visible = false
         }
         leaveDialog.cancelBtn.click = () => {
             /* cancelBtn action */
             leaveDialog.visible = false
-            this.timer.start()
+            // this.timer.start()
         }
         /* leave button */
         let leaveBtn = this.leaveBtn
@@ -414,12 +416,18 @@ export default class TestModeScene extends Scene {
         leaveBtn.setText(style15)
         leaveBtn.click = () => {
             leaveDialog.visible = true
-            if (this.timer.state) this.timer.stop()
+            // if (this.timer.state) this.timer.stop()
         }
         screenDown.addChild(leaveBtn)
     }
     reset() {
         Sound.stopAll()
+        this.timeline.clear()
+        if (this.timer.state) this.timer.stop()
+        this.showNext.visible = false
+        this.showNextCover.visible = false
+        this.character.action.animationPlayOriginal()
+        
         this.questionNo = 1
         this.questionNoShow.text = this.questionNo
 
@@ -645,10 +653,6 @@ export default class TestModeScene extends Scene {
         })
 
         let environmentName = this.environment.data.environment.name
-        let correct = this.answerCheck.filter((check) => {
-            return check.correctAnswer.id == check.yourAnswer.data.id
-        })
-
         let envionmentPicTexture = this.environment.background._texture
         let scale = Math.max(500 / envionmentPicTexture.width, 280 / envionmentPicTexture.height)
         this.resultEnvironmentPic.texture = envionmentPicTexture
@@ -703,7 +707,7 @@ export default class TestModeScene extends Scene {
         this.questionSystem.question.forEach((question, index) => {
             exam.questions.push({
                 object_id: question.id,
-                your_answer_id: this.questionSystem.myAnswer[index].data.id,
+                your_answer_id: (this.questionSystem.myAnswer[index]!= undefined)?this.questionSystem.myAnswer[index].data.id:'',
                 times: this.timer.differ(this.questionSystem.times[index-1],this.questionSystem.times[index]),
             })
         })
@@ -732,8 +736,9 @@ export default class TestModeScene extends Scene {
                 if (frequency.max > 2000) high = true
             })
             if (high) high_frequency_question_counts++
-            if (high && question.id == this.questionSystem.myAnswer[index].data.id)
-                high_frequency_question_correct_counts++
+            if(this.questionSystem.myAnswer[index]!= undefined)
+                if (high && question.id == this.questionSystem.myAnswer[index].data.id)
+                    high_frequency_question_correct_counts++
         })
         exam.high_frequency_accuracy = {
             your: high_frequency_question_correct_counts,
@@ -749,8 +754,9 @@ export default class TestModeScene extends Scene {
                 if (frequency.min < 300) low = true
             })
             if (low) low_frequency_question_counts++
-            if (low && question.id == this.questionSystem.myAnswer[index].data.id)
-                low_frequency_question_correct_counts++
+            if(this.questionSystem.myAnswer[index]!= undefined)
+                if (low && question.id == this.questionSystem.myAnswer[index].data.id)
+                    low_frequency_question_correct_counts++
         })
         exam.low_frequency_accuracy = {
             your: low_frequency_question_correct_counts,
@@ -762,8 +768,9 @@ export default class TestModeScene extends Scene {
         apiManageExam({ type: 'update', data: exam }).then((res) => {
             console.log(res.data)
         })
-
-        let correctTotal = correct.length
+        let have_answer = exam.questions.filter((question) => question.your_answer_id != '').length
+        console.log('have_answer',have_answer)
+        let correctTotal = correct_questions.length
         let resultText = this.resultText
         resultText.text =
             '作答情境: ' +
@@ -777,7 +784,7 @@ export default class TestModeScene extends Scene {
             '\n作答時間: ' +
             this.timer.text.text +
             '\n平均作答時間: ' +
-            this.timer.average(this.timer.text.text,this.questionTotal)
+            this.timer.average(this.timer.text.text,have_answer)
         let resultText2 = this.resultText2
         resultText2.text =
             '完成物件數: ' +
@@ -787,6 +794,8 @@ export default class TestModeScene extends Scene {
             '\n聲音頻率<300正確題數: ' +
             exam.low_frequency_accuracy.your
         this.answerBoard.update()
+
+        this.reset()
     }
 }
 
@@ -873,10 +882,18 @@ class AnswerBoard extends Container {
             listContainer.addChild(correct)
 
             let yourAnswer = data[i].yourAnswer
-            let your = new Sprite()
-            your.texture = resources[yourAnswer.data.pic_src].texture
-            scale = Math.min(90 / your.width, 90 / your.height)
-            your.scale.set(scale)
+            let your
+            if(yourAnswer!=undefined){
+                your = new Sprite()
+                your.texture = resources[yourAnswer.data.pic_src].texture
+                scale = Math.min(90 / your.width, 90 / your.height)
+                your.scale.set(scale)
+            }
+            else{
+                let noAnswerTextStyle = style15.clone()
+                noAnswerTextStyle.fill = 0x004d7f
+                your = new PIXI.Text('沒有作答', noAnswerTextStyle)
+            }
             your.anchor.set(0.5)
             your.position.set(250, 60 * (i * 2 + 1)) //width 140 180
             listContainer.addChild(your)
@@ -886,7 +903,8 @@ class AnswerBoard extends Container {
             times.position.set(390, 60 * (i * 2 + 1)) //width 140 320
             listContainer.addChild(times)
 
-            let checkAnswer = correctAnswer.id == yourAnswer.data.id ? 'O' : 'X'
+            let checkItem = (yourAnswer!=undefined)?yourAnswer.data.id:''
+            let checkAnswer = correctAnswer.id == checkItem ? 'O' : 'X'
             let style = textStyle.clone()
             let check = new PIXI.Text(checkAnswer, style)
             check.style.fill = checkAnswer == 'O' ? 0x017100 : 0xee220c
