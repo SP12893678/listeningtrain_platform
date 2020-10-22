@@ -6,6 +6,7 @@ import Dialog from 'Component/dialog'
 import { style1, style8, style9, style10, style11, style13 } from '@/js/game/engine/TextStyleManager'
 import RadarChart from 'Component/RadarChart'
 import Button2 from 'Component/button2'
+import { apiManageLearning } from '@/js/api'
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -61,6 +62,12 @@ export default class profile extends PIXI.Container {
     async checkData() {
         await this.character.get_character_data()
     }
+
+    async show() {
+        await this.checkData()
+
+    }
+
     setDialog() {
         let dialog = this.dialog
         dialog.visible = false
@@ -95,7 +102,7 @@ export default class profile extends PIXI.Container {
         editBtn.visible = true
         editBtn.interactive = true // 設定可以互動
         editBtn.buttonMode = true // 當滑鼠滑過時顯示為手指圖示
-        editBtn.click = function() {
+        editBtn.click = function () {
             t.editBtn.visible = false
             t.saveBtn.visible = true
             t.input.disabled = false
@@ -110,7 +117,7 @@ export default class profile extends PIXI.Container {
         saveBtn.visible = false
         saveBtn.interactive = true // 設定可以互動
         saveBtn.buttonMode = true // 當滑鼠滑過時顯示為手指圖示
-        saveBtn.click = async function() {
+        saveBtn.click = async function () {
             editBtn.visible = true
             saveBtn.visible = false
             t.input.disabled = true
@@ -247,10 +254,10 @@ export default class profile extends PIXI.Container {
         learningTitle.position.set(100, 75)
         learningContainer.addChild(learningTitle)
         /* 雷達圖 */
-        let labels = ['正確率', '反應速度', '  低頻辨識率', '  高頻辨識率', '完成度']
+        let labels = ['正確率', '反應\n速度', '  聲音頻率<300\n的正確率', '  聲音頻率>6000\n的正確率', '完成度']
         let datasets = [
-            { name: '最近一次測驗', data: [50, 10, 75, 40, 100] },
-            { name: '個人學習平均值', data: [100, 70, 60, 80, 30] },
+            // { name: '最近一次測驗', data: [50, 10, 75, 40, 100] },
+            // { name: '個人學習平均值', data: [100, 70, 60, 80, 30] },
         ]
         let chart = new RadarChart(labels, datasets)
         chart.position.set(175, 275)
@@ -267,7 +274,7 @@ export default class profile extends PIXI.Container {
         standardBtn.interactive = true
         standardBtn.buttonMode = true
         let t = this
-        standardBtn.click = function() {
+        standardBtn.click = function () {
             t.personInfoContainer.visible = !t.personInfoContainer.visible
             t.standardContainer.visible = !t.standardContainer.visible
         }

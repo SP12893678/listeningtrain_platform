@@ -11,7 +11,7 @@ import Environment from '@/js/game/Environment'
 import { OutlineFilter, ShockwaveFilter, GlowFilter } from 'pixi-filters'
 import { Graphics, Container, Sprite, Text } from 'pixi.js/lib/core'
 import HorizontalScroller from 'Component/HorizontalScroller'
-import { apiManageAudio } from '@/js/api'
+import { apiManageAudio, apiManageLearning } from '@/js/api'
 import Sound from 'pixi-sound'
 import { gsap } from 'gsap'
 import { PixiPlugin } from 'gsap/PixiPlugin'
@@ -42,8 +42,6 @@ export default class TrainModeScene extends Scene {
         this.btn_guidestep = new Button2(150, 70, ResourcesManager.help, '下一步')
         this.btn_guideend = new Button2(150, 70, ResourcesManager.help, '完成')
 
-
-
         this.setBackground()
         this.setTitle()
         this.setCharacter()
@@ -52,6 +50,11 @@ export default class TrainModeScene extends Scene {
     }
 
     async init(id) {
+        /**新增探索資料 */
+        let date = new Date()
+        let time = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+        apiManageLearning({ type: 'update', mode: 'train', enviro: id, action: 'new', time: time }).then(res => { console.log(res.data) })
+
         let environment = new TrainModeEnvironment()
         await environment.init(id)
         let scale = 1000 / environment.width
@@ -128,8 +131,6 @@ export default class TrainModeScene extends Scene {
 
         environment.position.set(500, 100)
         environment.addChild(gearlocking)
-
-
 
         /* guide  */
         let guide = new PIXI.Text('請點選情境中的物件\n就能聽到聲音喔', style15)
@@ -271,7 +272,7 @@ export default class TrainModeScene extends Scene {
         goBackText.position.set(160, titleHeight / 2)
         title.addChild(goBackText)
         /* title Text */
-        let titleText = new PIXI.Text('訓練模式', style14)
+        let titleText = new PIXI.Text('探索模式', style14)
         titleText.anchor.set(0.5)
         titleText.position.set(Config.screen.width / 2, titleHeight / 2)
         title.addChild(titleText)
@@ -350,7 +351,18 @@ class TrainModeEnvironment extends Environment {
     objectClick(object) {
         Sound.stopAll()
         Sound.add(object.data.audio.audio_id, resources[object.data.audio.sound_src])
-        Sound.play(object.data.audio.audio_id)
+        Sound.play(object.data.audio.audio_id, {
+            complete: () => {
+                console.log('complete', object.data.audio.audio_id)
+                let date = new Date()
+                let item = {
+                    enviro: this.data.environment.id,
+                    id: object.data.id,
+                    time: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+                };
+                apiManageLearning({ type: 'update', mode: 'train', action: 'add', item: item }).then(res => { console.log(res.data) })
+            }
+        })
         object.update()
     }
 }

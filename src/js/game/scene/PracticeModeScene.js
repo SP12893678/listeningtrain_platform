@@ -14,7 +14,7 @@ import RoundedButton from 'Component/RoundedButton'
 import { OutlineFilter } from 'pixi-filters'
 import { Graphics, Container, Sprite, Text } from 'pixi.js/lib/core'
 import Sound from 'pixi-sound'
-import { apiManageAudio } from '@/js/api'
+import { apiManageAudio, apiManageLearning } from '@/js/api'
 import ptdescription from '@/js/game/ptdescription'
 import video from '@/js/game/video'
 import { gsap } from 'gsap'
@@ -508,6 +508,29 @@ export default class PracticeModeScene extends Scene {
         leaveDialog.yesBtn.click = () => {
             /* yesBtn action */
             // Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
+            console.log(this.questionSystem)
+            let items = [];
+
+            let data = this.questionSystem.myAnser.map(answer => answer.map(item => item.id));
+            for (let index = 0; index < this.questionNo; index++) {
+                let item = {
+                    object_id: this.questionSystem.question[index].id,
+                    your_answer: (data[index] == undefined) ? null : data[index]
+                }
+                items.push(item)
+            }
+            console.log(items)
+            let date = new Date()
+            let time = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+            data = {
+                time: time,
+                enviro: this.environment.data.environment.id,
+                questions: items
+            }
+            apiManageLearning({ type: 'update', mode: 'practice', item: data })
+                .then(res => { console.log(res.data) })
+
+
             leaveDialog.visible = false
             showTotalDialog.visible = !leaveDialog.visible
             showTotalDialog.text.text =
@@ -568,25 +591,31 @@ export default class PracticeModeScene extends Scene {
     }
 
     nextQuestion() {
+        console.log(this.questionSystem)
+
         Sound.stopAll()
         this.timeline.clear()
         this.showNext.visible = false
         this.showNextCover.visible = false
         this.character.action.animationPlayOriginal()
         /* 顯示 */
-        if (!this.environment.selected)
-            this.showAnserDialog.showAnser(this.questionSystem.question[this.questionNo - 1], '')
-        else
-            this.showAnserDialog.showAnser(
-                this.questionSystem.question[this.questionNo - 1],
-                this.environment.selected.data
-            )
+        let selected = this.environment.selected
+        let question = this.questionSystem.question[this.questionNo - 1]
+        let isNext = !selected || selected.data.id == question.id
+
+        /**將此次作答紀錄到出題系統 */
+        if (isNext) {
+            let answer = []
+            answer.push(...this.showAnserDialog.answerRecord)
+            if (selected.data.id == question.id) answer.push(selected.data)
+            this.questionSystem.myAnser.push(answer)
+        }
+
+        if (!selected) this.showAnserDialog.showAnser(question, '')
+        else this.showAnserDialog.showAnser(question, selected.data)
+
         /* 判斷是否播放下一題 */
-        let check =
-            !this.environment.selected ||
-                this.environment.selected.data.pic_src == this.questionSystem.question[this.questionNo - 1].pic_src
-                ? true
-                : false
+        let check = isNext
         // let checkColor = (this.environment.selected.data.pic_src == this.questionSystem.question[this.questionNo - 1].pic_src) ? 0xFFFB00 : 0xDD9000
         /* 判斷要播的音效 */
         if (!check) {
@@ -597,10 +626,7 @@ export default class PracticeModeScene extends Scene {
             let emojiAnimation = this.character.armatureDisplay.animation.fadeIn('emoji_sad', 0, 1, 0, 'emoji')
             emojiAnimation.addBoneMask('emoji')
         }
-        if (
-            this.environment.selected &&
-            this.environment.selected.data.pic_src == this.questionSystem.question[this.questionNo - 1].pic_src
-        ) {
+        if (selected && selected.data.id == question.id) {
             this.questionCorrectTotal++
             Sound.stopAll()
             Sound.add('correct', '../static/sound/effect/correct.mp3')
@@ -845,7 +871,7 @@ class showAnserDialog extends Overlay {
         yourAnser.removeChildren()
         board.removeChild(board.getChildByName('scroller'))
 
-        if (yourObject.pic_src) this.answerRecord.push(yourObject.pic_src)
+        if (yourObject.pic_src) this.answerRecord.push(yourObject)
         if (this.answerRecord == 0) {
             let skipText = '放棄作答'
             let skipTextStyle = style15.clone()
@@ -870,7 +896,7 @@ class showAnserDialog extends Overlay {
             yourAnser.addChild(yourAnserBg)
 
             let answer = new Sprite()
-            answer.texture = resources[this.answerRecord[i]].texture
+            answer.texture = resources[this.answerRecord[i].pic_src].texture
             scale = Math.min(100 / answer.width, 100 / answer.height)
             answer.scale.set(scale)
             answer.anchor.set(0.5)
@@ -892,7 +918,7 @@ class showAnserDialog extends Overlay {
             times.position.set(10 + 145 * i, 10)
             yourAnser.addChild(times)
 
-            let checkAnswer = this.answerRecord[i] == correctObject.pic_src ? 'O' : 'X'
+            let checkAnswer = this.answerRecord[i].id == correctObject.id ? 'O' : 'X'
             let checkStyle = style15.clone()
             let check = new Text(checkAnswer, checkStyle)
             check.style.fill = checkAnswer == 'O' ? 0x017100 : 0xee220c
@@ -921,6 +947,9 @@ class showAnserDialog extends Overlay {
 
         /* correct or not ---> clean answerRecord */
         if (yourObject.pic_src == correctObject.pic_src || yourObject == '') {
+            if (this.yourObject != '') this.answerRecord.push(this.yourObject);
+
+
             this.answerRecord.length = 0
             answerBoard.visible = true
             this.background.visible = !answerBoard.visible

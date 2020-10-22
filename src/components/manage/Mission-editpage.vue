@@ -12,14 +12,23 @@
                 </v-btn>
             </v-list-item-action>
             <v-list-item-action class="ml-4 mb-0">
-                <v-btn @click="saveMission" color="red" text>
+                <v-btn
+                    @click="saveMission"
+                    :loading="save_loading"
+                    color="red"
+                    text
+                >
                     <v-icon left>mdi-content-save</v-icon>儲存
                 </v-btn>
             </v-list-item-action>
         </v-list-item>
         <v-divider></v-divider>
 
-        <v-data-table :headers="mission_headers" :items="missions" item-key="title">
+        <v-data-table
+            :headers="mission_headers"
+            :items="missions"
+            item-key="title"
+        >
             <template v-slot:[`item.action`]="{ item }">
                 <v-btn @click="openEditMissionDialog(item)" icon>
                     <v-icon>mdi-pencil</v-icon>
@@ -92,7 +101,10 @@
                             <v-list-item-content>
                                 <v-select
                                     v-model="mission.required.action"
-                                    :items="missionRule[mission.required.mode.id].action"
+                                    :items="
+                                        missionRule[mission.required.mode.id]
+                                            .action
+                                    "
                                     item-text="name"
                                     label="動作類型"
                                 ></v-select>
@@ -210,8 +222,8 @@
                                    
                                 >
                                 </v-data-table>  -->
-                                </v-list-item-content
-                        ></v-list-item>
+                            </v-list-item-content></v-list-item
+                        >
                     </v-tab-item>
                 </v-tabs-items>
                 <v-card-actions>
@@ -222,8 +234,18 @@
                         outlined
                         >取消</v-btn
                     >
-                    <v-btn v-if="missionEditArea.type=='new'" @click="newMission" outlined>確定新增</v-btn>
-                    <v-btn v-if="missionEditArea.type=='edit'" @click="editMission" outlined>確定儲存</v-btn>
+                    <v-btn
+                        v-if="missionEditArea.type == 'new'"
+                        @click="newMission"
+                        outlined
+                        >確定新增</v-btn
+                    >
+                    <v-btn
+                        v-if="missionEditArea.type == 'edit'"
+                        @click="editMission"
+                        outlined
+                        >確定儲存</v-btn
+                    >
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -358,10 +380,16 @@
 </template>
 
 <script>
-import { apiManageEnviroment, apiManageObject,apiManageMission } from "@/js/api";
+import {
+    apiManageEnviroment,
+    apiManageObject,
+    apiManageMission,
+} from "@/js/api";
 export default {
+    props: ["passdata"],
     data() {
         return {
+            save_loading: false,
             enviro_cards: {
                 search: "",
                 loading: true,
@@ -374,7 +402,7 @@ export default {
             missionEditArea: {
                 index: -1,
                 type: "new",
-                dialog: true,
+                dialog: false,
                 tab: 0,
                 missionType: ["每日任務", "成長任務"],
                 enviro: {
@@ -417,7 +445,7 @@ export default {
                 type: null,
                 title: null,
                 description: null,
-                required:{
+                required: {
                     mode: null,
                     counter: null,
                     action: null,
@@ -425,7 +453,7 @@ export default {
                     enviro: null,
                     object: null,
                 },
-                rewards: [{type:'money',value:'100'}],
+                rewards: [{ type: "money", value: "100" }],
             },
             missions: [],
             mission_headers: [
@@ -442,7 +470,10 @@ export default {
             snackbar: { body: false, text: null, timeout: 2000 },
         };
     },
-    mounted() {
+    async mounted() {
+        console.log(this.passdata);
+        if (this.passdata.mission == null) this.$router.back();
+        if (this.passdata.mission.id.length > 0) await this.getMissionData();
         // setInterval(() => {
         //     console.log(this.mission.mode);
         // }, 1000);
@@ -511,23 +542,73 @@ export default {
                     console.error(error);
                 });
         },
+        getMissionData() {
+            return apiManageMission({
+                type: "get",
+                amount: "part",
+                items: this.passdata.mission.id,
+            })
+                .then((res) => {
+                    console.log(res.data);
+                    this.missions = res.data;
+                    this.missions.forEach((mission) => {
+                        mission.required = JSON.parse(mission.required);
+                        mission.rewards = JSON.parse(mission.rewards);
+                        if (mission.required.enviro != null) {
+                            apiManageEnviroment({
+                                type: "get",
+                                amount: "one",
+                                item: mission.required.enviro,
+                            })
+                                .then((res) => {
+                                    console.log("enviro data", res.data);
+                                    mission.required.enviro = res.data;
+                                })
+                                .catch((error) => {
+                                    console.error(error);
+                                });
+                        }
+                        if (mission.required.object != null) {
+                            apiManageObject({
+                                type: "get",
+                                amount: "part",
+                                items: [mission.required.object],
+                            })
+                                .then((res) => {
+                                    console.log(res.data);
+                                    mission.required.object = res.data[0];
+                                })
+                                .catch((error) => {
+                                    console.error(error);
+                                });
+                        }
+                    });
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        },
         newMission() {
             this.mission.id = -1;
-            let item = {}
-            Object.assign(item,this.mission)
+            let item = {};
+            Object.assign(item, this.mission);
             this.missions.push(item);
             this.missionEditArea.dialog = false;
         },
-        editMission(){
-            Object.assign(this.missions[this.missionEditArea.index],this.mission)
-            this.missionEditArea.dialog = false
+        editMission() {
+            Object.assign(
+                this.missions[this.missionEditArea.index],
+                this.mission
+            );
+            this.missionEditArea.dialog = false;
         },
-        deleteMission(mission){
-            this.missions.splice(this.missions.indexOf(mission),1)
+        deleteMission(mission) {
+            this.missions.splice(this.missions.indexOf(mission), 1);
         },
         async selectEnviro(index) {
             this.mission.required.enviro = this.enviros[index];
             this.mission.required.object = null;
+
             await this.getObjectData();
 
             this.missionEditArea.enviro.dialog = false;
@@ -545,42 +626,53 @@ export default {
                 this.mission.required.object = null;
             }
         },
-        openNewMissionDialog(){
-            this.missionEditArea.type = "new"
-            this.missionEditArea.dialog = true
+        openNewMissionDialog() {
+            this.missionEditArea.type = "new";
+            this.missionEditArea.dialog = true;
         },
-        openEditMissionDialog(mission){
-            console.log(mission)
-            let item = {}
-            Object.assign(item,mission)
-            this.mission = item
-            this.missionEditArea.type = "edit"
-            this.missionEditArea.index = this.missions.indexOf(mission)
-            this.missionEditArea.dialog = true
+        openEditMissionDialog(mission) {
+            console.log(mission);
+            let item = {};
+            Object.assign(item, mission);
+            this.mission = item;
+            this.missionEditArea.type = "edit";
+            this.missionEditArea.index = this.missions.indexOf(mission);
+            this.missionEditArea.enviro.switch =
+                this.mission.required.enviro != null;
+            this.missionEditArea.object.switch =
+                this.mission.required.object != null;
+            this.missionEditArea.dialog = true;
         },
-        saveMission(){
-            console.log(this.missions)
-            let missions = []
-            missions.push(...this.missions)
+        saveMission() {
+            this.save_loading = true;
+            console.log(this.missions);
+            let missions = [];
+            missions.push(...this.missions);
 
             let saveMission = new Promise((resolve, reject) => {
                 let count = 0;
-                missions.forEach((mission,index) => {
-                    if(mission.required.enviro!=null) mission.required.enviro = mission.required.enviro.id
-                    if(mission.required.object!=null) mission.required.object = mission.required.object.id
-                    apiManageMission({type:'update',item:mission}).then(res=>{
-                        console.log(res.data)
-                        if(res.data.result) this.missions[index].id = res.data.id
-                        if (++count >= missions.length) resolve();
-                    })
+                missions.forEach((mission, index) => {
+                    if (mission.required.enviro != null)
+                        mission.required.enviro = mission.required.enviro.id;
+                    if (mission.required.object != null)
+                        mission.required.object = mission.required.object.id;
+                    apiManageMission({ type: "update", item: mission }).then(
+                        (res) => {
+                            console.log(res.data);
+                            if (res.data.result)
+                                this.missions[index].id = res.data.id;
+                            if (++count >= missions.length) resolve();
+                        }
+                    );
                 });
             });
 
             saveMission.then(() => {
+                this.save_loading = false;
                 this.snackbar.text = "儲存成功";
                 this.snackbar.body = true;
             });
-        }
+        },
     },
 };
 </script>

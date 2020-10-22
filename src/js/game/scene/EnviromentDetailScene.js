@@ -3,7 +3,7 @@ import Scene from '@/js/game/engine/Scene'
 import { Graphics, Container, Sprite, Text } from 'pixi.js/lib/core'
 import Config from '@/js/game/Config'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
-import { apiManageEnviroment, apiManageObject, apiManageExam } from '@/js/api'
+import { apiManageEnviroment, apiManageObject, apiManageLearning } from '@/js/api'
 import { BlurFilter } from 'pixi.js/lib/filters'
 import HorizontalScroller from '../component/HorizontalScroller'
 import RadarChart from 'Component/RadarChart'
@@ -75,9 +75,10 @@ export default class EnviromentDetailScene extends Scene {
         let past_exams = []
         let scroeSystem = new ScoreCaculate()
         let average_score = scroeSystem.getDefaultFormateObject()
-        await apiManageExam({ type: 'get' }).then((res) => {
+        await apiManageLearning({ type: 'get' }).then((res) => {
             if (res.data == null) return
-            past_exams = JSON.parse(res.data.exam).exam
+            past_exams = JSON.parse(res.data.test).test
+            if (past_exams.length < 1) return
             scroeSystem.first_response_rate = past_exams[0].response_rate
             let the_enviro_past_exam = past_exams.filter((exam) => exam.enviro_id == this.data.environment.id)
             the_enviro_past_exam.forEach((exam) => {
@@ -202,7 +203,7 @@ export default class EnviromentDetailScene extends Scene {
         scroller.position.set(136, 444)
         objectList.position.set(136, 358)
 
-        let labels = ['正確率', '完成度', '反應速度', '低頻辨識率', '高頻辨識率']
+        let labels = ['正確率', '反應\n速度', '  聲音頻率<300\n的正確率', '  聲音頻率>6000\n的正確率', '完成度']
         let datasets = [
             // {
             //     name: 'test',
@@ -226,7 +227,7 @@ export default class EnviromentDetailScene extends Scene {
 
     setGameModeArea() {
         let gamemodeArea = this.gamemodeArea
-        let btn_train_mode = new SlimeButton('訓練模式')
+        let btn_train_mode = new SlimeButton('探索模式')
         btn_train_mode.scale.set(0.7, 0.7)
         btn_train_mode.click = () => {
             ScenesManager.scenes['train_mode'] = null

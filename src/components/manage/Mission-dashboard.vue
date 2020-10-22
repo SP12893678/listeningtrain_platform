@@ -30,7 +30,7 @@
         </v-list-item>
         <v-divider></v-divider>
 
-         <!--數據表 -->
+        <!--數據表 -->
         <v-list-item two-line class="mt-4">
             <v-list-item-content>
                 <v-skeleton-loader
@@ -43,13 +43,19 @@
                         :items="missions"
                         :loading="mission_data_table.loading"
                         :search="mission_data_table.search"
-                        item-key="name"
+                        item-key="title"
                         class="elevation-1"
                         loading-text
                         show-select
                         multi-sort
+                        single-expand
                         show-expand
                     >
+                        <template v-slot:expanded-item="{ headers, item }">
+                            <td :colspan="headers.length">
+                                More info about {{ `${JSON.stringify(item)}` }}
+                            </td>
+                        </template>
                     </v-data-table>
                 </v-skeleton-loader>
             </v-list-item-content>
@@ -58,26 +64,30 @@
 </template>
 
 <script>
-import { apiManageEnviroment, apiManageObject,apiManageMission } from "@/js/api";
+import {
+    apiManageEnviroment,
+    apiManageObject,
+    apiManageMission,
+} from "@/js/api";
 
 export default {
-    data(){
-        return{
-             mission_data_table: {
+    data() {
+        return {
+            mission_data_table: {
                 header: [
                     { text: "名稱", align: "start", value: "title" },
                     { text: "敘述", value: "description" },
                     { text: "類型", value: "type" },
-                    { text: '', value: 'data-table-expand' },
+                    { text: "", value: "data-table-expand" },
                 ],
                 selected: [],
                 search: "",
                 loading: true,
             },
-            missions:[]
-        }
+            missions: [],
+        };
     },
-    async mounted(){
+    async mounted() {
         await this.getMissionData();
         setTimeout(() => {
             this.mission_data_table.loading = false;
@@ -89,15 +99,22 @@ export default {
                 .then((res) => {
                     console.log("missions", res.data);
                     this.missions = res.data;
+                    // this.missions.push(...res.data)
+                    // this.missions.push(...res.data)
                 })
                 .catch((error) => {
                     console.error(error);
                 });
         },
         goToEditPage() {
+            let selected_id = this.mission_data_table.selected.map(
+                (mission) => mission.id
+            );
+            let obj = { mission: { id: selected_id } };
+            console.log(obj);
             this.$router.push({
                 name: "mission-edit",
-                // params: { passdata: obj },
+                params: { passdata: obj },
             });
         },
     },

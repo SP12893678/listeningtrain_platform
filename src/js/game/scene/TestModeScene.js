@@ -12,7 +12,7 @@ import Environment from '@/js/game/Environment'
 import Dialog from 'Component/dialog'
 import { Graphics } from 'pixi.js/lib/core'
 import RadarChart from 'Component/RadarChart'
-import { apiManageAudio, apiManageExam } from '@/js/api'
+import { apiManageAudio, apiManageLearning } from '@/js/api'
 import { OutlineFilter } from 'pixi-filters'
 import Sound from 'pixi-sound'
 import testdescription from '@/js/game/testdescription'
@@ -261,11 +261,11 @@ export default class TestModeScene extends Scene {
                 Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
             }
         }
-        btn_goback.mouseover = function(mouseData) {
+        btn_goback.mouseover = function (mouseData) {
             btn_goback.scale.set(scale * 1.1)
             goBackText.scale.set(1.1)
         }
-        btn_goback.mouseout = function(mouseData) {
+        btn_goback.mouseout = function (mouseData) {
             btn_goback.scale.set(scale)
             goBackText.scale.set(1)
         }
@@ -316,10 +316,10 @@ export default class TestModeScene extends Scene {
         btn_help.click = () => {
             btn_help.click = () => (this.testdescription.dialog.visible = !this.testdescription.dialog.visible)
         }
-        btn_help.mouseover = function(mouseData) {
+        btn_help.mouseover = function (mouseData) {
             btn_help.scale.set(1.1)
         }
-        btn_help.mouseout = function(mouseData) {
+        btn_help.mouseout = function (mouseData) {
             btn_help.scale.set(1)
         }
         title.addChild(btn_help)
@@ -665,10 +665,13 @@ export default class TestModeScene extends Scene {
         let scroeSystem = new ScoreCaculate()
         let average_score = scroeSystem.getDefaultFormateObject()
 
-        await apiManageExam({ type: 'get' }).then((res) => {
+        await apiManageLearning({ type: 'get' }).then((res) => {
             if (res.data == null) return
-            past_exams = JSON.parse(res.data.exam).exam
+            console.log(res.data)
+            past_exams = JSON.parse(res.data.test).test
+            console.log(JSON.parse(res.data.test))
 
+            if (past_exams.length < 1) return
             the_enviro_past_exam = past_exams.filter((exam) => exam.enviro_id == this.environment.data.environment.id)
             scroeSystem.first_response_rate = past_exams[0].response_rate
             the_enviro_past_exam.forEach((exam) => {
@@ -765,7 +768,10 @@ export default class TestModeScene extends Scene {
 
         console.log(exam)
         exam.enviro_id = this.environment.data.environment.id
-        apiManageExam({ type: 'update', data: exam }).then((res) => {
+        let date = new Date()
+        let time = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+        exam.time = time
+        apiManageLearning({ type: 'update', mode: 'test', item: exam }).then((res) => {
             console.log(res.data)
         })
         let have_answer = exam.questions.filter((question) => question.your_answer_id != '').length
