@@ -45,9 +45,6 @@ export default class GameMainScene extends Scene {
         this.test = new Sprite()
         this.bao = new Sprite()
 
-        this.init()
-    }
-    async init() {
         this.setBackground()
         // this.doParticles()
         this.setButtonsBg()
@@ -59,6 +56,10 @@ export default class GameMainScene extends Scene {
         this.setShopButton()
         this.setAchievementButton()
         this.setGetButton()
+
+        this.init()
+    }
+    async init() {
         await this.setCharacter()
         this.setBao()
         this.setProfile()

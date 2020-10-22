@@ -121,13 +121,13 @@ const style15 = new TextStyle({
 const style16 = new TextStyle({
     fontFamily: 'jf-openhuninn',
     fontSize: 40,
-    fill: '#004D7F',
+    fill: '004D7F004D7F004D7F',
 }) //questionTotal Text
 const style17 = new TextStyle({
     fontFamily: 'jf-openhuninn',
-    fontSize: 28,
+    fontSize: 24,
     fill: '#000000',
-    lineHeight: 45,
+    lineHeight: 33,
     letterSpacing: 5,
 }) //result
 const style18 = new TextStyle({

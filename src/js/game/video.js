@@ -25,7 +25,9 @@ import {
     style20,
 } from '@/js/game/engine/TextStyleManager'
 import Button2 from 'Component/button2'
-import TrainModeScene from './scene/TrainModeScene'
+import trainmodevideo from '@/assets/video/trainmode.mp4'
+import practicemodevideo from '@/assets/video/practicemode.mp4'
+
 
 
 let Application = PIXI.Application,
@@ -33,9 +35,15 @@ let Application = PIXI.Application,
     Sprite = PIXI.Sprite
 
 export default class video extends PIXI.Container {
-    constructor() {
+    constructor(type = 0) {
         super()
-        this.dialog = new Dialog('', 1)
+        console.log("vedio", trainmodevideo)
+        this.type = type
+        this.trainmodevideo = trainmodevideo
+        this.dialog = new Dialog('', 3)
+        this.btn_play = new Button2(150, 70, ResourcesManager.start, '播放')
+        this.btn_stop = new Button2(150, 70, ResourcesManager.pause, '停止')
+        this.btn_goback = new Button2(150, 70, ResourcesManager.goBack, '')
         this.input = new TextInput({
             input: {
                 fontFamily: 'jf-openhuninn',
@@ -63,7 +71,6 @@ export default class video extends PIXI.Container {
 
     }
     async init() {
-
         this.setDialog()
         this.setInfoContainer()
     }
@@ -71,23 +78,16 @@ export default class video extends PIXI.Container {
     setDialog() {
         let dialog = this.dialog
         dialog.visible = false
-        dialog.setSize(1000, 530)
+        dialog.setSize(1000, 700)
         dialog.setBackgroundColor(0x2894FF, 0.95)
         dialog.setCloseBtnBackgroundColor(0xf8ba00, 0.95)
-        dialog.closeBtn.click = () => {
-            dialog.visible = false
-
-        }
+        // dialog.closeBtn.click = () => {
+        //     // this.videoSource.pause();
+        //     dialog.visible = false
+        // }
         this.addChild(dialog)
     }
     setInfoContainer() {
-
-
-        // PIXI.loader
-        //     .add("video1", './src/assets/video/trainmode.mp4')
-        //     .load(init);
-
-        // function init() {
 
         let InfoContainer = this.InfoContainer
         InfoContainer.position.set(
@@ -99,18 +99,95 @@ export default class video extends PIXI.Container {
         learningTitle.position.set(400, 20)
         InfoContainer.addChild(learningTitle)
 
-        // var avatar = new PIXI.Sprite(PIXI.loader.resources.video1.texture);
-        // console.warn(texture.baseTexture)
-        // avatar.interactive = true;
-        // avatar.autoplay = true;
 
-        // }
-        // InfoContainer.addChild(avatar);
+        //视频纹理
+        let videoTexture;
+        //需要用到的精灵 
+        let videoSprite;
+        //视频元素
+        let videoSource;
+        switch (this.type) {
+            case 0:
+                //加载视频纹理
+                videoTexture = PIXI.Texture.fromVideo(trainmodevideo);
+                break;
+            case 1:
+                //加载视频纹理
+                videoTexture = PIXI.Texture.fromVideo(practicemodevideo);
+                break;
+        }
+
+        //创建视频精灵
+        videoSprite = new PIXI.Sprite(videoTexture);
+        //设置视频精灵的宽度和高度
+        videoSprite.width = 800;
+        videoSprite.height = 515;
+
+        //视频元素
+        videoSource = videoTexture.baseTexture.source;
+        videoSource.loop = true
+        window.setTimeout((() => videoSource.pause()), 300);
+
+        videoSprite.position.set(100, 90)
+
+        InfoContainer.addChild(videoSprite);
 
 
-        // ../../assets/video/TrainModeScene.mp4
+        let btn_play = this.btn_play
+        btn_play.position.set(200, 620)
+        btn_play.setBorder(0)
+        btn_play.setBackgroundColor('', 0)
+        btn_play.setText(style15)
+        btn_play.mouseover = function (mouseData) {
+            btn_play.scale.set(1.1)
+        }
+        btn_play.mouseout = function (mouseData) {
+            btn_play.scale.set(1)
+        }
+
+        btn_play.click = () => {
+            videoSource.play();
+        }
+        InfoContainer.addChild(btn_play);
+
+        let btn_stop = this.btn_stop
+        btn_stop.position.set(500, 620)
+        btn_stop.setBorder(0)
+        btn_stop.setBackgroundColor('', 0)
+        btn_stop.setText(style15)
+        btn_stop.mouseover = function (mouseData) {
+            btn_stop.scale.set(1.1)
+        }
+        btn_stop.mouseout = function (mouseData) {
+            btn_stop.scale.set(1)
+        }
+
+        btn_stop.click = () => {
+            videoSource.pause();
+        }
+        InfoContainer.addChild(btn_stop);
+
+        let btn_goback = this.btn_goback
+        btn_goback.position.set(880, -50)
+        btn_goback.setBorder(0)
+        btn_goback.setBackgroundColor('', 0)
+        btn_goback.scale.set(1.5)
+        btn_goback.mouseover = function (mouseData) {
+            btn_goback.scale.set(1.6)
+        }
+        btn_goback.mouseout = function (mouseData) {
+            btn_goback.scale.set(1.5)
+        }
+
+        btn_goback.click = () => {
+            videoSource.pause();
+            this.dialog.visible = false
+        }
+        InfoContainer.addChild(btn_goback);
 
         this.dialog.addChild(InfoContainer)
     }
+
+
 
 }

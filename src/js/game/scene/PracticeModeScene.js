@@ -56,7 +56,7 @@ export default class PracticeModeScene extends Scene {
         this.questionSystem = new QuestionSystem()
         this.showAnserDialog = new showAnserDialog()
         this.ptdescription = new ptdescription()
-        this.video = new video()
+        this.video = new video(1)
         this.btn_guide = new Button2(150, 70, ResourcesManager.help, '導覽')
         this.btn_guidestep = new Button2(150, 70, ResourcesManager.help, '下一步')
         this.btn_guideend = new Button2(150, 70, ResourcesManager.help, '完成')
@@ -560,6 +560,7 @@ export default class PracticeModeScene extends Scene {
         }
         screenDown.addChild(leaveBtn)
     }
+
     reset() {
         Sound.stopAll()
         this.timeline.clear()

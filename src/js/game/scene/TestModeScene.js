@@ -4,7 +4,7 @@ import Config from '@/js/game/Config'
 import VerticalScroller from 'Component/VerticalScroller'
 import Events from '@/js/game/Events'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
-import { style6, style8, style14, style15, style16, style17 } from '@/js/game/engine/TextStyleManager'
+import { style6, style8, style9, style10, style13, style14, style15, style16, style17, style21 } from '@/js/game/engine/TextStyleManager'
 import character from '@/js/game/character'
 import Button2 from 'Component/button2'
 import Timer from 'Component/timer'
@@ -18,6 +18,11 @@ import Sound from 'pixi-sound'
 import testdescription from '@/js/game/testdescription'
 import ScoreCaculate from '@/js/game/exam/ScoreCaculate'
 import * as dat from 'dat.gui'
+import { gsap } from 'gsap'
+import { PixiPlugin } from 'gsap/PixiPlugin'
+
+gsap.registerPlugin(PixiPlugin)
+PixiPlugin.registerPIXI(PIXI)
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -39,25 +44,22 @@ export default class TestModeScene extends Scene {
         this.timer = new Timer()
         this.screen = new Container()
         this.screenCover = new PIXI.Graphics()
+        this.showNextCover = new Graphics()
+        this.showNext = new PIXI.Text()
         this.startBtn = new Button2(200, 60, ResourcesManager.start, ' 開始   ')
         this.environment = new TestModeEnvironment()
         this.screenDown = new Container()
         this.leaveBtn = new Button2(180, 50, ResourcesManager.leave, '中斷測驗')
         this.leaveDialog = new Dialog('確定要中斷測驗嗎？')
-        this.answerCheck = [
-            { correctAnswer: '1', yourAnswer: '2' },
-            { correctAnswer: '2', yourAnswer: '2' },
-            { correctAnswer: '1', yourAnswer: '3' },
-            { correctAnswer: '4', yourAnswer: '4' },
-        ]
+        this.answerCheck = []
         this.result = new Container()
         this.resultEnvironmentPic = new Sprite()
         this.resultText = new PIXI.Text()
+        this.resultText2 = new PIXI.Text()
         this.answerBoard = new AnswerBoard(this.answerCheck)
         this.questionSystem = new QuestionSystem()
         this.testdescription = new testdescription()
-
-
+        this.timeline = gsap.timeline()
 
         this.setBackground()
         this.setTitle()
@@ -81,6 +83,7 @@ export default class TestModeScene extends Scene {
                 (object.click = () => {
                     this.environment.selected = object
                     this.questionSystem.myAnswer.push(object)
+                    this.questionSystem.times.push(this.timer.text.text)
                     this.nextQuestion()
                 })
         )
@@ -107,10 +110,63 @@ export default class TestModeScene extends Scene {
             startBtn.visible = !startBtn.visible
             screenCover.visible = !screenCover.visible
             this.screenDown.visible = !this.screenDown.visible
-            this.timer.start()
-            questionSystem.play(this.questionNo - 1)
+            this.showNext.x = 425
+            this.showNextCover.visible = true
+            this.showNext.visible = true
+            this.timeline.to(this.showNextCover, { pixi: { alpha: 1 }, duration: 1.5 })
+            this.timeline.to(this.showNext, {
+                pixi: { text: '開始測驗 ', alpha: 1, x: this.showNext.x + 100 },
+                duration: 1.5,
+            })
+            this.timeline.to(this.showNext, {
+                pixi: { x: this.showNext.x + 200, alpha: 0 },
+                duration: 1,
+            })
+            this.timeline.to(this.showNext, {
+                pixi: { x: 525, text: 'Ready go! ', alpha: 1, scale: 1 },
+                duration: 1.5,
+            })
+            this.timeline.to(this.showNext, {
+                pixi: { scale: 2, alpha: 0 },
+                duration: 1,
+            })
+            this.timeline.to(this.showNextCover, {
+                pixi: { alpha: 0 },
+                duration: 1,
+            })
+            let time = 0
+            this.timeline.add(gsap.delayedCall(0.2, () => {
+                this.timer.start()
+                this.showNextCover.visible = false
+                this.showNext.scale.set(1, 1)
+                this.character.armatureDisplay.animation.play('listen_up', 1)
+                time = this.questionSystem.play(this.questionNo - 1)
+                this.timeline.add(gsap.delayedCall(time, () => {
+                    if (!this.character.armatureDisplay.animation.isPlaying) {
+                        this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen', 15, 1)
+                    }//聽完前都沒有點擊物件的話 手再放下
+                }))
+            }))
+            // this.timer.start()
+            // questionSystem.play(this.questionNo - 1)
         }
         screen.addChild(startBtn)
+
+        let showNext = this.showNext
+        showNext.style = style21
+        showNext.text = '下一題 '
+        showNext.anchor.set(0.5)
+        showNext.position.set(screen.length / 2, screen.height / 2)
+        showNext.alpha = 0
+        screen.addChild(showNext)
+
+        let showNextCover = this.showNextCover
+        showNextCover.interactive = true
+        showNextCover.beginFill(0xffffff, 0.2)
+        showNextCover.drawRoundedRect(0, 0, screen.length, screen.height, 10)
+        showNextCover.endFill()
+        showNextCover.visible = false
+        screen.addChild(showNextCover)
 
 
         let testdescription = this.testdescription
@@ -121,19 +177,53 @@ export default class TestModeScene extends Scene {
     nextQuestion() {
         if (!this.environment.selected) return
         Sound.stopAll()
+        this.timeline.clear()
+        this.timer.stop()
+        this.showNext.visible = false
+        this.showNextCover.visible = false
+        this.character.action.animationPlayOriginal()
 
         if (this.questionNo == this.questionTotal) {
             if (this.timer.state) this.timer.stop()
             this.showResult()
             this.result.visible = true
-            this.reset()
+            // this.reset()
             return
         }
-
         this.questionNo++
         if (this.questionNo > this.questionTotal) this.questionNo = this.questionTotal
         this.questionNoShow.text = this.questionNo
-        this.questionSystem.play(this.questionNo - 1)
+
+        this.showNext.text = '下一題 '
+        this.showNext.x = 425
+        this.showNextCover.visible = true
+        this.showNext.visible = true
+        this.timeline.to(this.showNextCover, { pixi: { alpha: 1 }, duration: 0.5 })
+        this.timeline.to(this.showNext, {
+            pixi: { alpha: 1, x: this.showNext.x + 100 },
+            duration: 1.5,
+        })
+        this.timeline.to(this.showNext, {
+            pixi: { x: this.showNext.x + 200, alpha: 0 },
+            duration: 1,
+        })
+        this.timeline.to(this.showNextCover, {
+            pixi: { alpha: 0 },
+            duration: 1,
+        })
+        let time = 0
+        this.timeline.add(gsap.delayedCall(0.2, () => {
+            this.timer.start()
+            this.showNextCover.visible = false
+            // this.character.action.animationPlayOriginal()
+            this.character.armatureDisplay.animation.play('listen_up', 1)
+            time = this.questionSystem.play(this.questionNo - 1)
+            this.timeline.add(gsap.delayedCall(time, () => {
+                if (!this.character.armatureDisplay.animation.isPlaying) {
+                    this.character.armatureDisplay.animation.gotoAndPlayByFrame('listen', 15, 1)
+                }//聽完前都沒有點擊物件的話 手再放下
+            }))
+        }))
     }
 
     setBackground() {
@@ -161,10 +251,15 @@ export default class TestModeScene extends Scene {
         btn_goback.buttonMode = true
         btn_goback.position.set(60, 60)
         btn_goback.click = () => {
-            if (!this.startBtn.visible) {
-                if (this.timer.state) this.timer.stop()
+            if (!this.startBtn.visible && !this.result.visible) {
+                // if (this.timer.state) this.timer.stop()
                 this.leaveDialog.visible = true
-            } else Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
+            }
+            // if(this.result.visible) Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
+            else {
+                Sound.stopAll()
+                Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
+            }
         }
         btn_goback.mouseover = function (mouseData) {
             btn_goback.scale.set(scale * 1.1)
@@ -262,7 +357,7 @@ export default class TestModeScene extends Scene {
         questionNoBg.beginFill()
         screenUp.addChild(questionNoBg)
 
-        let questionNoText = '第    題'
+        let questionNoText = '第     題'
         let questionNoLabel = new PIXI.Text(questionNoText, style15)
         questionNoLabel.anchor.set(0.5)
         questionNoLabel.position.set(65, 25)
@@ -275,7 +370,7 @@ export default class TestModeScene extends Scene {
         /* timer icon */
         let timerIcon = new Sprite(resources[ResourcesManager.clock].texture)
         timerIcon.scale.set(40 / timerIcon.width)
-        timerIcon.position.set(920, 8)
+        timerIcon.position.set(890, 8)
         screenUp.addChild(timerIcon)
         /* timer */
         let timer = this.timer
@@ -301,14 +396,16 @@ export default class TestModeScene extends Scene {
 
         leaveDialog.yesBtn.click = () => {
             /* yesBtn action */
-            this.reset()
-            Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
+            this.timer.stop()
+            this.showResult()
+            this.result.visible = true
+            // Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
             leaveDialog.visible = false
         }
         leaveDialog.cancelBtn.click = () => {
             /* cancelBtn action */
             leaveDialog.visible = false
-            this.timer.start()
+            // this.timer.start()
         }
         /* leave button */
         let leaveBtn = this.leaveBtn
@@ -319,11 +416,18 @@ export default class TestModeScene extends Scene {
         leaveBtn.setText(style15)
         leaveBtn.click = () => {
             leaveDialog.visible = true
-            if (this.timer.state) this.timer.stop()
+            // if (this.timer.state) this.timer.stop()
         }
         screenDown.addChild(leaveBtn)
     }
     reset() {
+        Sound.stopAll()
+        this.timeline.clear()
+        if (this.timer.state) this.timer.stop()
+        this.showNext.visible = false
+        this.showNextCover.visible = false
+        this.character.action.animationPlayOriginal()
+        
         this.questionNo = 1
         this.questionNoShow.text = this.questionNo
 
@@ -360,54 +464,96 @@ export default class TestModeScene extends Scene {
         /* environment pic */
         let EnvironmentPicMask = new PIXI.Graphics()
         EnvironmentPicMask.beginFill(0xffffff)
-        EnvironmentPicMask.drawRoundedRect(0, 0, 450, 280, 10)
+        EnvironmentPicMask.drawRoundedRect(0, 0, 500, 280, 10)
         EnvironmentPicMask.endFill()
-        EnvironmentPicMask.position.set(50, 50)
+        EnvironmentPicMask.position.set(40, 40)
         result.addChild(EnvironmentPicMask)
 
         let EnvironmentPic = this.resultEnvironmentPic
         EnvironmentPic.mask = EnvironmentPicMask
-        EnvironmentPic.position.set(50, 50)
+        EnvironmentPic.position.set(40, 40)
         result.addChild(EnvironmentPic)
+
         /* result text */
         let resultText = this.resultText
-        resultText.position.set(550, 60)
+        resultText.position.set(600, 50)
+        resultText.style = style17
         result.addChild(resultText)
+        /* result text 2 */
+        let resultText2 = this.resultText2
+        resultText2.position.set(600, 230)
+        let tempStyle = style17.clone()
+        tempStyle.fill = 0x004D7F
+        resultText2.style = tempStyle
+        result.addChild(resultText2)
+        //  /* button:詳細反應時間 */
+        //  let detailTimes = new Button2(210, 40, ResourcesManager.question, '各題作答時間')
+        //  detailTimes.position.set(870, 150)
+        //  let tempStyle2 = style8.clone()
+        //  tempStyle2.fill = 0xffffff
+        //  detailTimes.setText(tempStyle2)
+        //  detailTimes.setBorder(0)
+        //  detailTimes.setCornerRadius(10)
+        //  detailTimes.setBackgroundColor(0xf4814e)
+        //  detailTimes.interactive = true
+        //  detailTimes.buttonMode = true
+        //  result.addChild(detailTimes)
+        let textStyle = style15.clone()
+        textStyle.fontSize = 24
         /* answerCheck*/
-        let no = new PIXI.Text('題數', style15)
-        no.position.set(50, 350)
+        let no = new PIXI.Text('No', textStyle)
+        no.position.set(25, 355)
         result.addChild(no)
+        console.log('textS',textStyle)
 
         let correctAnswer = new Sprite(resources[ResourcesManager.correctAnswer].texture)
-        correctAnswer.width = 40
-        correctAnswer.height = 40
-        correctAnswer.position.set(no.x + no.width + 5, no.y)
+        correctAnswer.width = 35
+        correctAnswer.height = 35
+        correctAnswer.position.set(no.x + no.width + 5, no.y-5)
         result.addChild(correctAnswer)
 
-        let correctAnswerTitle = new PIXI.Text('正確答案', style15)
-        correctAnswerTitle.position.set(correctAnswer.x + correctAnswer.width + 5, correctAnswer.y)
+        let correctAnswerTitle = new PIXI.Text('正確答案', textStyle)
+        correctAnswerTitle.position.set(correctAnswer.x + correctAnswer.width + 5, no.y)
         result.addChild(correctAnswerTitle)
 
         let yourAnswer = new Sprite(resources[ResourcesManager.yourAnswer].texture)
-        yourAnswer.width = 40
-        yourAnswer.height = 40
-        yourAnswer.position.set(correctAnswerTitle.x + correctAnswerTitle.width + 5, correctAnswerTitle.y)
+        yourAnswer.width = 35
+        yourAnswer.height = 35
+        yourAnswer.position.set(correctAnswerTitle.x + correctAnswerTitle.width + 5, no.y-5)
         result.addChild(yourAnswer)
 
-        let yourAnswerTitle = new PIXI.Text('你的答案', style15)
-        yourAnswerTitle.position.set(yourAnswer.x + yourAnswer.width + 5, correctAnswer.y)
+        let yourAnswerTitle = new PIXI.Text('你的答案', textStyle)
+        yourAnswerTitle.position.set(yourAnswer.x + yourAnswer.width + 5, no.y)
         result.addChild(yourAnswerTitle)
 
+        let timerIcon = new Sprite(resources[ResourcesManager.clock].texture)
+        timerIcon.width = 35
+        timerIcon.height = 35
+        timerIcon.position.set(yourAnswerTitle.x + yourAnswerTitle.width + 5, no.y-5)
+        result.addChild(timerIcon)
+
+        let timeTitle = new PIXI.Text('作答時間', textStyle)
+        timeTitle.position.set(timerIcon.x + timerIcon.width + 5, no.y)
+        result.addChild(timeTitle)
+
         let check = new Sprite(resources[ResourcesManager.check].texture)
-        check.width = 40
-        check.height = 40
-        check.position.set(yourAnswerTitle.x + yourAnswerTitle.width + 10, yourAnswerTitle.y)
+        check.width = 35
+        check.height = 35
+        check.position.set(timeTitle.x + timeTitle.width + 5, no.y-5)
         result.addChild(check)
 
         let answerBoard = this.answerBoard
         answerBoard.position.set(no.x, no.y + no.height + 10)
         result.addChild(answerBoard)
 
+        let learningData = new Container()
+        result.addChild(learningData)
+        learningData.position.set(600,375)
+
+        let line = new PIXI.Graphics()
+        line.lineStyle(2, 0x000000)
+        line.drawRect(0, 0, 450, 350)
+        learningData.addChild(line)
         /* 雷達圖 */
         let labels = ['正確率', '反應\n速度', '  聲音頻率<300\n的正確率', '  聲音頻率>6000\n的正確率', '完成度']
         let datasets = [
@@ -415,28 +561,66 @@ export default class TestModeScene extends Scene {
             // { name: '個人學習平均值', data: [100, 70, 150, 80, 30] },
         ]
         let chart = new RadarChart(labels, datasets)
-        chart.position.set(780, 570)
+        chart.position.set(230, 195)
         chart.barLabel.position.set(-390, 340)
         chart.scale.set(380 / chart.width)
-        result.addChild(chart)
+        learningData.addChild(chart)
         this.chart = chart
         /* button:各能力計算標準 */
         let standardBtn = new Button2(180, 40, ResourcesManager.question, '能力計算標準')
-        standardBtn.position.set(820, 740)
+        standardBtn.position.set(265, 365)
         standardBtn.setText(style8)
         standardBtn.setBorder(0)
         standardBtn.setCornerRadius(10)
         standardBtn.setBackgroundColor(0xffa050)
         standardBtn.interactive = true
         standardBtn.buttonMode = true
-        result.addChild(standardBtn)
+        learningData.addChild(standardBtn)
 
-        let line = new PIXI.Graphics()
-        line.lineStyle(2, 0x000000)
-        line.drawRect(0, 0, 450, 350)
-        line.position.set(550, 375)
-        result.addChild(line)
-
+        let standardContainer = new Container()
+        standardContainer.visible = false
+        result.addChild(standardContainer)
+        standardContainer.position.set(25, 40)
+        /* panel */
+        let standardPanel = new PIXI.Graphics()
+        standardPanel.lineStyle(3,0x000000)
+        standardPanel.beginFill(0xfbffe0)
+        standardPanel.drawRoundedRect(0, 0, 525, panelHeight-80, 10)
+        standardPanel.endFill()
+        standardContainer.addChild(standardPanel)
+        /* title:※各能力的計算標準? */
+        let standardTitle = new PIXI.Text('※各能力的計算標準?', style10)
+        standardTitle.anchor.set(0.5)
+        standardTitle.position.set(262.5, 150)
+        standardContainer.addChild(standardTitle)
+        /* standard */
+        let standard = [
+            { name: '正確率', data: '本次測驗答題正確數 / 本次測驗題數' },
+            { name: '完成度', data: '本次測驗完成物件數 / 該情境物件數' },
+            {
+                name: '反應速度',
+                data: '平均作答所需時間',
+            },
+            { name: '高頻辨識率', data: '本次測驗低頻物件答對數 / 本次測驗低頻物件數' },
+            { name: '低頻辨識率', data: '本次測驗低頻物件答對數 / 本次測驗低頻物件數' },
+        ]
+        let index = 1
+        let textStyle2 = style9.clone()
+        textStyle2.wordWrapWidth = 500
+        standard.forEach((standard) => {
+            let str = '-' + standard.name
+            let name = new PIXI.Text(str, style13)
+            name.position.set(35, 150 + 80 * index)
+            standardContainer.addChild(name)
+            str = standard.data
+            let data = new PIXI.Text(str, textStyle2)
+            data.position.set(name.x+10 ,name.y + name.height + 15)
+            standardContainer.addChild(data)
+            index++
+        })
+        standardBtn.click = () =>{
+            standardContainer.visible = !standardContainer.visible
+        }
         // const gui = new dat.GUI()
         // var effectController = {
         //     chart: { X: 550, Y: 70 },
@@ -452,6 +636,7 @@ export default class TestModeScene extends Scene {
         // }
     }
     async showResult() {
+        this.timer.stop()
         //test
         this.answerCheck = []
         this.answerBoard.data = []
@@ -463,16 +648,13 @@ export default class TestModeScene extends Scene {
             this.answerBoard.data.push({
                 correctAnswer: item,
                 yourAnswer: this.questionSystem.myAnswer[index],
+                times: this.timer.differ(this.questionSystem.times[index-1],this.questionSystem.times[index])
             })
         })
 
         let environmentName = this.environment.data.environment.name
-        let correct = this.answerCheck.filter((check) => {
-            return check.correctAnswer.id == check.yourAnswer.data.id
-        })
-
         let envionmentPicTexture = this.environment.background._texture
-        let scale = Math.max(450 / envionmentPicTexture.width, 280 / envionmentPicTexture.height)
+        let scale = Math.max(500 / envionmentPicTexture.width, 280 / envionmentPicTexture.height)
         this.resultEnvironmentPic.texture = envionmentPicTexture
         this.resultEnvironmentPic.scale.set(scale)
 
@@ -528,8 +710,8 @@ export default class TestModeScene extends Scene {
         this.questionSystem.question.forEach((question, index) => {
             exam.questions.push({
                 object_id: question.id,
-                your_answer_id: this.questionSystem.myAnswer[index].data.id,
-                times: 0,
+                your_answer_id: (this.questionSystem.myAnswer[index]!= undefined)?this.questionSystem.myAnswer[index].data.id:'',
+                times: this.timer.differ(this.questionSystem.times[index-1],this.questionSystem.times[index]),
             })
         })
 
@@ -557,8 +739,9 @@ export default class TestModeScene extends Scene {
                 if (frequency.max > 2000) high = true
             })
             if (high) high_frequency_question_counts++
-            if (high && question.id == this.questionSystem.myAnswer[index].data.id)
-                high_frequency_question_correct_counts++
+            if(this.questionSystem.myAnswer[index]!= undefined)
+                if (high && question.id == this.questionSystem.myAnswer[index].data.id)
+                    high_frequency_question_correct_counts++
         })
         exam.high_frequency_accuracy = {
             your: high_frequency_question_correct_counts,
@@ -574,8 +757,9 @@ export default class TestModeScene extends Scene {
                 if (frequency.min < 300) low = true
             })
             if (low) low_frequency_question_counts++
-            if (low && question.id == this.questionSystem.myAnswer[index].data.id)
-                low_frequency_question_correct_counts++
+            if(this.questionSystem.myAnswer[index]!= undefined)
+                if (low && question.id == this.questionSystem.myAnswer[index].data.id)
+                    low_frequency_question_correct_counts++
         })
         exam.low_frequency_accuracy = {
             your: low_frequency_question_correct_counts,
@@ -590,10 +774,10 @@ export default class TestModeScene extends Scene {
         apiManageLearning({ type: 'update', mode: 'test', item: exam }).then((res) => {
             console.log(res.data)
         })
-
-        let correctTotal = correct.length
+        let have_answer = exam.questions.filter((question) => question.your_answer_id != '').length
+        console.log('have_answer',have_answer)
+        let correctTotal = correct_questions.length
         let resultText = this.resultText
-
         resultText.text =
             '作答情境: ' +
             environmentName +
@@ -605,14 +789,19 @@ export default class TestModeScene extends Scene {
             ' 題' +
             '\n作答時間: ' +
             this.timer.text.text +
-            '\n完成物件數: ' +
+            '\n平均作答時間: ' +
+            this.timer.average(this.timer.text.text,have_answer)
+        let resultText2 = this.resultText2
+        resultText2.text =
+            '完成物件數: ' +
             exam.completion.your +
             '\n聲音頻率>6000正確題數: ' +
             exam.high_frequency_accuracy.your +
             '\n聲音頻率<300正確題數: ' +
             exam.low_frequency_accuracy.your
-        resultText.style = style17
         this.answerBoard.update()
+
+        this.reset()
     }
 }
 
@@ -646,7 +835,7 @@ class AnswerBoard extends Container {
     setBackground() {
         let background = this.background
         background.beginFill(0xffffff)
-        background.drawRoundedRect(0, 0, 450, 350, 10)
+        background.drawRoundedRect(0, 0, 500, 350, 10)
         background.endFill()
         this.addChild(background)
     }
@@ -659,62 +848,80 @@ class AnswerBoard extends Container {
 
         let listMask = new Graphics()
         listMask.beginFill(0x000000)
-        listMask.drawRoundedRect(0, 0, 450, 350, 10)
+        listMask.drawRoundedRect(0, 0, 500, 350, 10)
         listMask.endFill()
         list.addChild(listMask)
 
         let data = this.data
         let listColor = this.listColor
+        let textStyle = style15.clone()
+        textStyle.fontSize = 24
 
         for (let i = 0; i < data.length; i++) {
             let bg = new Graphics()
             bg.beginFill(listColor[i % 2])
-            bg.drawRect(0, 120 * i, 450, 120)
+            bg.drawRect(0, 120 * i, 500, 120)
             bg.endFill()
             bg.lineStyle(1, 0x000000)
-            bg.moveTo(60, 120 * i)
-            bg.lineTo(60, 120 * (i + 1))
-            bg.moveTo(230, 120 * i)
-            bg.lineTo(230, 120 * (i + 1))
-            bg.moveTo(400, 120 * i)
-            bg.lineTo(400, 120 * (i + 1))
+            bg.moveTo(40, 120 * i)
+            bg.lineTo(40, 120 * (i + 1))
+            bg.moveTo(180, 120 * i)
+            bg.lineTo(180, 120 * (i + 1))
+            bg.moveTo(320, 120 * i)
+            bg.lineTo(320, 120 * (i + 1))
+            bg.moveTo(460, 120 * i)
+            bg.lineTo(460, 120 * (i + 1))
             listContainer.addChild(bg)
 
-            let no = new PIXI.Text(i + 1, style15)
+            let no = new PIXI.Text(i + 1, textStyle)
             no.anchor.set(0.5)
-            no.position.set(30, 60 * (i * 2 + 1)) //width 60
+            no.position.set(20, 60 * (i * 2 + 1)) //width 40
             listContainer.addChild(no)
 
             let correctAnswer = data[i].correctAnswer
             let correct = new Sprite()
             correct.texture = resources[correctAnswer.pic_src].texture
-            let scale = Math.min(100 / correct.width, 100 / correct.height)
-            correct.scale.set(scale, scale)
+            let scale = Math.min(90 / correct.width, 90 / correct.height)
+            correct.scale.set(scale)
             correct.anchor.set(0.5)
-            correct.position.set(145, 60 * (i * 2 + 1)) //width 170
+            correct.position.set(110, 60 * (i * 2 + 1)) //width 140 40
             listContainer.addChild(correct)
 
             let yourAnswer = data[i].yourAnswer
-            let your = new Sprite()
-            your.texture = resources[yourAnswer.data.pic_src].texture
-            scale = Math.min(100 / your.width, 100 / your.height)
-            your.scale.set(scale, scale)
+            let your
+            if(yourAnswer!=undefined){
+                your = new Sprite()
+                your.texture = resources[yourAnswer.data.pic_src].texture
+                scale = Math.min(90 / your.width, 90 / your.height)
+                your.scale.set(scale)
+            }
+            else{
+                let noAnswerTextStyle = style15.clone()
+                noAnswerTextStyle.fill = 0x004d7f
+                your = new PIXI.Text('沒有作答', noAnswerTextStyle)
+            }
             your.anchor.set(0.5)
-            your.position.set(315, 60 * (i * 2 + 1)) //width 170
+            your.position.set(250, 60 * (i * 2 + 1)) //width 140 180
             listContainer.addChild(your)
 
-            let checkAnswer = correctAnswer.id == yourAnswer.data.id ? 'O' : 'X'
-            let style = style15.clone()
+            let times = new PIXI.Text(data[i].times, textStyle)
+            times.anchor.set(0.5)
+            times.position.set(390, 60 * (i * 2 + 1)) //width 140 320
+            listContainer.addChild(times)
+
+            let checkItem = (yourAnswer!=undefined)?yourAnswer.data.id:''
+            let checkAnswer = correctAnswer.id == checkItem ? 'O' : 'X'
+            let style = textStyle.clone()
             let check = new PIXI.Text(checkAnswer, style)
             check.style.fill = checkAnswer == 'O' ? 0x017100 : 0xee220c
             check.anchor.set(0.5)
-            check.position.set(425, 60 * (i * 2 + 1)) //width 50
+            check.position.set(480, 60 * (i * 2 + 1)) //width 40 460
             listContainer.addChild(check)
         }
 
         listContainer.mask = listMask
         let scroller = new VerticalScroller(10, listContainer, listMask)
-        scroller.position.set(450, 0)
+        scroller.position.set(495, 0)
         list.addChild(scroller)
     }
     update() {
