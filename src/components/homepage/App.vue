@@ -2,36 +2,83 @@
     <v-app>
         <v-app-bar dark app>
             <v-col md="1">
-                <v-avatar tile @click="value=0">
-                    <v-img :src="require('@/assets/images/headphones.png')"></v-img>
+                <v-avatar tile @click="value = 0">
+                    <v-img
+                        :src="require('@/assets/images/headphones.png')"
+                    ></v-img>
                 </v-avatar>
             </v-col>
             <v-toolbar-title>情境式環境音訓練平台</v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn text large color="blue" @click="value=0">首頁</v-btn>
+            <v-btn
+                text
+                large
+                color="blue"
+                @click="
+                    goToIntroducePage(0);
+                    learningstatus = false;
+                "
+                >首頁</v-btn
+            >
             <v-menu offset-y>
                 <template v-slot:activator="{ on, attrs }">
-                    <v-btn text large color="amber" v-bind="attrs" v-on="on">導覽</v-btn>
+                    <v-btn text large color="amber" v-bind="attrs" v-on="on"
+                        >導覽</v-btn
+                    >
                 </template>
                 <v-list dark>
                     <v-list-item>
-                        <v-btn color="green" text @click="value=1">平台簡介</v-btn>
+                        <v-btn
+                            color="green"
+                            text
+                            @click="
+                                goToIntroducePage(1);
+                                learningstatus = false;
+                            "
+                            >平台簡介</v-btn
+                        >
                     </v-list-item>
                     <v-list-item>
-                        <v-btn color="error" text @click="value=2">遊戲系統</v-btn>
+                        <v-btn
+                            color="error"
+                            text
+                            @click="
+                                goToIntroducePage(2);
+                                learningstatus = false;
+                            "
+                            >遊戲系統</v-btn
+                        >
                     </v-list-item>
                     <v-list-item>
-                        <v-btn color="amber" text @click="value=3">模式介紹</v-btn>
+                        <v-btn
+                            color="amber"
+                            text
+                            @click="
+                                goToIntroducePage(3);
+                                learningstatus = false;
+                            "
+                            >模式介紹</v-btn
+                        >
                     </v-list-item>
                     <v-list-item>
-                        <v-btn color="blue" text @click="value=4">幫助我們</v-btn>
+                        <v-btn
+                            color="blue"
+                            text
+                            @click="
+                                goToIntroducePage(4);
+                                learningstatus = false;
+                            "
+                            >幫助我們</v-btn
+                        >
                     </v-list-item>
                 </v-list>
             </v-menu>
-            <v-btn text large color="error" @click="gotoManage">幫助我們</v-btn>
-            <v-btn text large color="green" @click="gotoGame">遊戲</v-btn>
+            <v-btn text large color="error" @click="gotoManage()"
+                >幫助我們</v-btn
+            >
+            <v-btn text large color="green" @click="gotoGame()">遊戲</v-btn>
 
-            <v-menu v-if="islogin===1" offset-y>
+            <v-menu v-if="islogin === 1" offset-y>
                 <template v-slot:activator="{ on, attr }">
                     <v-btn icon v-bind="attr" v-on="on">
                         <v-icon large>mdi-format-list-bulleted-square</v-icon>
@@ -41,11 +88,19 @@
                     <v-list>
                         <v-list-item class="mb-0" two-line>
                             <v-list-item-content>
-                                <v-list-item-title v-model="showUsername">{{showUsername}}</v-list-item-title>
-                                <v-list-item-subtitle v-model="showId">{{showId}}</v-list-item-subtitle>
+                                <v-list-item-title v-model="showUsername">{{
+                                    showUsername
+                                }}</v-list-item-title>
+                                <v-list-item-subtitle v-model="showId">{{
+                                    showId
+                                }}</v-list-item-subtitle>
                             </v-list-item-content>
                             <v-list-item-avatar>
-                                <v-img :src="require('@/assets/images/avatar-default.png')"></v-img>
+                                <v-img
+                                    :src="
+                                        require('@/assets/images/avatar-default.png')
+                                    "
+                                ></v-img>
                             </v-list-item-avatar>
                         </v-list-item>
                     </v-list>
@@ -57,17 +112,26 @@
                             <v-btn
                                 color="#9C0ACFFF"
                                 text
-                                @click="
-                                dialog3 = true                             
-                            "
-                            >個人資訊</v-btn>
+                                @click="dialog3 = true"
+                                >個人資訊</v-btn
+                            >
                         </v-list-item>
                         <v-list-item>
-                            <v-btn color="#EEA510FF" text>學習狀況</v-btn>
+                            <v-btn
+                                color="#EEA510FF"
+                                text
+                                @click="
+                                    goToLearningstatus();
+                                    learningstatus = true;
+                                "
+                                >學習狀況</v-btn
+                            >
                         </v-list-item>
 
                         <v-list-item>
-                            <v-btn color="primary" text @click="logout">登出系統</v-btn>
+                            <v-btn color="primary" text @click="logout"
+                                >登出系統</v-btn
+                            >
                         </v-list-item>
                     </v-list>
                 </v-card>
@@ -77,7 +141,7 @@
             <!-- <v-btn text disabled></v-btn> -->
             <!-- spacer  -->
 
-            <v-dialog v-if="islogin===0" v-model="dialog" max-width="600px">
+            <v-dialog v-if="islogin === 0" v-model="dialog" max-width="600px">
                 <template v-slot:activator="{ on, attrs }">
                     <v-btn icon v-bind="attrs" v-on="on">
                         <v-icon large>mdi-login-variant</v-icon>
@@ -86,7 +150,7 @@
                 <v-card color="	#8E8E8E">
                     <v-form v-model="valid" lazy-validation ref="form">
                         <v-card-title>
-                            <span style="color: #007979;">登入系統</span>
+                            <span style="color: #007979">登入系統</span>
                         </v-card-title>
                         <v-card-text>
                             <v-container>
@@ -117,16 +181,14 @@
                                 color="#EA0000"
                                 text
                                 @click="
-                                dialog2 = true
-                                dialog = false
-                            "
-                            >去註冊</v-btn>
-                            <v-btn
-                                color="success"
-                                v-on:click="                                
-                               invalidate();
-                            "
-                            >登入</v-btn>
+                                    dialog2 = true;
+                                    dialog = false;
+                                "
+                                >去註冊</v-btn
+                            >
+                            <v-btn color="success" v-on:click="invalidate()"
+                                >登入</v-btn
+                            >
                         </v-card-actions>
                     </v-form>
                 </v-card>
@@ -134,7 +196,7 @@
             <v-dialog v-model="dialog2" max-width="600px">
                 <v-card color="	#8E8E8E" dark>
                     <v-card-title>
-                        <span style="color: #21BFEDFF;">註冊系統</span>
+                        <span style="color: #21bfedff">註冊系統</span>
                     </v-card-title>
                     <v-card-text>
                         <v-container>
@@ -190,7 +252,10 @@
                                         <v-select
                                             v-model="identity"
                                             :items="['學生', '教師']"
-                                            :rules="[v => !!v || 'Item is required']"
+                                            :rules="[
+                                                (v) =>
+                                                    !!v || 'Item is required',
+                                            ]"
                                             label="身分"
                                             required
                                         ></v-select>
@@ -201,8 +266,49 @@
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn color="success" v-on:click="revalidate()">註冊</v-btn>
+                        <v-btn color="success" v-on:click="revalidate()"
+                            >註冊</v-btn
+                        >
                     </v-card-actions>
+                </v-card>
+            </v-dialog>
+
+            <v-dialog v-model="dialog4" max-width="250px">
+                <v-card>
+                    <v-form v-model="valid" lazy-validation ref="form3">
+                        <v-card-title>
+                            <span style="color: #007979">身分檢驗</span>
+                        </v-card-title>
+                        <v-card-text>
+                            <v-container>
+                                <v-row>
+                                    <v-col cols="12">
+                                        <v-text-field
+                                            v-model="accheck"
+                                            label="帳號"
+                                            required
+                                            :rules="required"
+                                        ></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12">
+                                        <v-text-field
+                                            v-model="pwcheck"
+                                            label="密碼"
+                                            type="password"
+                                            required
+                                            :rules="required"
+                                        ></v-text-field>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                        </v-card-text>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="success" v-on:click="checkvalidate()"
+                                >檢驗</v-btn
+                            >
+                        </v-card-actions>
+                    </v-form>
                 </v-card>
             </v-dialog>
             <!-- information -->
@@ -210,10 +316,14 @@
                 <v-card>
                     <v-card-title>
                         <v-list-item class="grow">
-                            <span style="color: #21BFEDFF;">你的資料</span>
+                            <span style="color: #21bfedff">你的資料</span>
                             <v-spacer></v-spacer>
                             <v-list-item-avatar>
-                                <v-img :src="require('@/assets/images/avatar-default.png')"></v-img>
+                                <v-img
+                                    :src="
+                                        require('@/assets/images/avatar-default.png')
+                                    "
+                                ></v-img>
                             </v-list-item-avatar>
                         </v-list-item>
                     </v-card-title>
@@ -260,14 +370,12 @@
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn
-                            text
-                            color="success"
-                            @click="
-                                dialog3 = false                          
-                            "
-                        >返回</v-btn>
-                        <v-btn text color="orange" @click="dialog4 = !dialog4">更改資料</v-btn>
+                        <v-btn text color="success" @click="dialog3 = false"
+                            >返回</v-btn
+                        >
+                        <v-btn text color="orange" @click="dialog4 = !dialog4"
+                            >更改資料</v-btn
+                        >
                     </v-card-actions>
                 </v-card>
             </v-dialog>
@@ -303,12 +411,9 @@
                         </v-card-text>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn
-                                color="success"
-                                v-on:click="                                
-                               checkvalidate();
-                            "
-                            >檢驗</v-btn>
+                            <v-btn color="success" v-on:click="checkvalidate()"
+                                >檢驗</v-btn
+                            >
                         </v-card-actions>
                     </v-form>
                 </v-card>
@@ -316,7 +421,7 @@
             <v-dialog v-model="dialog5" persistent dark max-width="500px">
                 <v-card>
                     <v-card-title>
-                        <span style="color: #21BFEDFF">更改資料</span>
+                        <span style="color: #21bfedff">更改資料</span>
                     </v-card-title>
                     <v-card-text>
                         <v-container>
@@ -369,103 +474,73 @@
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn
-                            text
-                            color="success"
-                            @click="
-                                dialog5 = false                          
-                            "
-                        >取消</v-btn>
-                        <v-btn
-                            text
-                            color="red"
-                            v-on:click="                                
-                               changevalidate();
-                            "
-                        >確定更改</v-btn>
+                        <v-btn text color="success" @click="dialog5 = false"
+                            >取消</v-btn
+                        >
+                        <v-btn text color="red" v-on:click="changevalidate()"
+                            >確定更改</v-btn
+                        >
                     </v-card-actions>
                 </v-card>
             </v-dialog>
         </v-app-bar>
-
-        <v-main>
-            <v-container class="ma-0 pa-0" fluid fill-height>
-                <!-- <router-view></router-view> -->
-                <v-carousel
-                    ref="carousel"
-                    id="carousel"
-                    v-model="value"
-                    class="ma-0 pa-0"
-                    height="100%"
-                    vertical
-                    vertical-delimiters
-                    hide-delimiter-background
-                >
-                    <v-carousel-item
-                        v-for="(slide, i) in slides"
-                        :key="i"
-                        reverse-transition="fade-transition"
-                        transition="fade-transition"
+        <!-- 側邊攔 -->
+        <v-navigation-drawer
+            v-model="learningstatus"
+            color="blue"
+            expand-on-hover
+            app
+        >
+            <v-divider></v-divider>
+            <v-list nav>
+                <v-list-item inactive>
+                    <v-list-item-icon>
+                        <v-icon>mdi-account</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-title class="title"
+                        >各模式學習狀況</v-list-item-title
                     >
-                        <v-sheet :color="colors[i]" height="100%">
-                            <v-row class="fill-height" align="center" justify="center">
-                                <v-card
-                                    class="text-center"
-                                    v-if="value===0"
-                                    light
-                                    color="#FF000000"
-                                    width="800"
-                                >
-                                    <v-card-text class="text-h2">情境式環境音訓練平台首頁</v-card-text>
-                                </v-card>
-                                <v-card
-                                    class="text-center"
-                                    v-if="value===1"
-                                    light
-                                    color="#FF000000"
-                                    width="800"
-                                >
-                                    <v-card-text class="text-h2">平台簡介</v-card-text>
-                                </v-card>
-                                <v-card
-                                    class="text-center"
-                                    v-if="value===2"
-                                    light
-                                    color="#FF000000"
-                                    width="800"
-                                >
-                                    <v-card-text class="text-h2">遊戲系統</v-card-text>
-                                </v-card>
-                                <v-card
-                                    class="text-center"
-                                    v-if="value===3"
-                                    light
-                                    color="#FF000000"
-                                    width="800"
-                                >
-                                    <v-card-text class="text-h2">模式介紹</v-card-text>
-                                </v-card>
-                                <v-card
-                                    class="text-center"
-                                    v-if="value===4"
-                                    light
-                                    color="#FF000000"
-                                    width="800"
-                                >
-                                    <v-card-text class="text-h2">幫助我們</v-card-text>
-                                </v-card>
+                </v-list-item>
+                <v-divider></v-divider>
+                <v-list-item-group
+                    active-class="deep-purple--text text--accent-4"
+                >
+                    <v-list-item to="/explore">
+                        <v-list-item-icon>
+                            <v-icon>mdi-magnify</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>探索模式</v-list-item-title>
+                    </v-list-item>
 
-                                <!-- <div class="display-3">{{ slide }}</div> -->
-                            </v-row>
-                        </v-sheet>
-                    </v-carousel-item>
-                </v-carousel>
-            </v-container>
+                    <v-list-item to="/practice">
+                        <v-list-item-icon>
+                            <v-icon>mdi-crosshairs-gps</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>練習模式</v-list-item-title>
+                    </v-list-item>
+
+                    <v-list-item to="/test">
+                        <v-list-item-icon>
+                            <v-icon>mdi-border-color</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>測驗模式</v-list-item-title>
+                    </v-list-item>
+                </v-list-item-group>
+            </v-list>
+        </v-navigation-drawer>
+        <!-- 側邊攔end -->
+        <v-main>
+            <router-view
+                :value.sync="value"
+                v-on:getValue="changeValue"
+                :passdata="passdata"
+                @passdata="passdata = $event"
+            ></router-view>
         </v-main>
 
         <v-dialog v-model="msg" width="300">
             <v-card center>
-                <v-card-title v-model="card">{{card}}</v-card-title>
+                <v-card-title v-model="card">{{ card }}</v-card-title>
             </v-card>
         </v-dialog>
 
@@ -511,24 +586,9 @@ export default {
             creatday: "2020/02/30",
             showId: null,
             showMail: null,
-
-            colors: [
-                "indigo",
-                "warning",
-                "pink darken-2",
-                "red lighten-1",
-                "deep-purple accent-4",
-            ],
-
-            slides: [
-                "index1",
-                "Introduction1",
-                "Introduction2",
-                "Introduction3",
-                "help",
-            ],
+            // --------
+            learningstatus: false,
             value: 0,
-            scrollable: true,
             //rule start
             counter16: [
                 (v) => !!v || "必填!",
@@ -544,14 +604,29 @@ export default {
             ],
             required: [(v) => !!v || "必填!"],
             //rule end
+            passdata: {},
         };
     },
     mounted() {
-        document.querySelector(".v-carousel__controls").style.right = 0;
-        this.setCarouselEvent();
+        // document.querySelector(".v-carousel__controls").style.right = 0;
+        // this.setCarouselEvent();
         this.checklogin();
     },
     methods: {
+        goToIntroducePage(val) {
+            if (this.$route.path != "/")
+                this.$router.push({ name: "introduction" });
+            this.value = val;
+        },
+        goToLearningstatus() {
+            this.$router.push({
+                name: "explore",
+                // params: { passdata: obj },
+            });
+        },
+        changeValue(val) {
+            this.value = val;
+        },
         login() {
             return apiManageLogin({
                 type: "login",
@@ -584,13 +659,17 @@ export default {
         },
 
         checklogin() {
+            this.$router.push({
+                name: "introduction",
+                // params: { passdata: obj },
+            });
             return apiManageLogin({
                 type: "checklogin",
             })
                 .then((res) => {
                     console.log(res.data);
                     this.logindata = res.data;
-
+                    this.learningstatus = false;
                     if (this.logindata.islogin == 1) {
                         this.card = this.logindata.user.name + " 歡迎回來!";
                         this.islogin = 1;
@@ -614,6 +693,7 @@ export default {
             })
                 .then((res) => {
                     console.log(res.data);
+                    this.learningstatus = false;
                     if (res.data == 1) {
                         this.msg = true;
                         this.card = "登出成功!";
@@ -724,33 +804,6 @@ export default {
             }
         },
 
-        setCarouselEvent() {
-            var app = this;
-            window.addEventListener("wheel", function (event) {
-                if (!app.scrollable) return;
-                let offset = event.deltaY < 0 ? -1 : 1;
-                let slides_length = app.$refs["carousel"].$slots.default.length;
-                app.scrollable = false;
-                app.value =
-                    app.value + offset < slides_length &&
-                    app.value + offset >= 0
-                        ? app.value + offset
-                        : app.value;
-                if (
-                    !(
-                        app.value + offset < slides_length &&
-                        app.value + offset >= 0
-                    )
-                )
-                    app.scrollable = true;
-            });
-            const transition = document.querySelector("#carousel");
-            transition.addEventListener("transitionend", (e) => {
-                if (e.propertyName.indexOf("transform") != -1)
-                    this.scrollable = true;
-            });
-        },
-
         revalidate() {
             if (this.$refs.form2.validate()) {
                 this.register();
@@ -781,15 +834,3 @@ export default {
 };
 </script>
 
-<style scoped>
-.v-window-x-transition-enter-active,
-.v-window-x-transition-leave-active,
-.v-window-x-reverse-transition-enter-active,
-.v-window-x-reverse-transition-leave-active,
-.v-window-y-transition-enter-active,
-.v-window-y-transition-leave-active,
-.v-window-y-reverse-transition-enter-active,
-.v-window-y-reverse-transition-leave-active {
-    transition: all 100ms ease 0s;
-}
-</style>
