@@ -289,7 +289,7 @@ class MissionListItem extends Container {
         let actionBtn = this.actionBtn
         let buttonBuilder = {
             build(type) {
-                let background = new PIXI.Sprite();
+                let background = new Sprite();
                 let colors = this.colors[type]
                 background.texture = PIXI.Texture.fromCanvas(buttonBuilder.drawGradientArea(colors, 200, 50))
                 let background_mask = new Graphics()
@@ -311,6 +311,22 @@ class MissionListItem extends Container {
                 actionBtn.buttonMode = true;
                 actionBtn.click = this.click[type]
                 actionBtn.position.set(630, 70)
+
+                actionBtn.update = () => { actionBtn.filters = [] }
+                actionBtn.filters = []
+                if (type == 'finished') {
+                    actionBtn.update = () => {
+                        requestAnimationFrame(actionBtn.update)
+                        var r = Math.round(Math.random() * 255);
+                        var g = Math.round(Math.random() * 255);
+                        var b = Math.round(Math.random() * 255);
+                        var color = `0x${parseInt(r, 16)}${parseInt(g, 16)}${parseInt(b, 16)}`;
+                        // app.filters = [new OutlineFilter(3, color)]
+                        // actionBtn.filters = [new GlowFilter(20, 3, 0, color)]
+                    }
+                    actionBtn.update();
+                }
+
                 app.addChild(actionBtn)
             },
             colors: {
@@ -328,7 +344,10 @@ class MissionListItem extends Container {
                     console.log('1')
                 },
                 finished() {
-                    console.log('2')
+                    actionBtn.interactive = false;
+                    MissionSystem.completeMission(app.mission)
+                    app.mission.status = 'received'
+                    app.setActionButton()
                 },
                 received() {
                     console.log('3')

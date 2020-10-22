@@ -227,7 +227,7 @@ export default class EnviromentDetailScene extends Scene {
 
     setGameModeArea() {
         let gamemodeArea = this.gamemodeArea
-        let btn_train_mode = new SlimeButton('訓練模式')
+        let btn_train_mode = new SlimeButton('探索模式')
         btn_train_mode.scale.set(0.7, 0.7)
         btn_train_mode.click = () => {
             ScenesManager.scenes['train_mode'] = null

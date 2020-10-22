@@ -31,13 +31,14 @@ class MissionSystem {
                 if (complete_missions == null) return
                 complete_missions = JSON.parse(complete_missions)
                 // console.log(JSON.parse(complete_missions))
-                /**處理每日任務已完成的 */
+                /**處理每日/成長任務已完成的 */
                 this.missions.forEach(mission => {
                     if (mission.type == '每日任務') {
                         let the_same_mission = complete_missions.find(complete_mission => mission.id == complete_mission.id)
                         if (the_same_mission == undefined) return
                         let today = new Date()
                         let today_string = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()} 0:0:0`
+                        console.log(today_string, the_same_mission.time)
                         if (Date.parse(today_string) < Date.parse(the_same_mission.time)) mission.status = 'received'
                     }
                     else {
@@ -76,20 +77,55 @@ class MissionSystem {
         return {
             train(mission) {
                 let trainData = app.learningdata.train.train
+                // console.log(trainData)
                 /**任務類型(每日/成長) */
                 trainData = dateFilter(mission, trainData)
                 let isNeedSpecificEnviro = (mission.required.enviro != null)
                 let isNeedSpecificObject = (mission.required.object != null)
                 trainData = (!isNeedSpecificObject && isNeedSpecificEnviro)
                     ? trainData.filter(item => item.enviro == mission.required.enviro) : trainData;
-                trainData = (isNeedSpecificObject) ? trainData.filter(item => item.id == mission.required.object) : trainData;
+                let fitData = [];
+                trainData.forEach(item => fitData.push(...item.items));
+                trainData = (isNeedSpecificObject) ? fitData.filter(item => item.id == mission.required.object) : fitData;
                 mission.status = (trainData.length >= mission.required.times) ? 'finished' : 'unfinished'
                 mission.fit = trainData.length
             },
             practice(mission) {
-                // console.log('practice',mission)
-                mission.status = 'unfinished'
-                mission.fit = 0
+                let practiceData = app.learningdata.practice.practice
+                // console.log('practice', practiceData)
+                // console.log('practice', mission)
+                practiceData = dateFilter(mission, practiceData)
+                let isNeedSpecificEnviro = (mission.required.enviro != null)
+                let isNeedSpecificObject = (mission.required.object != null)
+                practiceData = (!isNeedSpecificObject && isNeedSpecificEnviro)
+                    ? practiceData.filter(item => item.enviro == mission.required.enviro) : practiceData;
+
+                if (mission.required.counter.id == 'total') {
+                    let fitData = [];
+                    practiceData.forEach(item => fitData.push(...item.questions));
+                    if (isNeedSpecificObject)
+                        practiceData = (isNeedSpecificObject) ? fitData.filter(item => item.object_id == mission.required.object) : fitData;
+                    practiceData = practiceData.filter(item => item.your_answer != null && item.your_answer.indexOf(item.object_id) != -1)
+                    mission.status = (practiceData.length >= mission.required.times) ? 'finished' : 'unfinished'
+                    mission.fit = practiceData.length
+                }
+                else {
+                    let fitData = [];
+                    practiceData.forEach(item => fitData.push(item.questions));
+                    let best_value = 0
+                    if (fitData.length > 0)
+                        best_value = Math.max(...fitData.map(items => {
+                            if (isNeedSpecificObject) {
+                                return items.filter(item => item.object_id == mission.required.object && item.your_answer != null && item.your_answer.indexOf(item.object_id) != -1).length;
+                            }
+                            else {
+                                return items.filter(item => item.your_answer != null && item.your_answer.indexOf(item.object_id) != -1).length;
+                            }
+                        }
+                        ))
+                    mission.status = (best_value >= mission.required.times) ? 'finished' : 'unfinished'
+                    mission.fit = Math.round(best_value)
+                }
             },
             test(mission) {
                 let testData = app.learningdata.test.test
@@ -116,6 +152,13 @@ class MissionSystem {
                 action[action_type]();
             }
         }
+    }
+
+    completeMission(mission) {
+        let date = new Date()
+        let time = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+        apiManageGame({ type: 'update_mission', id: mission.id, time: time })
+            .then(res => console.log(res.data))
     }
 }
 

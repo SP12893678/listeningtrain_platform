@@ -25,7 +25,7 @@ export default new Router({
         { path: '/student-edit', name: 'student-edit', component: Student_editpage },
         { path: '/consultant-dashboard', name: 'consultant-dashboard', component: Consultant_dashboard },
         { path: '/mission-dashboard', name: 'mission-dashboard', component: Mission_dashboard },
-        { path: '/mission-edit', name: 'mission-edit', component: Mission_editpage },
+        { path: '/mission-edit', name: 'mission-edit', component: Mission_editpage, props: true },
         { path: '/404', name: 'error', component: Error },
         { path: '*', redirect: '/404' },
     ],

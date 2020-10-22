@@ -13,6 +13,11 @@ import set from '@/js/game/set'
 import * as particles from 'pixi-particles'
 import emitter2 from '@/assets/json/emitter2.json'
 import MissionBoard from '../component/MissionBoard'
+import { gsap } from 'gsap'
+import { PixiPlugin } from 'gsap/PixiPlugin'
+
+gsap.registerPlugin(PixiPlugin)
+PixiPlugin.registerPIXI(PIXI)
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -36,8 +41,9 @@ export default class GameMainScene extends Scene {
         this.btn_set = new RoundedButton(120, 60, '其他')
         this.btn_mission = new RoundedButton(120, 60, '任務')
         this.btn_shop = new RoundedButton(120, 60, '商城')
-        this.btn_achievement = new RoundedButton(120, 60, '成就')
+        this.btn_achievement = new RoundedButton(120, 60, '排行榜')
         this.test = new Sprite()
+        this.bao = new Sprite()
 
         this.init()
     }
@@ -54,10 +60,12 @@ export default class GameMainScene extends Scene {
         this.setAchievementButton()
         this.setGetButton()
         await this.setCharacter()
+        this.setBao()
         this.setProfile()
         this.setSet()
         this.addChild(this.missionBoard)
         this.missionBoard.visible = false
+
     }
     setBackground() {
         let background = new Sprite(resources[ResourcesManager.game_main_bg].texture)
@@ -79,7 +87,7 @@ export default class GameMainScene extends Scene {
         // Calculate the current time
         var elapsed = Date.now()
         // Update function every frame
-        var update = function() {
+        var update = function () {
             // Update the next frame
             requestAnimationFrame(update)
             var now = Date.now()
@@ -230,7 +238,7 @@ export default class GameMainScene extends Scene {
         this.addChild(armatureDisplay)
         armatureDisplay.interactive = true
         armatureDisplay.buttonMode = true
-        armatureDisplay.mouseover = function(mouseData) {
+        armatureDisplay.mouseover = function (mouseData) {
             // armatureDisplay.animation.play('shakeHand', 1)
             // armatureDisplay.animation.fadeIn('shakeHand',0,1,1)
             // armatureDisplay.animation.fadeIn('fighting',0,1,2)
@@ -240,8 +248,8 @@ export default class GameMainScene extends Scene {
                 emojiAnimation.addBoneMask('emoji') //只顯示表情這部分
             }
         }
-        armatureDisplay.mouseout = function(mouseData) {}
-        armatureDisplay.click = function() {
+        armatureDisplay.mouseout = function (mouseData) { }
+        armatureDisplay.click = function () {
             t.profile.dialog.visible = !t.profile.dialog.visible
         }
         //this.armatureDisplay.animation.play('shakeHand',1);
@@ -253,6 +261,37 @@ export default class GameMainScene extends Scene {
     setSet() {
         let set = this.set
         this.addChild(set)
+    }
+    setBao() {
+        let bao = this.bao
+        bao.texture = resources[ResourcesManager.bao].texture
+        bao.interactive = true;
+        bao.buttonMode = true;
+        let scale = 300 / bao.width;
+        bao.anchor.set(0, 1)
+        bao.scale.set(scale)
+        bao.position.set(350, 650)
+        bao.click = () => {
+            let tl = gsap.timeline({ duration: 0.2, repeat: -1, repeatDelay: 0 })
+            tl.to(bao, { pixi: { scaleY: scale / 2 }, duration: 0.5, ease: 'Power2.easeOut' })
+            tl.to(bao, { pixi: { scaleY: scale * 1.1, positionY: 350 }, duration: 0.8, ease: 'Power2.easeOut' })
+            tl.to(bao, { pixi: { scaleY: scale, positionY: 650 }, duration: 0.8, ease: 'Power2.easeIn' })
+            tl.to(bao, { pixi: { scaleY: scale * 0.6 }, duration: 0.2, ease: 'Power2.easeOut' })
+            tl.to(bao, { pixi: { scaleY: scale * 1 }, duration: 0.2, ease: 'Power2.easeOut' })
+
+            // tl.to(bao, { pixi: { positionY: 200 }, duration: 0.5, ease: 'Power2.easeOut' })
+        }
+        bao.visible = false
+        this.addChild(bao)
+
+        this.secret_key = ''
+        window.addEventListener('keyup', (event) => {
+            this.secret_key += event.key
+            if (this.secret_key.indexOf('bao') != -1) {
+                this.character.armatureDisplay.visible = false
+                bao.visible = true
+            }
+        })
     }
     /*---------*/
     update() {

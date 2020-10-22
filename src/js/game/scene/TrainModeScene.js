@@ -42,8 +42,6 @@ export default class TrainModeScene extends Scene {
         this.btn_guidestep = new Button2(150, 70, ResourcesManager.help, '下一步')
         this.btn_guideend = new Button2(150, 70, ResourcesManager.help, '完成')
 
-
-
         this.setBackground()
         this.setTitle()
         this.setCharacter()
@@ -52,6 +50,11 @@ export default class TrainModeScene extends Scene {
     }
 
     async init(id) {
+        /**新增探索資料 */
+        let date = new Date()
+        let time = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+        apiManageLearning({ type: 'update', mode: 'train', enviro: id, action: 'new', time: time }).then(res => { console.log(res.data) })
+
         let environment = new TrainModeEnvironment()
         await environment.init(id)
         let scale = 1000 / environment.width
@@ -114,14 +117,6 @@ export default class TrainModeScene extends Scene {
         cover.endFill();
         environment.addChild(cover)
 
-
-
-
-
-
-
-
-
         let environment_mask = this.environment_mask
         environment_mask.beginFill(0x000000, 0)
         environment_mask.drawRect(0, 0, 1000, 625)
@@ -130,8 +125,6 @@ export default class TrainModeScene extends Scene {
 
         environment.position.set(500, 100)
         environment.addChild(gearlocking)
-
-
 
         /* guide  */
         let guide = new PIXI.Text('請點選情境中的物件\n就能聽到聲音喔', style15)
@@ -272,7 +265,7 @@ export default class TrainModeScene extends Scene {
         goBackText.position.set(160, titleHeight / 2)
         title.addChild(goBackText)
         /* title Text */
-        let titleText = new PIXI.Text('訓練模式', style14)
+        let titleText = new PIXI.Text('探索模式', style14)
         titleText.anchor.set(0.5)
         titleText.position.set(Config.screen.width / 2, titleHeight / 2)
         title.addChild(titleText)
@@ -360,7 +353,7 @@ class TrainModeEnvironment extends Environment {
                     id: object.data.id,
                     time: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
                 };
-                apiManageLearning({ type: 'update', mode: 'train', item: item }).then(res => { console.log(res.data) })
+                apiManageLearning({ type: 'update', mode: 'train', action: 'add', item: item }).then(res => { console.log(res.data) })
             }
         })
         object.update()

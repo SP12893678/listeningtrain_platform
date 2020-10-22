@@ -66,7 +66,6 @@
                         class="ma-4"
                         max-width="300"
                         height="308"
-                        :data-v-step="`Enviroment-dashboard-card-${index}`"
                     >
                         <v-row justify="center" align-self="center">
                             <v-col md="auto">

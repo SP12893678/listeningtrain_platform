@@ -15,6 +15,19 @@
                 }
                 echo json_encode($data, JSON_UNESCAPED_UNICODE);
             }
+            else if($amount == 'part')
+            {
+                $items = $_GET['items'];
+                $mission_arr = join("','",$items);
+                $sql = "SELECT * FROM mission where id IN ('$mission_arr')";
+                $result = mysqli_query($con, $sql);
+                $data = [];
+                while($row = mysqli_fetch_array($result))
+                {
+                    array_push($data,$row);
+                }
+                echo json_encode($data, JSON_UNESCAPED_UNICODE);
+            }
             break;
         case 'update':
             $data = [];
