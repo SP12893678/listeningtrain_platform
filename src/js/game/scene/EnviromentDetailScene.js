@@ -203,7 +203,7 @@ export default class EnviromentDetailScene extends Scene {
         scroller.position.set(136, 444)
         objectList.position.set(136, 358)
 
-        let labels = ['正確率', '完成度', '反應速度', '低頻辨識率', '高頻辨識率']
+        let labels = ['正確率', '反應\n速度', '  聲音頻率<300\n的正確率', '  聲音頻率>6000\n的正確率', '完成度']
         let datasets = [
             // {
             //     name: 'test',
