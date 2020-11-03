@@ -50,9 +50,14 @@ function update_mission($con) {
     $mission = [];
     $mission['id'] = $id;
     $mission['time'] = $time;
-    $key = array_search($id, array_column($missions, 'id'));
-    if($key == false) array_push($missions,$mission);
-    else $missions[$key] = $mission;
+    // $key = array_search($id, array_column($missions, 'id'));
+    if(in_array($id, array_column($missions, 'id'))) {
+        $key = array_search($id, array_column($missions, 'id'));
+        $missions[$key] = $mission;
+    }
+    else array_push($missions,$mission);
+    // if($key == false) array_push($missions,$mission);
+    // else $missions[$key] = $mission;
     $missions = json_encode($missions, JSON_UNESCAPED_UNICODE);
     $sql = "UPDATE `game` SET mission = '$missions' WHERE `account` = '$account'";
     $result = mysqli_query($con, $sql);
