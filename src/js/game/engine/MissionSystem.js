@@ -50,6 +50,7 @@ class MissionSystem {
 
             Promise.all([getLearningData, getMissionData, getUserData])
                 .then(res => {
+                    console.log(res)
                     learningDataPrase(res[0])
                     missionDataPrase(res[1])
                     userDataParse(res[2])
