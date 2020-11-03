@@ -34,10 +34,12 @@
                         $items = json_decode($passdata['train'], true);  
                         $time = $_GET['time'];
                         $enviro = $_GET['enviro'];
+                        
                         $item = [];  
                         $item['items'] = [];
                         $item['time'] = $time;
                         $item['enviro'] = $enviro;
+                        
                         array_push($items['train'],$item);
                         $items = json_encode($items, JSON_UNESCAPED_UNICODE);
                         $sql = "UPDATE `learning` SET 
