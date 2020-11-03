@@ -13,11 +13,6 @@ export default class loadClothes{
         this.context = this.canvas.getContext('2d');
         this.imageObj = new Image();
         this.imageObj.src = ResourcesManager.Character_tex;
-        this.mydata = {}
-        this.pic = {}//整理好的no跟imgsrc
-        this.init()
-    }
-    async init() {
         this.mydata = this.item_classifier(character_tex_json)
         this.pic_classifier()
     }
