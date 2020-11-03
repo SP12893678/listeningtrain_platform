@@ -8,6 +8,9 @@
             $account = $_SESSION['account'];
             $sql = "SELECT * FROM learning where account='$account'";
             $result = mysqli_query($con, $sql);
+            if(mysqli_num_rows($result)<1) insertEmptyTable($con);
+            $sql = "SELECT * FROM learning where account='$account'";
+            $result = mysqli_query($con, $sql);
             // $data['count'] = mysqli_num_rows($result);
             echo json_encode(mysqli_fetch_array($result), JSON_UNESCAPED_UNICODE);
             break;
