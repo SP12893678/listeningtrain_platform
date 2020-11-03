@@ -245,7 +245,7 @@ class EnviromentList extends Container {
         let content_mask = this.content_mask
 
         let item = new EnviromentListItem(data)
-        item.position.set(0, 0)
+        item.position.set((content.children.length % 2) * 350, Math.floor(content.children.length / 2) * 350)
         content.addChild(item)
     }
 }
