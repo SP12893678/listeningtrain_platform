@@ -10,6 +10,9 @@ import { OutlineFilter, ShockwaveFilter, GlowFilter, DropShadowFilter } from 'pi
 import { apiManageMission, apiManageLearning } from "@/js/api";
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
 import MissionSystem from '@/js/game/engine/MissionSystem'
+import character from '@/js/game/character'
+import Events from '@/js/game/Events'
+import Dialog from 'Component/dialog'
 
 import { gsap } from 'gsap'
 import { PixiPlugin } from 'gsap/PixiPlugin'
@@ -18,9 +21,13 @@ gsap.registerPlugin(PixiPlugin)
 PixiPlugin.registerPIXI(PIXI)
 let resources = PIXI.loader.resources
 
+let myCharacter = new character()
+let missionDialog = null;
+
 export default class MissionBoardDialog extends Overlay {
     constructor() {
         super()
+        missionDialog = this;
         this.missionBoard = new MissionBoard()
         this.missionBoard.position.set(
             (Config.screen.width - this.missionBoard.width) / 2,
@@ -30,6 +37,9 @@ export default class MissionBoardDialog extends Overlay {
     }
 
     async init() {
+        await myCharacter.check_if_has_data()
+
+
         this.missionBoard = new MissionBoard()
         this.missionBoard.position.set(
             (Config.screen.width - this.missionBoard.width) / 2,
@@ -260,24 +270,44 @@ class MissionListItem extends Container {
 
     setRewards() {
         let rewards = this.rewards
-        for (let index = 0; index < 3; index++) {
+        console.log(this.mission.rewards)
+
+
+        let addReward = (icon, index) => {
             let item = new Container()
             let background = new Graphics()
             background.beginFill(0xFFD36B, 0.5)
             background.drawRoundedRect(0, 0, 80, 80, 10)
             background.endFill()
-            // background.filters = [new DropShadowFilter()]
             item.addChild(background)
 
-            let icon = new Sprite()
-            icon.texture = resources[ResourcesManager.money_bag].texture
+
             let scale = 60 / icon.width
             icon.scale.set(scale)
             icon.position.set((item.width - icon.width) / 2, (item.height - icon.height) / 2)
             item.addChild(icon)
-
-            item.position.set(index * 95, 0)
+            item.position.set(rewards.children.length * 95, 0)
             rewards.addChild(item)
+        }
+
+        this.mission.rewards.forEach(reward => {
+            let texture;
+            if (reward.type == 'money') {
+                texture = resources[ResourcesManager.money_bag].texture;
+                let icon = new Sprite()
+                icon.texture = texture;
+                addReward(icon, texture);
+            }
+            else {
+                let gender = myCharacter.gender
+                let clothing = myCharacter.clothing
+                let getItem = clothing.showClothes(reward[gender].type, reward[gender].no, 0, 0)
+                addReward(getItem, texture);
+            }
+        })
+        for (let index = 0; index < 3 - this.mission.rewards.length; index++) {
+            let icon = new Sprite()
+            addReward(icon, index);
         }
 
         rewards.position.set(300 + 20 + 15, 35)
@@ -348,6 +378,48 @@ class MissionListItem extends Container {
                     MissionSystem.completeMission(app.mission)
                     app.mission.status = 'received'
                     app.setActionButton()
+                    let gender = myCharacter.gender
+
+
+                    let dialog = new Dialog('恭喜你獲得', 2)
+                    dialog.setSize(400, 300)
+                    dialog.text.position.set(dialog.text.x, dialog.text.y - 60)
+                    dialog.yesBtn.position.set(dialog.yesBtn.x, dialog.yesBtn.y + 30)
+                    dialog.yesBtn.setBorder(0)
+                    dialog.yesBtn.scale.set(0.8)
+                    missionDialog.addChild(dialog)
+                    /* yesBtn action */
+                    dialog.yesBtn.click = () => {
+                        app.mission.rewards.forEach(reward => {
+                            if (reward.type == 'entity') {
+                                let check = myCharacter.clothing.addWardrobeClothes(reward[gender].type, reward[gender].no)
+                                check.then((success) => {
+                                    Events.emit('warning', { no: success })
+                                })
+                            }
+                        })
+                        dialog.visible = false
+                    }
+                    //獲得服飾顯示（for test）
+                    let clothing = myCharacter.clothing
+                    let rewardBox = new Container();
+                    app.mission.rewards.forEach((reward, index) => {
+                        if (reward.type == 'entity') {
+                            let getItem = clothing.showClothes(reward[gender].type, reward[gender].no, 100 * index, 0)
+                            rewardBox.addChild(getItem)
+                        }
+                        else {
+                            let texture = resources[ResourcesManager.money_bag].texture;
+                            let icon = new Sprite()
+                            icon.texture = texture;
+                            let scale = 80 / icon.width
+                            icon.scale.set(scale)
+                            icon.position.set(100 * index, 0)
+                            rewardBox.addChild(icon)
+                        }
+                    });
+                    rewardBox.position.set(dialog.dialog.x + (dialog.dialog.width - rewardBox.width) / 2, dialog.dialog.y + 90);
+                    dialog.addChild(rewardBox)
                 },
                 received() {
                     console.log('3')
