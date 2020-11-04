@@ -66,6 +66,7 @@
                         class="ma-4"
                         max-width="300"
                         height="308"
+                        data-v-step="Enviroment-dashboard-new-empty"
                     >
                         <v-row justify="center" align-self="center">
                             <v-col md="auto">
@@ -207,11 +208,21 @@ export default {
             snackbar: { body: false, text: null, timeout: 2000 },
             steps: [
                 {
+                    target: '[data-v-step="Enviroment-dashboard-new-empty"]',
+                    header: {
+                        title: "以空白情境範本新增教材",
+                    },
+                    content: `點選後將進入教材編輯頁面，其中情境教材為空白範本形式。`,
+                    params: {
+                        enableScrolling: false,
+                    },
+                },
+                {
                     target: '[data-v-step="Enviroment-dashboard-card-0"]',
                     header: {
                         title: "情境教材卡片",
                     },
-                    content: `顯示該情境教材相關資訊，<br>另外可使用編輯和刪除按鈕對該情境教材進行操作`,
+                    content: `顯示該情境教材相關資訊，<br>另外可使用編輯、使用該範本新增和刪除按鈕對該情境教材進行操作`,
                     params: {
                         enableScrolling: false,
                     },
@@ -221,7 +232,7 @@ export default {
                     header: {
                         title: "情境教材分頁欄",
                     },
-                    content: ``,
+                    content: `透過分頁欄可切換查看情境教材`,
                     params: {
                         enableScrolling: false,
                     },
@@ -231,18 +242,7 @@ export default {
                     header: {
                         title: "情境教材搜尋欄",
                     },
-                    content: ``,
-                    params: {
-                        enableScrolling: false,
-                    },
-                },
-                {
-                    target: '[data-v-step="Enviroment-dashboard-2"]',
-                    header: {
-                        title: "幫助選單按鈕",
-                    },
-                    content:
-                        "內有說明手冊、操作導覽、客服詢問功能，可幫助了解管理平台以及解決疑難雜症",
+                    content: `透過輸入關鍵字將顯示與關鍵字相關的情境教材`,
                     params: {
                         enableScrolling: false,
                     },
@@ -251,7 +251,6 @@ export default {
         };
     },
     async mounted() {
-        console.log(this.$route.name);
         await this.getEnviroData();
 
         /**模擬情境數量 */
@@ -296,60 +295,16 @@ export default {
         },
     },
     methods: {
-        test() {
-            let data = [];
-            for (let index = 0; index < 1; index++) {
-                let obj = {
-                    environ_id: 1,
-                    questions: [
-                        {
-                            audio_id: 1,
-                            your_answer: 1,
-                            time: 300,
-                        },
-                        {
-                            audio_id: 2,
-                            your_answer: 5,
-                            time: 300,
-                        },
-                        {
-                            audio_id: 4,
-                            your_answer: 3,
-                            time: 300,
-                        },
-                        {
-                            audio_id: 7,
-                            your_answer: 2,
-                            time: 300,
-                        },
-                        {
-                            audio_id: 1,
-                            your_answer: 1,
-                            time: 300,
-                        },
-                    ],
-                    accuracy: 50,
-                    completion: 50,
-                    reaction_rate: 50,
-                    high_frequency_accuracy: 60,
-                    low_frequency_accuracy: 60,
-                };
-                data.push(obj);
-            }
-            apiManageEnviroment({ type: "none", data: data }).then((res) => {
-                console.log(res.data);
-            });
-        },
         /**前往該情境教材的編輯頁面 */
         goToEditPage(id) {
             var obj = { enviro: { id: id } };
             this.$emit("passdata", obj);
-            this.$router.push("/enviroment-edit");
+            this.$router.push("/enviroment-edit").catch((err) => {});
         },
         goToNewEditPage(id, simple_id = this.enviro[0].id) {
             var obj = { enviro: { id: id, simple_id: simple_id } };
             this.$emit("passdata", obj);
-            this.$router.push("/enviroment-edit");
+            this.$router.push("/enviroment-edit").catch((err) => {});
         },
         /**請求後端並取得情境教材
          * @async
@@ -357,7 +312,6 @@ export default {
         getEnviroData() {
             return apiManageEnviroment({ type: "get", amount: "all" })
                 .then((res) => {
-                    console.log("enviro data", res.data);
                     this.enviro = res.data;
                 })
                 .catch((error) => {
@@ -378,7 +332,6 @@ export default {
 
             await apiManageEnviroment({ type: "delete", id: id })
                 .then((res) => {
-                    console.log("delete", res.data);
                     this.enviro_cards.delete_dialog = false;
                     this.snackbar.text = res.data.result
                         ? "刪除成功"

@@ -205,25 +205,152 @@
                     <v-tab-item>
                         <v-list-item>
                             <v-list-item-content>
-                                <v-btn color="orange" outlined
+                                <v-btn
+                                    @click="addMoneyReward"
+                                    color="orange"
+                                    outlined
                                     >新增金幣獎勵</v-btn
                                 >
                             </v-list-item-content>
                             <v-list-item-content>
-                                <v-btn color="purple" outlined
+                                <v-btn
+                                    @click="openChoseEntityDialog"
+                                    color="purple"
+                                    outlined
                                     >新增物品獎勵</v-btn
                                 >
                             </v-list-item-content>
                         </v-list-item>
                         <v-list-item>
-                            <v-list-item-content>
-                                <!-- <v-data-table
-                                    :headers="headers"
-                                   
-                                >
-                                </v-data-table>  -->
-                            </v-list-item-content></v-list-item
+                            <v-list-item-content class="pt-0">
+                                <v-row>
+                                    <v-col class="pt-0">
+                                        <v-btn color="blue" block text>
+                                            男生
+                                        </v-btn>
+                                    </v-col>
+                                    <v-col class="pt-0"
+                                        ><v-btn color="pink" block text>
+                                            女生
+                                        </v-btn></v-col
+                                    >
+                                </v-row>
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-list-item
+                            v-for="(reward, index) in mission.rewards"
+                            :key="index"
                         >
+                            <v-list-item-content v-if="reward.type == 'money'">
+                                <v-hover>
+                                    <template v-slot:default="{ hover }">
+                                        <v-card class="mx-auto" max-width="150">
+                                            <v-img
+                                                class="mx-auto"
+                                                :src="
+                                                    require('@/assets/images/money-bag.png')
+                                                "
+                                                width="100"
+                                            ></v-img>
+
+                                            <v-fade-transition>
+                                                <v-overlay
+                                                    v-if="hover"
+                                                    absolute
+                                                    color="#036358"
+                                                >
+                                                    <v-text-field
+                                                        v-model="reward.value"
+                                                        label="金額"
+                                                    ></v-text-field>
+                                                    <v-btn
+                                                        @click="
+                                                            deleteReward(reward)
+                                                        "
+                                                        block
+                                                        >刪除</v-btn
+                                                    >
+                                                </v-overlay>
+                                            </v-fade-transition>
+                                        </v-card>
+                                    </template>
+                                </v-hover>
+                            </v-list-item-content>
+                            <v-list-item-content v-if="reward.type == 'entity'">
+                                <v-hover>
+                                    <template v-slot:default="{ hover }">
+                                        <v-card class="mx-auto" max-width="150">
+                                            <v-img
+                                                class="mx-auto"
+                                                :src="reward.gg.imgsrc"
+                                                width="100"
+                                            ></v-img>
+
+                                            <v-fade-transition>
+                                                <v-overlay
+                                                    v-if="hover"
+                                                    absolute
+                                                    color="#036358"
+                                                >
+                                                    <v-btn
+                                                        @click="
+                                                            openEditRewardDialog(
+                                                                reward
+                                                            )
+                                                        "
+                                                        block
+                                                        >編輯</v-btn
+                                                    >
+                                                    <v-btn
+                                                        @click="
+                                                            deleteReward(reward)
+                                                        "
+                                                        block
+                                                        >刪除</v-btn
+                                                    >
+                                                </v-overlay>
+                                            </v-fade-transition>
+                                        </v-card>
+                                    </template>
+                                </v-hover>
+                                <v-hover>
+                                    <template v-slot:default="{ hover }">
+                                        <v-card class="mx-auto" max-width="150">
+                                            <v-img
+                                                class="mx-auto"
+                                                :src="reward.mm.imgsrc"
+                                                width="100"
+                                            ></v-img>
+
+                                            <v-fade-transition>
+                                                <v-overlay
+                                                    v-if="hover"
+                                                    absolute
+                                                    color="#036358"
+                                                >
+                                                    <v-btn
+                                                        @click="
+                                                            openEditRewardDialog(
+                                                                reward
+                                                            )
+                                                        "
+                                                        block
+                                                        >編輯</v-btn
+                                                    >
+                                                    <v-btn
+                                                        @click="
+                                                            deleteReward(reward)
+                                                        "
+                                                        block
+                                                        >刪除</v-btn
+                                                    >
+                                                </v-overlay>
+                                            </v-fade-transition>
+                                        </v-card>
+                                    </template>
+                                </v-hover>
+                            </v-list-item-content>
+                        </v-list-item>
                     </v-tab-item>
                 </v-tabs-items>
                 <v-card-actions>
@@ -363,6 +490,147 @@
             </v-card>
         </v-dialog>
 
+        <v-dialog v-model="missionEditArea.reward.dialog">
+            <v-card>
+                <v-card-title>
+                    <span class="jf-title">物品獎勵選擇</span>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        v-if="missionEditArea.reward.type == 'add'"
+                        @click="addReward('entity')"
+                        icon
+                    >
+                        <v-icon color="grey lighten-1">mdi-check</v-icon>
+                    </v-btn>
+                    <v-btn
+                        v-if="missionEditArea.reward.type == 'edit'"
+                        @click="editReward('entity')"
+                        icon
+                    >
+                        <v-icon color="grey lighten-1">mdi-check</v-icon>
+                    </v-btn>
+                </v-card-title>
+                <v-tabs v-model="missionEditArea.reward.tab" grow>
+                    <v-tab>男生</v-tab>
+                    <v-tab>女生</v-tab>
+                </v-tabs>
+                <v-tabs-items v-model="missionEditArea.reward.tab">
+                    <v-tab-item>
+                        <v-container fluid>
+                            <v-item-group
+                                v-model="missionEditArea.reward.item.gg"
+                                mandatory
+                            >
+                                <v-row>
+                                    <v-col
+                                        v-for="(item, i) in getMaleCloth"
+                                        :key="i"
+                                        md="auto"
+                                    >
+                                        <v-item
+                                            v-slot:default="{
+                                                active,
+                                                toggle,
+                                            }"
+                                            :value="item"
+                                        >
+                                            <v-card
+                                                :ripple="{
+                                                    class: 'white--text',
+                                                }"
+                                                min-width="100"
+                                                min-height="150"
+                                                max-width="200"
+                                                max-height="150"
+                                            >
+                                                <v-img
+                                                    @click="toggle"
+                                                    :src="item.imgsrc"
+                                                    :class="
+                                                        active
+                                                            ? 'border text-right pa-2'
+                                                            : ' text-right pa-2'
+                                                    "
+                                                    max-height="150"
+                                                    min-height="150"
+                                                    min-width="100"
+                                                    class
+                                                    contain
+                                                >
+                                                    <v-overlay
+                                                        v-if="active"
+                                                        transition="fade-transition"
+                                                        color="rgba(100, 100, 255, 0.5)"
+                                                        absolute
+                                                    ></v-overlay>
+                                                </v-img>
+                                            </v-card>
+                                        </v-item>
+                                    </v-col>
+                                </v-row>
+                            </v-item-group>
+                        </v-container>
+                    </v-tab-item>
+                    <v-tab-item>
+                        <v-container fluid>
+                            <v-item-group
+                                v-model="missionEditArea.reward.item.mm"
+                                mandatory
+                            >
+                                <v-row>
+                                    <v-col
+                                        v-for="(item, i) in getFeMaleCloth"
+                                        :key="i"
+                                        md="auto"
+                                    >
+                                        <v-item
+                                            v-slot:default="{
+                                                active,
+                                                toggle,
+                                            }"
+                                            :value="item"
+                                        >
+                                            <v-card
+                                                :ripple="{
+                                                    class: 'white--text',
+                                                }"
+                                                min-width="100"
+                                                min-height="150"
+                                                max-width="200"
+                                                max-height="150"
+                                            >
+                                                <v-img
+                                                    @click="toggle"
+                                                    :src="item.imgsrc"
+                                                    :class="
+                                                        active
+                                                            ? 'border text-right pa-2'
+                                                            : ' text-right pa-2'
+                                                    "
+                                                    max-height="150"
+                                                    min-height="150"
+                                                    min-width="100"
+                                                    class
+                                                    contain
+                                                >
+                                                    <v-overlay
+                                                        v-if="active"
+                                                        transition="fade-transition"
+                                                        color="rgba(100, 100, 255, 0.5)"
+                                                        absolute
+                                                    ></v-overlay>
+                                                </v-img>
+                                            </v-card>
+                                        </v-item>
+                                    </v-col>
+                                </v-row>
+                            </v-item-group>
+                        </v-container>
+                    </v-tab-item>
+                </v-tabs-items>
+            </v-card>
+        </v-dialog>
+
         <!--消息提醒條 -->
         <v-snackbar v-model="snackbar.body" :timeout="snackbar.timeout">
             {{ snackbar.text }}
@@ -385,6 +653,8 @@ import {
     apiManageObject,
     apiManageMission,
 } from "@/js/api";
+import LoadClothes from "@/js/manage/loadClothes";
+
 export default {
     props: ["passdata"],
     data() {
@@ -399,6 +669,7 @@ export default {
             },
             enviros: [],
             objects: [],
+            rewards: {},
             missionEditArea: {
                 index: -1,
                 type: "new",
@@ -417,6 +688,10 @@ export default {
                     { text: "種類", align: "start", value: "type" },
                     { text: "物品", value: "category" },
                 ],
+                reward: {
+                    dialog: false,
+                    item: { type: "entity", gg: null, mm: null },
+                },
             },
             missionRule: {
                 type: [
@@ -453,7 +728,8 @@ export default {
                     enviro: null,
                     object: null,
                 },
-                rewards: [{ type: "money", value: "100" }],
+                rewards: [],
+                // rewards: { type: "money", value: "100" },
             },
             missions: [],
             mission_headers: [
@@ -468,15 +744,14 @@ export default {
                 },
             ],
             snackbar: { body: false, text: null, timeout: 2000 },
+
+            // clothes: new LoadClothes(),
         };
     },
     async mounted() {
-        console.log(this.passdata);
         if (this.passdata.mission == null) this.$router.back();
+        this.rewards = await new LoadClothes().pic;
         if (this.passdata.mission.id.length > 0) await this.getMissionData();
-        // setInterval(() => {
-        //     console.log(this.mission.mode);
-        // }, 1000);
         this.getEnviroData();
     },
     computed: {
@@ -509,6 +784,24 @@ export default {
             });
             return Math.ceil(tmp.length / 10);
         },
+        getMaleCloth() {
+            let data = [];
+            if (this.rewards == undefined || this.rewards == null) return data;
+            for (const part of Object.keys(this.rewards.gg)) {
+                this.rewards.gg[part].forEach((item) => (item.type = part));
+                data.push(...this.rewards.gg[part]);
+            }
+            return data;
+        },
+        getFeMaleCloth() {
+            let data = [];
+            if (this.rewards == undefined || this.rewards == null) return data;
+            for (const part of Object.keys(this.rewards.mm)) {
+                this.rewards.mm[part].forEach((item) => (item.type = part));
+                data.push(...this.rewards.mm[part]);
+            }
+            return data;
+        },
     },
     methods: {
         /**請求後端並取得情境教材
@@ -517,7 +810,6 @@ export default {
         getEnviroData() {
             return apiManageEnviroment({ type: "get", amount: "all" })
                 .then((res) => {
-                    console.log("enviro data", res.data);
                     this.enviros = res.data;
                 })
                 .catch((error) => {
@@ -535,7 +827,6 @@ export default {
                 items: object_arr,
             })
                 .then((res) => {
-                    console.log(res.data);
                     this.objects = res.data;
                 })
                 .catch((error) => {
@@ -549,11 +840,21 @@ export default {
                 items: this.passdata.mission.id,
             })
                 .then((res) => {
-                    console.log(res.data);
                     this.missions = res.data;
                     this.missions.forEach((mission) => {
                         mission.required = JSON.parse(mission.required);
                         mission.rewards = JSON.parse(mission.rewards);
+                        mission.rewards.forEach((reward) => {
+                            if (reward.type == "entity") {
+                                reward.gg = this.rewards.gg[
+                                    reward.gg.type
+                                ].filter((item) => item.no == reward.gg.no)[0];
+                                reward.mm = this.rewards.mm[
+                                    reward.mm.type
+                                ].filter((item) => item.no == reward.mm.no)[0];
+                            }
+                        });
+
                         if (mission.required.enviro != null) {
                             apiManageEnviroment({
                                 type: "get",
@@ -561,7 +862,6 @@ export default {
                                 item: mission.required.enviro,
                             })
                                 .then((res) => {
-                                    console.log("enviro data", res.data);
                                     mission.required.enviro = res.data;
                                 })
                                 .catch((error) => {
@@ -575,7 +875,6 @@ export default {
                                 items: [mission.required.object],
                             })
                                 .then((res) => {
-                                    console.log(res.data);
                                     mission.required.object = res.data[0];
                                 })
                                 .catch((error) => {
@@ -630,8 +929,11 @@ export default {
             this.missionEditArea.type = "new";
             this.missionEditArea.dialog = true;
         },
+        openChoseEntityDialog() {
+            this.missionEditArea.reward.type = "add";
+            this.missionEditArea.reward.dialog = true;
+        },
         openEditMissionDialog(mission) {
-            console.log(mission);
             let item = {};
             Object.assign(item, mission);
             this.mission = item;
@@ -645,7 +947,6 @@ export default {
         },
         saveMission() {
             this.save_loading = true;
-            console.log(this.missions);
             let missions = [];
             missions.push(...this.missions);
 
@@ -656,9 +957,14 @@ export default {
                         mission.required.enviro = mission.required.enviro.id;
                     if (mission.required.object != null)
                         mission.required.object = mission.required.object.id;
+                    mission.rewards.forEach((reward) => {
+                        if (reward.type == "entity") {
+                            delete reward.gg.imgsrc;
+                            delete reward.mm.imgsrc;
+                        }
+                    });
                     apiManageMission({ type: "update", item: mission }).then(
                         (res) => {
-                            console.log(res.data);
                             if (res.data.result)
                                 this.missions[index].id = res.data.id;
                             if (++count >= missions.length) resolve();
@@ -672,6 +978,41 @@ export default {
                 this.snackbar.text = "儲存成功";
                 this.snackbar.body = true;
             });
+        },
+        addMoneyReward() {
+            this.missionEditArea.reward.item = { type: "money", value: 100 };
+            this.addReward("money");
+        },
+        addReward(type) {
+            let item = {};
+            Object.assign(item, this.missionEditArea.reward.item);
+            item.type = type;
+            this.mission.rewards.push(item);
+            this.missionEditArea.reward.dialog = false;
+            this.missionEditArea.reward.item = {};
+        },
+        editReward(type) {
+            Object.assign(
+                this.mission.rewards[this.missionEditArea.reward.index],
+                this.missionEditArea.reward.item
+            );
+            this.missionEditArea.reward.dialog = false;
+        },
+        openEditRewardDialog(reward) {
+            this.missionEditArea.reward.type = "edit";
+            this.missionEditArea.reward.index = this.mission.rewards.indexOf(
+                reward
+            );
+            let item = {};
+            Object.assign(item, reward);
+            this.mission.reward = item;
+            this.missionEditArea.reward.dialog = true;
+        },
+        deleteReward(reward) {
+            this.mission.rewards.splice(
+                this.mission.rewards.indexOf(reward),
+                1
+            );
         },
     },
 };

@@ -237,24 +237,16 @@ export default {
         };
     },
     async mounted() {
-        console.log(this.$route.name);
+        console.log(
+            "%c住手! %c༼ つ ◕_◕ ༽つ",
+            "color:red;font-family:system-ui;font-size:4rem;-webkit-text-stroke: 1px black;font-weight:bold",
+            "font-family:system-ui;font-size:16px;-webkit-text-stroke: 1px black;font-weight:bold"
+        );
         apiManageLogin({ type: "checklogin" })
             .then((res) => {
-                if (res.data.islogin != 1)
-                    this.showDialog({
-                        title: "尚未登入",
-                        text: "如欲使用管理功能需先進行登入",
-                    });
-                else if (res.data.user.identity == "學生")
-                    this.showDialog({
-                        title: "身份不符",
-                        text: "學生身份無權限使用管理功能",
-                    });
-                else {
-                    let { name, identity } = res.data.user;
-                    this.user.name = name;
-                    this.user.identity = identity;
-                }
+                let { name, identity } = res.data.user;
+                this.user.name = name;
+                this.user.identity = identity;
             })
             .catch((error) => {
                 console.error(error);
