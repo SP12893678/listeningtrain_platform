@@ -490,6 +490,7 @@
             color="blue"
             expand-on-hover
             app
+            stateless
         >
             <v-divider></v-divider>
             <v-list nav>
@@ -693,7 +694,6 @@ export default {
             })
                 .then((res) => {
                     console.log(res.data);
-                    this.learningstatus = false;
                     if (res.data == 1) {
                         this.msg = true;
                         this.card = "登出成功!";
@@ -703,6 +703,8 @@ export default {
                         this.showMail = null;
                         this.ac = null;
                         this.pw = null;
+                        this.learningstatus = false;
+                        this.goToIntroducePage(0);
                     } else {
                         this.msg = true;
                         this.card = "登出失敗";

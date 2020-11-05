@@ -128,7 +128,6 @@ export default {
         setCarouselEvent() {
             var app = this;
             window.addEventListener("wheel", function (event) {
-                console.log(app.scrollable);
                 if (!app.scrollable) return;
                 let offset = event.deltaY < 0 ? -1 : 1;
                 let slides_length = app.$refs["carousel"].$slots.default.length;
@@ -148,15 +147,12 @@ export default {
                     app.scrollable = true;
                 }
 
-                console.log("wheel end", app.scrollable);
                 this.setTimeout(() => (app.scrollable = true), 1000);
             });
             const transition = document.querySelector("#carousel");
             transition.addEventListener("transitionend", (e) => {
-                console.log("transitionend", app.scrollable);
                 if (e.propertyName.indexOf("transform") != -1)
                     app.scrollable = true;
-                console.log("transitionend2", app.scrollable);
             });
         },
     },
