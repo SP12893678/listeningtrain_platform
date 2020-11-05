@@ -1005,5 +1005,7 @@ class QuestionSystem {
         Sound.stopAll()
         Sound.add(this.question[index].audio.audio_id, resources[this.question[index].audio.sound_src])
         Sound.play(this.question[index].audio.audio_id)
+        let test = resources[this.question[index].audio.sound_src].sound
+        return test.duration
     }
 }

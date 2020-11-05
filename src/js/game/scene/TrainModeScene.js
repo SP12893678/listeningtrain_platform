@@ -45,8 +45,6 @@ export default class TrainModeScene extends Scene {
         this.setBackground()
         this.setTitle()
         this.setCharacter()
-
-
     }
 
     async init(id) {
@@ -439,7 +437,6 @@ class ObjectList extends Container {
         list_content.addChild(list_item)
         this.addChild(list_content)
         this.objects.push(list_item)
-        console.log(this.objects)
     }
 
     selectListItem(object) {

@@ -15,6 +15,7 @@ import emitter2 from '@/assets/json/emitter2.json'
 import MissionBoard from '../component/MissionBoard'
 import { gsap } from 'gsap'
 import { PixiPlugin } from 'gsap/PixiPlugin'
+import loadClothes from '@/js/game/loadClothes'
 
 gsap.registerPlugin(PixiPlugin)
 PixiPlugin.registerPIXI(PIXI)
@@ -44,6 +45,8 @@ export default class GameMainScene extends Scene {
         this.btn_achievement = new RoundedButton(120, 60, '排行榜')
         this.test = new Sprite()
         this.bao = new Sprite()
+        console.log(new loadClothes())
+
 
         this.setBackground()
         // this.doParticles()

@@ -73,7 +73,7 @@ export default class Character{
         await this.show_character(this.gender);
         this.clothing = new clothing(this.armatureDisplay,this.factory,this.gender);
         this.action = new action(this.armatureDisplay)
-        if(this.clothing_data != null){
+        if(this.clothing_data != ''){
             await this.clothing.changeClothes(this.clothing_data);
         }
     }

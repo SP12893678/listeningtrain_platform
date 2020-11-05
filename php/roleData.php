@@ -2,7 +2,8 @@
     session_start();
     require_once './connect.php';
     $type = $_GET['type'];
-    $account = $_SESSION['account'];
+    if(isset($_SESSION['account'])){
+        $account = $_SESSION['account'];
     switch ($type) {
         /* 讀取角色個人資料 */
         case 'getData':
@@ -114,5 +115,6 @@
         default:
             # code...
             break;
+    }
     }
     

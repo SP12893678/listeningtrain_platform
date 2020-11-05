@@ -607,7 +607,7 @@ export default class PracticeModeScene extends Scene {
         if (isNext) {
             let answer = []
             answer.push(...this.showAnserDialog.answerRecord)
-            if (selected.data.id == question.id) answer.push(selected.data)
+            if (selected && selected.data.id == question.id) answer.push(selected.data)
             this.questionSystem.myAnser.push(answer)
         }
 

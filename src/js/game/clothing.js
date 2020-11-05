@@ -85,7 +85,7 @@ export default class Clothing{
             itemName.forEach(item=>{
                 let gender = temp[i].gender
                 let str = temp[i][item]
-                if(str != ""){
+                if(str != "" && typeof(str) != "undefined"){
                     let strAry = str.split(',');
                     strAry.forEach(no=>{
                         tempClass[gender][item][no] = this.item_data[gender][item][no].name//只丟名字就好
