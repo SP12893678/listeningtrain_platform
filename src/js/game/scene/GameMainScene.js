@@ -6,6 +6,8 @@ import Events from '@/js/game/Events'
 import RoundedButton from 'Component/button3'
 import { style7 } from '@/js/game/engine/TextStyleManager'
 import Dialog from 'Component/dialog'
+import EnviromentSelectScene from 'Scene/EnviromentSelectScene'
+import ScenesManager from '@/js/game/engine/ScenesManager'
 
 import character from '@/js/game/character'
 import profile from '@/js/game/profile'
@@ -118,7 +120,18 @@ export default class GameMainScene extends Scene {
         style.fontSize = 36
         button.setText(style)
         button.position.set(850, 320)
-        button.click = () => Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
+        button.click = async () => {
+            if (!ScenesManager.scenes['enviro_select']) ScenesManager.createScene('enviro_select', new EnviromentSelectScene())
+            await ScenesManager.scenes['enviro_select'].init()
+            ScenesManager.goToScene('enviro_select')
+            ScenesManager.scenes['enviro_select'].alpha = 0
+            gsap.to(ScenesManager.scenes['enviro_select'], {
+                pixi: {
+                    alpha: 1,
+                },
+                duration: 1,
+            })
+        }
         this.addChild(button)
     }
     setProfileButton() {
@@ -275,15 +288,15 @@ export default class GameMainScene extends Scene {
         bao.anchor.set(0, 1)
         bao.scale.set(scale)
         bao.position.set(350, 650)
-        bao.click = () => {
-            let tl = gsap.timeline({ duration: 0.2, repeat: -1, repeatDelay: 0 })
-            tl.to(bao, { pixi: { scaleY: scale / 2 }, duration: 0.5, ease: 'Power2.easeOut' })
-            tl.to(bao, { pixi: { scaleY: scale * 1.1, positionY: 350 }, duration: 0.8, ease: 'Power2.easeOut' })
-            tl.to(bao, { pixi: { scaleY: scale, positionY: 650 }, duration: 0.8, ease: 'Power2.easeIn' })
-            tl.to(bao, { pixi: { scaleY: scale * 0.6 }, duration: 0.2, ease: 'Power2.easeOut' })
-            tl.to(bao, { pixi: { scaleY: scale * 1 }, duration: 0.2, ease: 'Power2.easeOut' })
 
-            // tl.to(bao, { pixi: { positionY: 200 }, duration: 0.5, ease: 'Power2.easeOut' })
+        let tl = gsap.timeline({ duration: 0.2, repeat: -1, repeatDelay: 0 })
+        tl.to(bao, { pixi: { scaleY: scale / 2 }, duration: 0.5, ease: 'Power2.easeOut' })
+        tl.to(bao, { pixi: { scaleY: scale * 1.1, positionY: 350 }, duration: 0.8, ease: 'Power2.easeOut' })
+        tl.to(bao, { pixi: { scaleY: scale, positionY: 650 }, duration: 0.8, ease: 'Power2.easeIn' })
+        tl.to(bao, { pixi: { scaleY: scale * 0.6 }, duration: 0.2, ease: 'Power2.easeOut' })
+        tl.to(bao, { pixi: { scaleY: scale * 1 }, duration: 0.2, ease: 'Power2.easeOut' })
+        bao.click = () => {
+
         }
         bao.visible = false
         this.addChild(bao)

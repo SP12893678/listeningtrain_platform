@@ -71,10 +71,10 @@ export class Environment {
 
         object.interactive = true // 設定可以互動
         object.buttonMode = true // 當滑鼠滑過時顯示為手指圖示
-        object.mouseover = function() {
+        object.mouseover = function () {
             object.filters = [new OutlineFilter(3, 0x99ff99)]
         }
-        object.mouseout = function() {
+        object.mouseout = function () {
             object.filters = [new OutlineFilter(3, 0xf0aaee)]
         }
         return object
@@ -101,8 +101,9 @@ export class Editor extends Environment {
 
     control() {
         var app = this
+        if (this.object_data.length <= 0) return
         this.object_data.forEach((object_item) => {
-            object_item.sprite.click = function() {
+            object_item.sprite.click = function () {
                 app.object_click(object_item)
             }
             app.object_drag(object_item)
@@ -113,10 +114,10 @@ export class Editor extends Environment {
         var app = this
         app.object_data.forEach((object_item) => {
             object_item.sprite.filters = [new OutlineFilter(3, 0xf0aaee)]
-            object_item.sprite.mouseover = function() {
+            object_item.sprite.mouseover = function () {
                 this.filters = [new OutlineFilter(3, 0x99ff99)]
             }
-            object_item.sprite.mouseout = function() {
+            object_item.sprite.mouseout = function () {
                 this.filters = [new OutlineFilter(3, 0xf0aaee)]
             }
         })

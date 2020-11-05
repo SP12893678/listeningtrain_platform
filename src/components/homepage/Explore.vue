@@ -22,28 +22,33 @@
                     :items="explore"
                     :search="search"
                     item-key="name"
-                    :single-expand="singleExpand"
+                    :single-expand="true"
                     :expanded.sync="expanded"
                     show-expand
                     multi-sort
                 >
-                    <template v-slot:expanded-item="{ headers }">
+                    <template v-slot:expanded-item="{ headers, item }">
                         <td :colspan="headers.length">
+                            <!-- {{ objects.name }} -->
                             <v-simple-table>
                                 <template v-slot:default>
                                     <thead>
                                         <tr>
-                                            <th>環境音</th>
+                                            <th>情境音</th>
                                             <th>聆聽次數</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr
-                                            v-for="explore in explore"
-                                            :key="explore.name"
+                                            v-for="(items, index) in cutdate(
+                                                item
+                                            )"
+                                            :key="index"
                                         >
-                                            <td>{{ explore.name }}</td>
-                                            <td>{{ explore.account }}</td>
+                                            <td>
+                                                {{ items.name }}
+                                            </td>
+                                            <td></td>
                                         </tr>
                                     </tbody>
                                 </template>
@@ -57,42 +62,65 @@
 </template>
 
 <script>
+import {
+    apiManageLearning,
+    apiManageEnviroment,
+    apiManageObject,
+} from "@/js/api";
+
 export default {
     data() {
         return {
-            expanded: [],
-            singleExpand: false,
             search: null,
             explore_header: [
                 {
-                    text: "情境",
+                    text: "探索情境",
                     align: "start",
                     value: "name",
                 },
-                { text: "探索情境音總次數", value: "account" },
-                { text: "探索情境次數", value: "mail" },
+                { text: "探索情境次數", value: "time" },
             ],
-            explore: [
-                {
-                    name: "動物",
-                    account: 59,
-                    mail: 6.0,
-                },
-                {
-                    name: "廚房",
-                    account: 14,
-                    mail: 4,
-                },
-                {
-                    name: "廁所",
-                    account: 79,
-                    mail: 2,
-                },
-            ],
+            explore: [],
+            objects: [],
+            expanded: [],
         };
+    },
+    computed: {
+        cutdate: function () {
+            return function (item) {
+                return this.objects.filter(
+                    (items) => item.object.indexOf(items.id) != -1
+                );
+            };
+        },
     },
     mounted() {
         console.log("explore Page run");
+        apiManageLearning({ type: "get" }).then((res) => {
+            res.data.train = JSON.parse(res.data.train);
+            console.log(res.data.train.train);
+
+            // this.explore = res.data.train.train;
+        });
+        apiManageEnviroment({ type: "get", amount: "all" })
+            .then((res) => {
+                console.log("enviro data", res.data);
+                this.explore = res.data;
+                this.explore.forEach((explore) => {
+                    explore.object = explore.object.split(",");
+                });
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+        apiManageObject({ type: "get", amount: "all" })
+            .then((res) => {
+                this.objects = res.data;
+                console.log("Object", this.objects);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
     },
 };
 </script>

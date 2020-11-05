@@ -51,6 +51,7 @@ export default class TrainModeScene extends Scene {
         /**新增探索資料 */
         let date = new Date()
         let time = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+
         apiManageLearning({ type: 'update', mode: 'train', enviro: id, action: 'new', time: time }).then(res => { console.log(res.data) })
 
         let environment = new TrainModeEnvironment()
@@ -354,8 +355,9 @@ class TrainModeEnvironment extends Environment {
                 console.log('complete', object.data.audio.audio_id)
                 let date = new Date()
                 let item = {
-                    enviro: this.data.environment.id,
+                    enviro: this.data.environment.name,
                     id: object.data.id,
+                    object_name: object.data.name,
                     time: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
                 };
                 apiManageLearning({ type: 'update', mode: 'train', action: 'add', item: item }).then(res => { console.log(res.data) })

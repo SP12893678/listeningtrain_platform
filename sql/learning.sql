@@ -30,9 +30,9 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `learning` (
   `account` varchar(12) NOT NULL,
-  `train` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '""',
-  `practice` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '""',
-  `test` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '""'
+  `train` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  `practice` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  `test` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --

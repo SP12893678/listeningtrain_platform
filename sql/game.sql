@@ -31,16 +31,14 @@ SET time_zone = "+00:00";
 CREATE TABLE `game` (
   `account` varchar(12) NOT NULL,
   `money` int(11) NOT NULL DEFAULT 0,
-  `mission` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '""' CHECK (json_valid(`mission`)),
-  `entity` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '""'
+  `mission` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid('mission')),
+  `entity` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- 傾印資料表的資料 `game`
 --
 
-INSERT INTO `game` (`account`, `money`, `mission`, `entity`) VALUES
-('test002', 0, '[{\"id\":1,\"time\":\"2020-10-11 17:05:20\"},{\"id\":\"2\",\"time\":\"2020-10-13 20:22:10\"}]', '\"\"');
 
 --
 -- 已傾印資料表的索引

@@ -3,6 +3,7 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
+    mode: 'production',
     entry: {
         index: './src/index.js',
         game: './src/game.js',
@@ -140,7 +141,7 @@ module.exports = {
     ],
     resolve: {
         alias: {
-            vue: 'vue/dist/vue.js',
+            vue: process.env.NODE_ENV == 'production' ? 'vue/dist/vue.min.js' : 'vue/dist/vue.js',
             '@': path.resolve('src'),
             Manage: path.resolve('./src/components/manage'),
             Scene: path.resolve('./src/js/game/scene'),

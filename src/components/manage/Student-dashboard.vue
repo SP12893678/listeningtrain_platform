@@ -10,11 +10,16 @@
                 v-model="search"
                 append-icon="mdi-magnify"
                 label="Search"
+                data-v-step="Student-dashboard-search"
                 single-line
                 hide-details
             ></v-text-field>
             <v-list-item-action class="ml-4 mb-0">
-                <v-btn to="/student-edit" text>
+                <v-btn
+                    to="/student-edit"
+                    data-v-step="Student-dashboard-add"
+                    text
+                >
                     <v-icon left>mdi-account-plus</v-icon>新增
                 </v-btn>
             </v-list-item-action>
@@ -27,6 +32,7 @@
                     :items="users"
                     :search="search"
                     multi-sort
+                    data-v-step="Student-dashboard-student-table"
                     class="elevation-1"
                 >
                     <template v-slot:item.tags="{ item }">
@@ -41,6 +47,8 @@
                 </v-data-table>
             </v-list-item-content>
         </v-list-item>
+
+        <v-tour :name="this.$route.name" :steps="steps"></v-tour>
     </v-container>
 </template>
 
@@ -63,15 +71,50 @@ export default {
                 { text: "標籤", value: "tags" },
                 { text: "創建者", value: "creator" },
             ],
+            steps: [
+                {
+                    target: '[data-v-step="Student-dashboard-student-table"]',
+                    header: {
+                        title: "學生帳戶資料表",
+                    },
+                    content: `將列出所擁有的學生帳戶資料表，可於表中查看各項內容和屬性，另外可於資料表標題欄點選該類別進行排序以便查看`,
+                    params: {
+                        enableScrolling: false,
+                    },
+                },
+                {
+                    target: '[data-v-step="Student-dashboard-search"]',
+                    header: {
+                        title: "學生帳戶搜尋欄",
+                    },
+                    content: `透過輸入關鍵字將顯示與關鍵字相關的學生帳戶`,
+                    params: {
+                        enableScrolling: false,
+                    },
+                },
+                {
+                    target: '[data-v-step="Student-dashboard-add"]',
+                    header: {
+                        title: "新增學生帳戶按鈕",
+                    },
+                    content: `點選此按鈕將進入學生帳戶編輯頁面。`,
+                    params: {
+                        enableScrolling: false,
+                    },
+                },
+            ],
         };
     },
-    mounted() {
-        console.log("Student dashboard Page run");
-        apiManageUser({ type: "get" }).then((res) => {
-            console.log(res.data);
-            res.data.forEach((user) => (user.tags = user.tags.split(",")));
-            this.users = res.data;
-        });
+    async mounted() {
+        await this.getStudentData();
+    },
+    methods: {
+        getStudentData() {
+            return apiManageUser({ type: "get" }).then((res) => {
+                res.data.forEach((user) => (user.tags = user.tags.split(",")));
+                this.users = res.data;
+            });
+        },
     },
 };
 </script>

@@ -31,6 +31,7 @@
 </template>
 
 <script>
+import { apiManageLearning } from "@/js/api";
 export default {
     data() {
         return {
@@ -39,17 +40,25 @@ export default {
                 {
                     text: "情境",
                     align: "start",
-                    value: "name",
+                    value: "enviro_name",
                 },
-                { text: "作答時間", value: "account" },
-                { text: "答對題數", value: "mail" },
-                { text: "測驗日期", value: "tags" },
+                { text: "作答時間(秒)", value: "usetime" },
+                { text: "答對題數(共10題)", value: "accuracy.your" },
+                { text: "測驗日期", value: "time" },
             ],
             test: [],
         };
     },
     mounted() {
-        console.log("explore Page run");
+        console.log("test Page run");
+        apiManageLearning({ type: "get" }).then((res) => {
+            res.data.test = JSON.parse(res.data.test);
+            console.log(res.data.test.test);
+            // res.data.test.test.forEach(
+            //     (tests) => (tests.enviro_id = tests.enviro_id.split(","))
+            // );
+            this.test = res.data.test.test;
+        });
     },
 };
 </script>

@@ -36,6 +36,8 @@ export default class PracticeModeScene extends Scene {
         // this.questionTotal = 10
         this.questionNo = 1
         this.questionCorrectTotal = 0
+        this.firstCorrectTotal = 0
+
         this.screenUp = new Container()
         this.questionNoShow = new Text(this.questionNo, style15)
         // this.starCheck = new Container()
@@ -524,8 +526,11 @@ export default class PracticeModeScene extends Scene {
             let time = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
             data = {
                 time: time,
-                enviro: this.environment.data.environment.id,
-                questions: items
+                enviro: this.environment.data.environment.name,
+                questions: items,
+                firstCorrect: this.firstCorrectTotal,
+                Correct: this.questionCorrectTotal,
+                questions_num: items.length
             }
             apiManageLearning({ type: 'update', mode: 'practice', item: data })
                 .then(res => { console.log(res.data) })
@@ -575,6 +580,7 @@ export default class PracticeModeScene extends Scene {
         this.questionNo = 1
         this.questionNoShow.text = this.questionNo
         this.questionCorrectTotal = 0
+        this.firstCorrectTotal = 0
 
         // let starCheck = this.starCheck.children
         // starCheck.forEach((star) => {
@@ -605,10 +611,19 @@ export default class PracticeModeScene extends Scene {
 
         /**將此次作答紀錄到出題系統 */
         if (isNext) {
+
             let answer = []
             answer.push(...this.showAnserDialog.answerRecord)
-            if (selected && selected.data.id == question.id) answer.push(selected.data)
+            if (selected && selected.data.id == question.id) {
+                answer.push(selected.data)
+                if (answer.length == 1 || answer[0].id == question.id) {
+                    this.firstCorrectTotal++
+                }
+
+            }
             this.questionSystem.myAnser.push(answer)
+
+
         }
 
         if (!selected) this.showAnserDialog.showAnser(question, '')

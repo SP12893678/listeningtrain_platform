@@ -97,7 +97,6 @@ export default {
         getMissionData() {
             return apiManageMission({ type: "get", amount: "all" })
                 .then((res) => {
-                    console.log("missions", res.data);
                     this.missions = res.data;
                     // this.missions.push(...res.data)
                     // this.missions.push(...res.data)
@@ -111,7 +110,6 @@ export default {
                 (mission) => mission.id
             );
             let obj = { mission: { id: selected_id } };
-            console.log(obj);
             this.$router.push({
                 name: "mission-edit",
                 params: { passdata: obj },
