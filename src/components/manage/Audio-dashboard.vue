@@ -11,21 +11,32 @@
                 v-model="audio_data_table.search"
                 append-icon="mdi-magnify"
                 label="聲音資源搜尋"
+                data-v-step="Audio-dashboard-search"
                 single-line
                 hide-details
             ></v-text-field>
             <v-list-item-action class="ml-4 mb-0">
-                <v-btn @click="addAudio" text>
+                <v-btn @click="addAudio" data-v-step="Audio-dashboard-add" text>
                     <v-icon left>mdi-music-note-plus</v-icon>新增
                 </v-btn>
             </v-list-item-action>
             <v-list-item-action class="mb-0">
-                <v-btn @click.prevent="editAudio" color="blue" text>
+                <v-btn
+                    @click.prevent="editAudio"
+                    color="blue"
+                    data-v-step="Audio-dashboard-edit"
+                    text
+                >
                     <v-icon left>mdi-pencil</v-icon>編輯
                 </v-btn>
             </v-list-item-action>
             <v-list-item-action class="ml-0 mb-0">
-                <v-btn @click="deleteAudioAsk" color="red" text>
+                <v-btn
+                    @click="deleteAudioAsk"
+                    color="red"
+                    data-v-step="Audio-dashboard-delete"
+                    text
+                >
                     <v-icon left>mdi-delete</v-icon>刪除
                 </v-btn>
             </v-list-item-action>
@@ -48,6 +59,7 @@
                         :search="audio_data_table.search"
                         item-key="name"
                         class="elevation-1"
+                        data-v-step="Audio-dashboard-audio-table"
                         loading-text
                         show-select
                         multi-sort
@@ -211,6 +223,8 @@
                 >
             </template>
         </v-snackbar>
+
+        <v-tour :name="this.$route.name" :steps="steps"></v-tour>
     </v-container>
 </template>
 
@@ -243,11 +257,61 @@ export default {
                 audio: new Audio(),
             },
             snackbar: { body: false, text: null, timeout: 2000 },
+            steps: [
+                {
+                    target: '[data-v-step="Audio-dashboard-audio-table"]',
+                    header: {
+                        title: "聲音資源資料表",
+                    },
+                    content: `將列出所擁有的聲音資源資料表，可於表中查看各項內容和屬性，在最右側有聲音撥放按鈕可聆聽該聲音，另外可於資料表標題欄點選該類別進行排序以便查看`,
+                    params: {
+                        enableScrolling: false,
+                    },
+                },
+                {
+                    target: '[data-v-step="Audio-dashboard-search"]',
+                    header: {
+                        title: "聲音資源搜尋欄",
+                    },
+                    content: `透過輸入關鍵字將顯示與關鍵字相關的聲音資源`,
+                    params: {
+                        enableScrolling: false,
+                    },
+                },
+                {
+                    target: '[data-v-step="Audio-dashboard-add"]',
+                    header: {
+                        title: "新增聲音資源按鈕",
+                    },
+                    content: `點選此按鈕將進入聲音資源編輯頁面。`,
+                    params: {
+                        enableScrolling: false,
+                    },
+                },
+                {
+                    target: '[data-v-step="Audio-dashboard-edit"]',
+                    header: {
+                        title: "編輯聲音資源按鈕",
+                    },
+                    content: `勾選聲音資源資料表中欲刪除的聲音後，點選此按鈕將進入聲音資源編輯頁面。`,
+                    params: {
+                        enableScrolling: false,
+                    },
+                },
+                {
+                    target: '[data-v-step="Audio-dashboard-delete"]',
+                    header: {
+                        title: "刪除聲音資源按鈕",
+                    },
+                    content: `勾選聲音資源資料表中欲刪除的聲音後，點選此按鈕即可刪除。`,
+                    params: {
+                        enableScrolling: false,
+                    },
+                },
+            ],
         };
     },
     async mounted() {
-        console.log("Audio Dashboard Page run");
-
         await this.getAudioData();
         this.loadAudioResources();
         this.audioPlayerEvent();
@@ -276,8 +340,6 @@ export default {
             });
         });
 
-        // console.log(this.audio)
-        // console.log(this.audio_categories)
         setTimeout(() => {
             this.audio_data_table.loading = false;
         }, 1000);
@@ -293,16 +355,12 @@ export default {
         },
     },
     methods: {
-        test() {
-            console.log(this.audio_data_table.selected);
-        },
         /**請求後端並取得聲音資源
          * @async
          */
         getAudioData() {
             return apiManageAudio({ type: "get", amount: "all" })
                 .then((res) => {
-                    console.log(res.data);
                     this.audio = res.data;
                 })
                 .catch((error) => {
@@ -344,7 +402,6 @@ export default {
                 if (!PIXI.loader.resources[object.sound_src])
                     load_resources.push(object.sound_src);
             });
-            // console.log(load_resources)
 
             // PIXI.loader.reset()
             if (load_resources.length > 0)
@@ -421,7 +478,6 @@ export default {
         },
         /**進入編輯頁面(含新增功能) */
         addAudio() {
-            this.test();
             var obj = { audio: { id: [] } };
             this.$router.push({
                 name: "audio-edit",
@@ -446,10 +502,8 @@ export default {
             let audio_id_arr = this.audio_data_table.selected.map(
                 (audio) => audio.id
             );
-            console.log(audio_id_arr);
             await apiManageAudio({ type: "delete", items: audio_id_arr })
                 .then((res) => {
-                    console.log(res.data);
                     this.snackbar.text = res.data.result
                         ? "刪除成功"
                         : "刪除失敗";

@@ -37,7 +37,6 @@ let Application = PIXI.Application,
 export default class video extends PIXI.Container {
     constructor(type = 0) {
         super()
-        console.log("vedio", trainmodevideo)
         this.type = type
         this.trainmodevideo = trainmodevideo
         this.dialog = new Dialog('', 3)
@@ -122,6 +121,8 @@ export default class video extends PIXI.Container {
         //设置视频精灵的宽度和高度
         videoSprite.width = 800;
         videoSprite.height = 515;
+        
+        videoTexture.baseTexture.autoPlay = false
 
         //视频元素
         videoSource = videoTexture.baseTexture.source;

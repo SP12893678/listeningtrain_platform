@@ -35,7 +35,7 @@
                                 goToIntroducePage(1);
                                 learningstatus = false;
                             "
-                            >平台簡介</v-btn
+                            >模式介紹</v-btn
                         >
                     </v-list-item>
                     <v-list-item>
@@ -43,10 +43,10 @@
                             color="error"
                             text
                             @click="
-                                goToIntroducePage(2);
+                                goToIntroducePage(4);
                                 learningstatus = false;
                             "
-                            >遊戲系統</v-btn
+                            >角色系統</v-btn
                         >
                     </v-list-item>
                     <v-list-item>
@@ -54,10 +54,10 @@
                             color="amber"
                             text
                             @click="
-                                goToIntroducePage(3);
+                                goToIntroducePage(5);
                                 learningstatus = false;
                             "
-                            >模式介紹</v-btn
+                            >身分功能</v-btn
                         >
                     </v-list-item>
                     <v-list-item>
@@ -65,7 +65,7 @@
                             color="blue"
                             text
                             @click="
-                                goToIntroducePage(4);
+                                goToIntroducePage(6);
                                 learningstatus = false;
                             "
                             >幫助我們</v-btn

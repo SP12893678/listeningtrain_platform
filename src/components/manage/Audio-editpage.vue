@@ -8,27 +8,51 @@
                 >
             </v-list-item-content>
             <v-list-item-action class="ml-0 mb-0">
-                <v-btn @click="addAudioData" text>
+                <v-btn
+                    @click="addAudioData"
+                    data-v-step="Audio-editpage-add"
+                    text
+                >
                     <v-icon left>mdi-playlist-plus</v-icon>新增一筆
                 </v-btn>
             </v-list-item-action>
             <v-list-item-action class="ml-0 mb-0">
-                <v-btn @click="addCategoryAsk" color="green" text>
+                <v-btn
+                    @click="addCategoryAsk"
+                    color="green"
+                    data-v-step="Audio-editpage-category"
+                    text
+                >
                     <v-icon left>mdi-shape-plus</v-icon>新增類別
                 </v-btn>
             </v-list-item-action>
             <v-list-item-action class="ml-0 mb-0">
-                <v-btn @click="addFrequencyAsk" color="blue" text>
+                <v-btn
+                    @click="addFrequencyAsk"
+                    color="blue"
+                    data-v-step="Audio-editpage-frequency"
+                    text
+                >
                     <v-icon left>mdi-chart-bell-curve</v-icon>新增頻率
                 </v-btn>
             </v-list-item-action>
             <v-list-item-action class="ml-0 mb-0">
-                <v-btn @click="addWaveformAsk" color="purple" text>
+                <v-btn
+                    @click="addWaveformAsk"
+                    color="purple"
+                    data-v-step="Audio-editpage-waveform"
+                    text
+                >
                     <v-icon left>mdi-waveform</v-icon>新增波形
                 </v-btn>
             </v-list-item-action>
             <v-list-item-action class="ml-0 mb-0">
-                <v-btn @click="saveAudioData" color="red" text>
+                <v-btn
+                    @click="saveAudioData"
+                    color="red"
+                    data-v-step="Audio-editpage-save"
+                    text
+                >
                     <v-icon left>mdi-content-save</v-icon>儲存資源
                 </v-btn>
             </v-list-item-action>
@@ -44,6 +68,7 @@
                         :items="audio"
                         item-key="index"
                         class="elevation-1"
+                        data-v-step="Audio-editpage-audio-table"
                         multi-sort
                     >
                         <template v-slot:item.name="{ item }">
@@ -187,6 +212,8 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <v-tour :name="this.$route.name" :steps="steps"></v-tour>
     </v-container>
 </template>
 
@@ -259,22 +286,78 @@ export default {
                 steps: [{ text: "上傳聲音檔" }, { text: "儲存聲音資料" }],
                 progress: 0,
             },
+            steps: [
+                {
+                    target: '[data-v-step="Audio-editpage-audio-table"]',
+                    header: {
+                        title: "聲音資源編輯資料表",
+                    },
+                    content: `將列出編輯的聲音資源資料表，可於表中查看並編輯各項內容和屬性，在最右側有刪除按鈕可取消該筆資料新增或編輯。`,
+                    params: {
+                        enableScrolling: false,
+                    },
+                },
+                {
+                    target: '[data-v-step="Audio-editpage-add"]',
+                    header: {
+                        title: "新增一筆空白聲音資源",
+                    },
+                    content: `點選後將新增一筆空白資料的聲音資源於資料表中。`,
+                    params: {
+                        enableScrolling: false,
+                    },
+                },
+                {
+                    target: '[data-v-step="Audio-editpage-category"]',
+                    header: {
+                        title: "新增聲音資源類別項目按鈕",
+                    },
+                    content: `點選此按鈕可增加新的類別，可用於資料編輯中。`,
+                    params: {
+                        enableScrolling: false,
+                    },
+                },
+                {
+                    target: '[data-v-step="Audio-editpage-frequency"]',
+                    header: {
+                        title: "新增聲音資源頻率項目按鈕",
+                    },
+                    content: `點選此按鈕可增加新的頻率，可用於資料編輯中。`,
+                    params: {
+                        enableScrolling: false,
+                    },
+                },
+                {
+                    target: '[data-v-step="Audio-editpage-waveform"]',
+                    header: {
+                        title: "新增聲音資源波形項目按鈕",
+                    },
+                    content: `點選此按鈕可增加新的波形，可用於資料編輯中。`,
+                    params: {
+                        enableScrolling: false,
+                    },
+                },
+                {
+                    target: '[data-v-step="Audio-editpage-save"]',
+                    header: {
+                        title: "儲存聲音資源按鈕",
+                    },
+                    content: `編輯完聲音資源資料後，可點選此按鈕進行儲存。`,
+                    params: {
+                        enableScrolling: false,
+                    },
+                },
+            ],
         };
     },
     async mounted() {
-        console.log("Audio edit Page run");
-        // console.log(this.passdata);
         if (this.passdata.audio == null) this.$router.back();
-        // console.log(this.passdata.audio == null);
         if (this.passdata.audio.id.length > 0) await this.getAudioData();
         await this.getAudioFormat();
         this.setCategoryColor();
         if (this.passdata.audio.id.length <= 0) this.addAudioData();
     },
     methods: {
-        test(item) {
-            console.log(item);
-        },
         setCategoryColor() {
             var app = this;
             for (let index = 0; index < this.category_options.length; index++) {
@@ -293,13 +376,11 @@ export default {
                 items: this.passdata.audio.id,
             })
                 .then((res) => {
-                    console.log(res.data);
                     this.audio = res.data;
                     this.audio.forEach((item) => {
                         item.category = item.category.split(";");
                         item.frequency = item.frequency.split(";");
                     });
-                    console.log(res.data);
                 })
                 .catch((error) => {
                     console.error(error);
@@ -356,7 +437,6 @@ export default {
             this.dialog.body = false;
         },
         onChange: function (event, item) {
-            console.log(event);
             let file = event;
             if (event != undefined) {
                 var reader = new FileReader();
@@ -364,14 +444,12 @@ export default {
                 reader.onload = function (event) {
                     let audio_type = ["audio/mpeg", "audio/wav"];
                     if (audio_type.indexOf(file.type) == -1) return;
-                    console.log(event);
                     item.sound_src = event.target.result;
                 };
                 reader.readAsDataURL(event);
             }
         },
         playAudio(item) {
-            console.log(item.sound_src);
             if (item.sound_src != undefined && item.sound_src != null) {
                 this.audio_player.src = item.sound_src;
                 this.audio_player.play();
@@ -403,7 +481,6 @@ export default {
                 { type: "upload", data: data },
                 config.onUploadProgress
             ).then((res) => {
-                console.log(res.data);
                 res.data.forEach((item) => {
                     this.audio[item.index].sound_src = item.filename;
                     delete this.audio[item.index].file;
@@ -411,8 +488,6 @@ export default {
             });
         },
         async saveAudioData() {
-            console.log(this.audio);
-
             /**檢查欄位是否都已填好 */
             if (!this.$refs.form.validate()) return;
             this.stepper.progress = 0;
@@ -431,7 +506,6 @@ export default {
                 this.audio.forEach((audio, index) => {
                     apiManageAudio({ type: "update", item: audio }).then(
                         (res) => {
-                            console.log(audio.name, res.data);
                             if (res.data.result) audio.id = res.data.id;
                             if (++count >= this.audio.length) resolve();
                         }
@@ -441,7 +515,6 @@ export default {
 
             saveAudio.then(() => {
                 this.stepper.progress = 2;
-                console.log(this.audio);
             });
         },
         addAudioData() {

@@ -1,13 +1,24 @@
 <template>
     <v-main class="pr-0">
-        <canvas v-resize="onResizeCanvas" id="enviro" class="enviro"></canvas>
+        <canvas
+            v-resize="onResizeCanvas"
+            id="enviro"
+            class="enviro"
+            data-v-step="Enviroment-editpage-canvas"
+        ></canvas>
         <div class="objects-display">
             <v-card-title class="jf-title">物件列表</v-card-title>
             <v-divider></v-divider>
-            <v-slide-group v-model="model" mandatory show-arrows center-active>
+            <v-slide-group
+                v-model="model"
+                mandatory
+                show-arrows
+                center-active
+                data-v-step="Enviroment-editpage-object-list"
+            >
                 <v-slide-item
                     v-for="(object, index) in objects"
-                    :key="object.id"
+                    :key="object.id + index"
                     v-slot:default="{ active, toggle }"
                 >
                     <v-card
@@ -38,7 +49,12 @@
                         >
                     </v-list-item-content>
                     <v-spacer></v-spacer>
-                    <v-btn @click="saveEnvironment" color="red" text>
+                    <v-btn
+                        @click="saveEnvironment"
+                        color="red"
+                        data-v-step="Enviroment-editpage-save"
+                        text
+                    >
                         <v-icon left>mdi-content-save</v-icon>儲存
                     </v-btn>
                 </v-list-item>
@@ -47,7 +63,10 @@
             <v-list shaped>
                 <v-list-group prepend-icon="mdi-image-area" value="true">
                     <template v-slot:activator>
-                        <v-list-item-title>背景</v-list-item-title>
+                        <v-list-item-title
+                            data-v-step="Enviroment-editpage-background"
+                            >背景</v-list-item-title
+                        >
                     </template>
                     <v-divider></v-divider>
                     <v-list-item>
@@ -89,7 +108,10 @@
                 </v-list-group>
                 <v-list-group prepend-icon="mdi-shape-plus">
                     <template v-slot:activator>
-                        <v-list-item-title>物件</v-list-item-title>
+                        <v-list-item-title
+                            data-v-step="Enviroment-editpage-object"
+                            >物件</v-list-item-title
+                        >
                     </template>
                     <v-divider></v-divider>
                     <v-list-item>
@@ -766,6 +788,8 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <v-tour :name="this.$route.name" :steps="steps"></v-tour>
     </v-main>
 </template>
 
@@ -847,27 +871,74 @@ export default {
                 ],
                 progress: 0,
             },
+            steps: [
+                {
+                    target: '[data-v-step="Enviroment-editpage-canvas"]',
+                    header: {
+                        title: "情境畫面",
+                    },
+                    content: `情境畫面會是該情境於遊玩中的畫面，可於透過右側編輯區設定情境內容`,
+                    params: {
+                        enableScrolling: false,
+                    },
+                },
+                {
+                    target: '[data-v-step="Enviroment-editpage-object-list"]',
+                    header: {
+                        title: "物件列表",
+                    },
+                    content: `顯示該情境所有物件的列表，可點選物件將同步至情境畫面和物件編輯區。`,
+                    params: {
+                        enableScrolling: false,
+                    },
+                },
+                {
+                    target: '[data-v-step="Enviroment-editpage-background"]',
+                    header: {
+                        title: "情境教材背景編輯區",
+                    },
+                    content: `點選後將列出情境背景可編輯的各個項目，可於此對該情境進行相關設定。`,
+                    params: {
+                        enableScrolling: false,
+                    },
+                },
+                {
+                    target: '[data-v-step="Enviroment-editpage-object"]',
+                    header: {
+                        title: "情境教材物件編輯區",
+                    },
+                    content: `點選後將列出情境物件可編輯的各個項目，可於此對該物件進行相關設定。`,
+                    params: {
+                        enableScrolling: false,
+                    },
+                },
+                {
+                    target: '[data-v-step="Enviroment-editpage-save"]',
+                    header: {
+                        title: "情境教材編輯儲存按鈕",
+                    },
+                    content: `在編輯完該情境教材後，可點選此按鈕儲存。`,
+                    params: {
+                        enableScrolling: false,
+                    },
+                },
+            ],
         };
     },
     async mounted() {
-        console.log("Home Page run");
         if (this.passdata.enviro == null) this.$router.back();
-        console.log(this.passdata);
         this.getCloudBackgroundImages();
         this.getCloudObjectImages();
-        console.log("1");
 
         let simple_id =
             this.passdata.enviro.id == -1
                 ? this.passdata.enviro.simple_id
                 : this.passdata.enviro.id;
         await this.requestDataAndLoad(simple_id);
-        console.log("2");
         this.enviro.id = this.passdata.enviro.id;
         if (this.passdata.enviro.id == -1)
             this.objects.forEach((object) => (object.id = -1));
         this.getAudiotypes();
-        console.log("3");
     },
     computed: {
         /**取得符合該聲音類別的聲音資源 */
@@ -883,11 +954,6 @@ export default {
         },
     },
     methods: {
-        test() {
-            // console.log(this.selected);
-            // console.log(this.object_img_profile.local_img);
-            console.log(this.objects);
-        },
         creatEnvrioment() {
             PIXI.settings.RESOLUTION = window.devicePixelRatio || 1;
 
@@ -907,13 +973,12 @@ export default {
                 resolution: 1,
                 view: document.getElementById("enviro"),
             });
-
             this.environment = new Editor(this, app, this.enviro, this.objects);
             this.enviro_container = this.environment.getEnvironment();
             this.enviro_container.position.set(0, 0);
             app.stage.addChild(this.enviro_container);
-            console.log("render");
-            this.environment.object_click(this.objects[0]);
+            if (this.objects.length >= 1)
+                this.environment.object_click(this.objects[0]);
         },
         requestDataAndLoad: async function (enviro_name) {
             var app = this;
@@ -966,10 +1031,8 @@ export default {
             // });
 
             // 判定有無資源須加載，並執行情境建立與設定
-            console.log("2.3", load_arr);
             if (load_arr.length <= 0) this.creatEnvrioment();
             else PIXI.loader.add(load_arr).load(this.creatEnvrioment);
-            console.log("2.4");
         },
         /**請求後端並取得該情境教材資料
          * @async
@@ -977,7 +1040,6 @@ export default {
         get_enviro_data(id) {
             return apiManageEnviroment({ type: "get", amount: "one", item: id })
                 .then((res) => {
-                    console.log(res.data);
                     this.enviro = res.data;
                 })
                 .catch((error) => {
@@ -994,7 +1056,6 @@ export default {
                 items: object_arr,
             })
                 .then((res) => {
-                    console.log(res.data);
                     this.objects = res.data;
                 })
                 .catch((error) => {
@@ -1007,7 +1068,6 @@ export default {
         getAudioData() {
             return apiManageAudio({ type: "get", amount: "all" })
                 .then((res) => {
-                    console.log(res.data);
                     this.audio = res.data;
                 })
                 .catch((error) => {
@@ -1032,7 +1092,6 @@ export default {
                 extensions: ["*.png"],
             })
                 .then((res) => {
-                    console.log(res.data);
                     this.object_img_profile.cloud_img = res.data;
                 })
                 .catch((error) => {
@@ -1046,7 +1105,6 @@ export default {
                 extensions: ["*.gif", "*.jpg", "*.png"],
             })
                 .then((res) => {
-                    console.log(res.data);
                     this.background_img_profile.cloud_img = res.data;
                 })
                 .catch((error) => {
@@ -1144,9 +1202,13 @@ export default {
             this.environment.getEnvironment().addChild(object);
             this.objects.push(object_data);
             this.clickObject(this.objects.length - 1);
+
+            console.log(this.objects[this.objects.length - 1]);
         },
         /**刪除被選取之情境物件,並點擊物件陣列索引0的物件 */
         deleteObject() {
+            if (this.objects.length <= 0) return;
+
             var app = this;
             var delete_object_index = this.objects.findIndex(
                 (object) => object.sprite == app.sprite
@@ -1154,11 +1216,6 @@ export default {
             this.objects[delete_object_index].sprite.parent.removeChild(
                 this.objects[delete_object_index].sprite
             );
-            this.objects[delete_object_index].sprite.destroy({
-                children: true,
-                texture: true,
-                baseTexture: true,
-            });
             this.objects.splice(delete_object_index, 1);
 
             if (this.objects.length > 0) this.clickObject(0);
@@ -1169,13 +1226,6 @@ export default {
             this.environment.object_click(this.objects[index]);
         },
         playAudio() {
-            // Sound.stopAll();
-            // Sound.add(
-            //     this.select_object.audio.audio_id,
-            //     PIXI.loader.resources[this.select_object.audio.sound_src]
-            // );
-            // Sound.play(this.select_object.audio.audio_id);
-
             this.audio_player.pause = true;
             this.audio_player.src = this.select_object.audio.sound_src;
             this.audio_player.currentTime = 0;
@@ -1201,8 +1251,6 @@ export default {
                                     }px;`;
         },
         checkEditComplete() {
-            console.log(this.enviro);
-            console.log(this.objects);
             let isComplete = false;
             let { background, name, category } = this.alert.enviro;
             background = this.enviro.background_src ? true : false;
@@ -1222,7 +1270,13 @@ export default {
             let result = this.alert.objects.filter(
                 (object) => !object.name || !object.audio
             );
-            if (background && name && category && result.length == 0)
+            if (
+                background &&
+                name &&
+                category &&
+                result.length == 0 &&
+                this.objects.length > 0
+            )
                 isComplete = true;
 
             return isComplete;
@@ -1250,7 +1304,6 @@ export default {
                     delete item.file;
                     apiManageObject({ type: "update", item: item }).then(
                         (res) => {
-                            console.log(object.name, res.data);
                             if (res.data.result) object.id = res.data.id;
                             if (++count >= this.objects.length) resolve();
                         }
@@ -1268,7 +1321,6 @@ export default {
                     type: "update",
                     item: this.enviro,
                 }).then((res) => {
-                    console.log(res.data);
                     this.stepper.progress = 3;
                     if (res.data.result) this.enviro.id = res.data.id;
                 });
@@ -1319,7 +1371,6 @@ export default {
                 { type: "upload", data: data },
                 config.onUploadProgress
             ).then((res) => {
-                console.log(res.data);
                 res.data.forEach((item) => {
                     switch (item.type) {
                         case "background":
@@ -1338,7 +1389,6 @@ export default {
     watch: {
         select_object: {
             handler(val) {
-                var app = this;
                 var i = this.model;
                 this.sprite.position.x = this.select_object.position.x;
                 this.sprite.position.y = this.select_object.position.y;

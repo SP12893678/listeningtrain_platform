@@ -2,6 +2,7 @@
  session_start();
     require_once './connect.php';
     $type = $_GET['type'];
+    if(isset($_SESSION['account']))
     switch ($type) {
         case 'get':
             $data = [];
@@ -11,7 +12,6 @@
             if(mysqli_num_rows($result)<1) insertEmptyTable($con);
             $sql = "SELECT * FROM learning where account='$account'";
             $result = mysqli_query($con, $sql);
-
             // $data['count'] = mysqli_num_rows($result);
             echo json_encode(mysqli_fetch_array($result), JSON_UNESCAPED_UNICODE);
             break;
