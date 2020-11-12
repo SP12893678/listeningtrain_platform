@@ -4,6 +4,7 @@ import Introduction from '@/components/homepage/Introduction.vue'
 import Test from '@/components/homepage/Test.vue'
 import Practice from '@/components/homepage/Practice.vue'
 import Explore from '@/components/homepage/Explore.vue'
+import Learnstate from '@/components/homepage/Learnstate.vue'
 
 Vue.use(Router)
 
@@ -19,5 +20,6 @@ export default new Router({
         { path: '/test', name: 'test', component: Test, props: true },
         { path: '/practice', name: 'practice', component: Practice, props: true },
         { path: '/explore', name: 'explore', component: Explore, props: true },
+        { path: '/learnstate', name: 'learnstate', component: Learnstate, props: true },
     ],
 })
