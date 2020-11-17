@@ -58,7 +58,7 @@ export default class GameStartScene extends Scene {
     }
 
     async gotoNextScene() {
-        await apiManageLogin({type: "checklogin",})
+        await apiManageLogin({type: "checklogin",check:'game'})
         .then((res) => {
             console.log('checkLogin',res.data);
             this.logindata = res.data;

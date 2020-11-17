@@ -53,8 +53,7 @@ export default class Character{
     get_character_data() {
         return apiManageRoleData({ type: 'getData'})
         .then((res) => {
-            // console.log('data',res.data)
-            if(res.data != null){
+            if(res.data != '' && res.data != null){
                 this.account = res.data.account
                 this.gender = res.data.gender
                 this.nickname = res.data.nickname
@@ -73,7 +72,7 @@ export default class Character{
         await this.show_character(this.gender);
         this.clothing = new clothing(this.armatureDisplay,this.factory,this.gender);
         this.action = new action(this.armatureDisplay)
-        if(this.clothing_data != ''){
+        if(this.clothing_data != '' && this.clothing_data != null){
             await this.clothing.changeClothes(this.clothing_data);
         }
     }

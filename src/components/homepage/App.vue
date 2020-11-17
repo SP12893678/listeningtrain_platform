@@ -552,6 +552,7 @@
 <script>
 import { apiManageLogin } from "@/js/api";
 import { apiManageRegister } from "@/js/api";
+import Sound from "pixi-sound";
 export default {
     data() {
         return {
@@ -615,6 +616,7 @@ export default {
     },
     methods: {
         goToIntroducePage(val) {
+            Sound.stopAll();
             if (this.$route.path != "/")
                 this.$router.push({ name: "introduction" });
             this.value = val;
@@ -665,7 +667,7 @@ export default {
                 // params: { passdata: obj },
             });
             return apiManageLogin({
-                type: "checklogin",
+                type: "checklogin",check: "main"
             })
                 .then((res) => {
                     console.log(res.data);
