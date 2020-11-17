@@ -503,9 +503,13 @@
                     >
                 </v-list-item>
                 <v-divider></v-divider>
-                <v-list-item-group
-                    active-class="deep-purple--text text--accent-4"
-                >
+                <v-list-item-group active-class="white--text text--accent-4">
+                    <v-list-item to="/learnstate">
+                        <v-list-item-icon>
+                            <v-icon>mdi-format-list-bulleted</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>學習狀況總覽</v-list-item-title>
+                    </v-list-item>
                     <v-list-item to="/explore">
                         <v-list-item-icon>
                             <v-icon>mdi-magnify</v-icon>
@@ -623,7 +627,7 @@ export default {
         },
         goToLearningstatus() {
             this.$router.push({
-                name: "explore",
+                name: "learnstate",
                 // params: { passdata: obj },
             });
         },
