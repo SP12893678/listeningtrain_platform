@@ -46,7 +46,6 @@ export default class ProgressBar extends PIXI.Container {
         progress_bar.beginFill(0xff9933, 1)
         progress_bar.drawRoundedRect(0, 0, percentage * basic_bar.width, 24, 12)
         progress_bar.endFill()
-        console.log(Math.round(percentage * 100) + '%')
         progress_text.text = Math.round(percentage * 100) + '%'
     }
 }

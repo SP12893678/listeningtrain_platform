@@ -510,7 +510,7 @@ export default class PracticeModeScene extends Scene {
         leaveDialog.yesBtn.click = () => {
             /* yesBtn action */
             // Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
-            console.log(this.questionSystem)
+
             let items = [];
 
             let data = this.questionSystem.myAnser.map(answer => answer.map(item => item.id));
@@ -521,7 +521,7 @@ export default class PracticeModeScene extends Scene {
                 }
                 items.push(item)
             }
-            console.log(items)
+
             let date = new Date()
             let time = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
             data = {
@@ -597,7 +597,6 @@ export default class PracticeModeScene extends Scene {
     }
 
     nextQuestion() {
-        console.log(this.questionSystem)
 
         Sound.stopAll()
         this.timeline.clear()

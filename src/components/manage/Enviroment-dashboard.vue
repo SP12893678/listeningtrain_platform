@@ -15,14 +15,6 @@
                 single-line
                 hide-details
             ></v-text-field>
-            <!-- <v-list-item-action>
-                <v-btn
-                    @click="goToNewEditPage(-1)"
-                    data-v-step="Enviroment-dashboard-2"
-                >
-                    <v-icon left>mdi-pencil-plus</v-icon>新增
-                </v-btn>
-            </v-list-item-action> -->
         </v-list-item>
 
         <v-divider></v-divider>
@@ -91,12 +83,12 @@
 
                 <!--情境教材卡片-->
                 <v-hover
+                    v-show="!enviro_cards.loading"
                     v-for="(item, index) in getEnviroCards"
                     :key="item.id + item.name"
                     v-slot:default="{ hover }"
                 >
                     <v-card
-                        v-if="!enviro_cards.loading"
                         :elevation="hover ? 10 : 2"
                         :ripple="{ class: 'white--text' }"
                         class="ma-4"

@@ -74,12 +74,27 @@ events.on('goto', (val) => {
 })
 
 events.on('warning', (val) => {
-    switch(val.no){
+    switch (val.no) {
         case -1:
-            let warningDialog = new Dialog('你已獲得過此服裝',2)
+            let warningDialog = new Dialog('你已獲得過此服裝', 2)
             warningDialog.name = 'repeatClothes'
             ScenesManager.currentScene.addChild(warningDialog)
-            warningDialog.yesBtn.click= () =>{
+            warningDialog.yesBtn.click = () => {
+                ScenesManager.currentScene.removeChild(warningDialog)
+            }
+            break
+        default:
+            break
+    }
+})
+
+events.on('receive', (val) => {
+    switch (val.no) {
+        case -1:
+            let warningDialog = new Dialog('你已獲得過此服裝', 2)
+            warningDialog.name = 'repeatClothes'
+            ScenesManager.currentScene.addChild(warningDialog)
+            warningDialog.yesBtn.click = () => {
                 ScenesManager.currentScene.removeChild(warningDialog)
             }
             break

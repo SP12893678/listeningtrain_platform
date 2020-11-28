@@ -51,63 +51,23 @@ export default class EnviromentDetailScene extends Scene {
          * 取得情境資料(包含物件)
          * 取得該情境之玩家學習狀況
          */
-        await apiManageEnviroment({
-            type: 'get',
-            amount: 'one',
-            item: id,
-        }).then((res) => {
+        await apiManageEnviroment({ type: 'get', amount: 'one', item: id }).then((res) => {
             this.data = {}
             this.data.environment = res.data
         })
 
         let object_arr = this.data.environment.object.split(',')
-        await apiManageObject({
-            type: 'get',
-            amount: 'part',
-            items: object_arr,
-        }).then((res) => {
+        await apiManageObject({ type: 'get', amount: 'part', items: object_arr }).then((res) => {
             console.log(res.data)
             this.data.objects = res.data
         })
 
         /**取得資料庫測驗資料並計算學習平均成績 */
         this.average_score_data = []
-        let past_exams = []
         let scroeSystem = new ScoreCaculate()
-        let average_score = scroeSystem.getDefaultFormateObject()
-        await apiManageLearning({ type: 'get' }).then((res) => {
-            if (res.data == null) return
-            past_exams = JSON.parse(res.data.test).test
-            if (past_exams.length < 1) return
-            scroeSystem.first_response_rate = past_exams[0].response_rate
-            let the_enviro_past_exam = past_exams.filter((exam) => exam.enviro_id == this.data.environment.id)
-            the_enviro_past_exam.forEach((exam) => {
-                average_score.accuracy.your += exam.accuracy.your
-                average_score.accuracy.all += exam.accuracy.all
-                average_score.completion.your += exam.completion.your
-                average_score.completion.all += exam.completion.all
-                average_score.response_rate += exam.response_rate
-                average_score.high_frequency_accuracy.your += exam.high_frequency_accuracy.your
-                average_score.high_frequency_accuracy.all += exam.high_frequency_accuracy.all
-                average_score.low_frequency_accuracy.your += exam.low_frequency_accuracy.your
-                average_score.low_frequency_accuracy.all += exam.low_frequency_accuracy.all
-                average_score.total++
-            })
-            if (the_enviro_past_exam.length == 0) return
-            this.average_score_data = [
-                Math.round((average_score.accuracy.your / average_score.accuracy.all) * 100),
-                Math.round(
-                    (average_score.response_rate / average_score.total / (scroeSystem.first_response_rate * 2)) * 100
-                ),
-                Math.round(
-                    (average_score.low_frequency_accuracy.your / average_score.low_frequency_accuracy.all) * 100
-                ),
-                Math.round(
-                    (average_score.high_frequency_accuracy.your / average_score.high_frequency_accuracy.all) * 100
-                ),
-                Math.round((average_score.completion.your / average_score.completion.all) * 100),
-            ]
-        })
+        await scroeSystem.getExamData()
+        if (scroeSystem.hasExamData(this.data.environment.id))
+            this.average_score_data = scroeSystem.getAverageScoreData(this.data.environment.id)
 
         this.built()
     }
@@ -204,12 +164,7 @@ export default class EnviromentDetailScene extends Scene {
         objectList.position.set(136, 358)
 
         let labels = ['正確率', '反應\n速度', '  聲音頻率<300\n的正確率', '  聲音頻率>6000\n的正確率', '完成度']
-        let datasets = [
-            // {
-            //     name: 'test',
-            //     data: [100, 20, 60, 40, 90],
-            // },
-        ]
+        let datasets = []
         let radar = new RadarChart(labels, datasets)
         if (this.average_score_data.length != 0) radar.addChart('上一次平均學習成績', this.average_score_data)
         radar.position.set(radar.width / 2 + 800, radar.height / 2 + 100)
@@ -234,6 +189,8 @@ export default class EnviromentDetailScene extends Scene {
             ScenesManager.createScene('train_mode', new TrainModeScene())
             ScenesManager.scenes['train_mode'].init(this.data.environment.id)
             ScenesManager.goToScene('train_mode')
+            ScenesManager.scenes['train_mode'].alpha = 0
+            gsap.to(ScenesManager.scenes['train_mode'], { pixi: { alpha: 1 }, duration: 1 })
         }
         let btn_practice_mode = new SlimeButton('練習模式', 'red')
         btn_practice_mode.scale.set(0.7, 0.7)
@@ -242,6 +199,8 @@ export default class EnviromentDetailScene extends Scene {
             ScenesManager.createScene('practice_mode', new PracticeModeScene())
             ScenesManager.scenes['practice_mode'].init(this.data.environment.id)
             ScenesManager.goToScene('practice_mode')
+            ScenesManager.scenes['practice_mode'].alpha = 0
+            gsap.to(ScenesManager.scenes['practice_mode'], { pixi: { alpha: 1 }, duration: 1 })
         }
 
         let btn_test_mode = new SlimeButton('測驗模式', 'blue')
@@ -251,6 +210,8 @@ export default class EnviromentDetailScene extends Scene {
             ScenesManager.createScene('test_mode', new TestModeScene())
             ScenesManager.scenes['test_mode'].init(this.data.environment.id)
             ScenesManager.goToScene('test_mode')
+            ScenesManager.scenes['test_mode'].alpha = 0
+            gsap.to(ScenesManager.scenes['test_mode'], { pixi: { alpha: 1 }, duration: 1 })
         }
 
         btn_train_mode.position.set(0, 0)

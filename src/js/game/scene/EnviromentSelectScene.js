@@ -12,9 +12,11 @@ import Text from 'pixi.js/lib/core/text/Text'
 import Sprite from 'pixi.js/lib/core/sprites/Sprite'
 import ScenesManager from '@/js/game/engine/ScenesManager'
 import EnviromentDetailScene from 'Scene/EnviromentDetailScene'
-import { style6 } from '@/js/game/engine/TextStyleManager'
+import { style6, style4 } from '@/js/game/engine/TextStyleManager'
 import { gsap } from 'gsap'
 import { PixiPlugin } from 'gsap/PixiPlugin'
+import ScoreCaculate from '@/js/game/exam/ScoreCaculate'
+
 
 gsap.registerPlugin(PixiPlugin)
 PixiPlugin.registerPIXI(PIXI)
@@ -27,28 +29,38 @@ export default class EnviromentSelectScene extends Scene {
         this.environments = []
         this.current_environments = []
         this.background = new Graphics()
-        this.background.beginFill(0xffffff, 1)
-        this.background.drawRect(0, 0, Config.screen.width, Config.screen.height)
-        this.background.endFill()
-        this.addChild(this.background)
-
         this.environmentlist = new EnviromentListBoard()
-
+        this.goBackArea = new Container()
+        this.setBackground()
         this.setCategoryList()
         this.setEnviromentList()
-
-        this.goBackArea = new Container()
         this.setgoBackArea()
     }
 
     async init() {
-        let environments = this.environments
         await apiManageEnviroment({ type: 'get', amount: 'all' }).then((res) => {
-            environments = res.data
-            console.log(environments)
+            this.environments = res.data
+            this.environments.forEach((environment) => (environment.category = environment.category.split(';')))
+        })
+
+        let scroeSystem = new ScoreCaculate()
+        await scroeSystem.getExamData()
+
+        this.environments.forEach(enviro => {
+            enviro.completion = (scroeSystem.hasExamData(enviro.id)) ? scroeSystem.getAverageCompletion(enviro.id) : 0
         })
     }
 
+    /**設定背景 */
+    setBackground() {
+        let background = this.background
+        background.beginFill(0xffffff, 1)
+        background.drawRect(0, 0, Config.screen.width, Config.screen.height)
+        background.endFill()
+        this.addChild(background)
+    }
+
+    /**設定返回按鈕 */
     setgoBackArea() {
         let goBackArea = this.goBackArea
         let background = new Sprite()
@@ -70,7 +82,6 @@ export default class EnviromentSelectScene extends Scene {
 
         goBackArea.interactive = true
         goBackArea.buttonMode = true
-
         goBackArea.mouseover = () => gsap.to(goBackArea, { pixi: { scale: 1.2 }, duration: 0.5 })
         goBackArea.mouseout = () => gsap.to(goBackArea, { pixi: { scale: 1 }, duration: 0.5 })
         goBackArea.click = () => ScenesManager.goToScene('game_main')
@@ -83,8 +94,8 @@ export default class EnviromentSelectScene extends Scene {
         let environmentlist = this.environmentlist
 
         await apiManageEnviroment({ type: 'get', amount: 'all' }).then((res) => {
-            environments = res.data
-            environments.forEach((environment) => (environment.category = environment.category.split(';')))
+            this.environments = res.data
+            this.environments.forEach((environment) => (environment.category = environment.category.split(';')))
         })
 
         let listboard = new ListBoard()
@@ -92,9 +103,8 @@ export default class EnviromentSelectScene extends Scene {
             item.click = () => {
                 listboard.getListItems().forEach((i) => i.drawBackground(0x29d4ff))
                 item.drawBackground(0x4b70fa)
-                current_environments = environments.filter((environment) => {
-                    return environment.category.indexOf(item.type) != -1
-                })
+                current_environments = this.environments.filter((environment) => environment.category.indexOf(item.type) != -1)
+                environmentlist.list.content.position.set(0, 0)
                 environmentlist.showCurrentLists(current_environments)
                 environmentlist.scroller.refresh()
             }
@@ -200,12 +210,9 @@ class EnviromentListBoard extends Container {
         this.background = new Graphics()
         this.list = new EnviromentList()
         this.scroller = new VerticalScroller(10, this.list.content, this.list.content_mask)
-
         this.setBackground()
-
         this.list.position.set(30, 30)
         this.scroller.position.set(750, 30)
-
         this.addChild(this.list)
         this.addChild(this.scroller)
     }
@@ -223,6 +230,7 @@ class EnviromentListBoard extends Container {
         let list = this.list
         list.content.removeChild(...list.content.children)
         current_environments.forEach((enviroment) => list.addListitem(enviroment))
+
     }
 }
 
@@ -246,6 +254,7 @@ class EnviromentList extends Container {
 
         let item = new EnviromentListItem(data)
         item.position.set((content.children.length % 2) * 350, Math.floor(content.children.length / 2) * 350)
+        item.updateCompleteBox()
         content.addChild(item)
     }
 }
@@ -333,6 +342,10 @@ class EnviromentListItem extends Container {
         let title_complete = new Text('完成度', style2)
         title_complete.position.set(8, 65)
 
+        let text_complete = new Text('0%', style4)
+        text_complete.anchor.set(0.5, 0)
+        text_complete.position.set(title_complete.position.x + title_complete.width + 10 + 50, 68)
+
         let box_complete = new Graphics()
         box_complete.lineStyle(2, 0xbd7dfe, 1)
         box_complete.drawRect(0, 0, 100, 20)
@@ -346,9 +359,32 @@ class EnviromentListItem extends Container {
         profile_container.addChild(title)
         profile_container.addChild(btn_go)
         profile_container.addChild(title_complete)
+        profile_container.addChild(text_complete)
         profile_container.addChild(box_complete)
 
         profile_container.position.set(10, 225)
         this.addChild(profile_container)
+
+        this.text_complete = text_complete
+        this.box_complete = box_complete
+        this.profile_container = profile_container
+    }
+
+    updateCompleteBox() {
+        let data = this.data
+        let profile_container = this.profile_container
+        let text_complete = this.text_complete
+        let box_complete = this.box_complete
+        box_complete.clear()
+        box_complete.lineStyle(2, 0xbd7dfe, 1)
+        box_complete.drawRect(0, 0, 100, 20)
+        box_complete.endFill()
+        box_complete.beginFill(0xbd7dfe, 1)
+        box_complete.drawRect(0, 0, data.completion, 20)
+        box_complete.endFill()
+        text_complete.text = data.completion + '%'
+
+        profile_container.addChild(box_complete)
+        profile_container.addChild(text_complete)
     }
 }

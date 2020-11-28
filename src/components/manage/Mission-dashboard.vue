@@ -43,23 +43,35 @@
                         :items="missions"
                         :loading="mission_data_table.loading"
                         :search="mission_data_table.search"
-                        item-key="title"
+                        item-key="id"
                         class="elevation-1"
                         loading-text
                         show-select
                         multi-sort
-                        single-expand
-                        show-expand
                     >
-                        <template v-slot:expanded-item="{ headers, item }">
+                        <template v-slot:item.mode="{ item }">
+                            {{ item.required.mode.name }}
+                        </template>
+                        <template v-slot:item.detail="{ item }">
+                            <v-btn @click="showMissionDetailDialog(item)" icon>
+                                <v-icon>mdi-magnify-plus-outline</v-icon>
+                            </v-btn>
+                        </template>
+                        <!-- <template v-slot:expanded-item="{ headers, item }">
                             <td :colspan="headers.length">
                                 More info about {{ `${JSON.stringify(item)}` }}
                             </td>
-                        </template>
+                        </template> -->
                     </v-data-table>
                 </v-skeleton-loader>
             </v-list-item-content>
         </v-list-item>
+
+        <v-dialog v-model="detail_dialog.dialog">
+            <v-card>
+                <v-card-title>任務詳細資訊</v-card-title>
+            </v-card>
+        </v-dialog>
     </v-container>
 </template>
 
@@ -78,13 +90,19 @@ export default {
                     { text: "名稱", align: "start", value: "title" },
                     { text: "敘述", value: "description" },
                     { text: "類型", value: "type" },
-                    { text: "", value: "data-table-expand" },
+                    { text: "模式", value: "mode" },
+                    { text: "詳細資訊", value: "detail" },
+                    // { text: "", value: "data-table-expand" },
                 ],
                 selected: [],
                 search: "",
                 loading: true,
             },
             missions: [],
+            mission: {},
+            detail_dialog: {
+                dialog: false,
+            },
         };
     },
     async mounted() {
@@ -98,8 +116,12 @@ export default {
             return apiManageMission({ type: "get", amount: "all" })
                 .then((res) => {
                     this.missions = res.data;
-                    // this.missions.push(...res.data)
-                    // this.missions.push(...res.data)
+                    console.log(this.missions);
+
+                    this.missions.forEach(
+                        (mission) =>
+                            (mission.required = JSON.parse(mission.required))
+                    );
                 })
                 .catch((error) => {
                     console.error(error);
@@ -114,6 +136,12 @@ export default {
                 name: "mission-edit",
                 params: { passdata: obj },
             });
+        },
+        showMissionDetailDialog(mission) {
+            let index = this.missions.indexOf(mission);
+            this.mission = this.missions[index];
+
+            this.detail_dialog.dialog = true;
         },
     },
 };

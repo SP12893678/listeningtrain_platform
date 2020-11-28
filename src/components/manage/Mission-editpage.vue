@@ -963,6 +963,9 @@ export default {
                             delete reward.mm.imgsrc;
                         }
                     });
+
+                    console.log(mission);
+
                     apiManageMission({ type: "update", item: mission }).then(
                         (res) => {
                             if (res.data.result)

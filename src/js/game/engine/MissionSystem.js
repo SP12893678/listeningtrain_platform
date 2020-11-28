@@ -26,11 +26,9 @@ class MissionSystem {
                 })
             }
             const userDataParse = (res) => {
-                console.log('complete mission', res.data)
                 let complete_missions = res.data.mission
                 if (complete_missions == null) return
                 complete_missions = JSON.parse(complete_missions)
-                // console.log(JSON.parse(complete_missions))
                 /**處理每日/成長任務已完成的 */
                 this.missions.forEach(mission => {
                     if (mission.type == '每日任務') {
@@ -38,7 +36,6 @@ class MissionSystem {
                         if (the_same_mission == undefined) return
                         let today = new Date()
                         let today_string = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()} 0:0:0`
-                        console.log(today_string, the_same_mission.time)
                         if (Date.parse(today_string) < Date.parse(the_same_mission.time)) mission.status = 'received'
                     }
                     else {
@@ -50,7 +47,6 @@ class MissionSystem {
 
             Promise.all([getLearningData, getMissionData, getUserData])
                 .then(res => {
-                    console.log(res)
                     learningDataPrase(res[0])
                     missionDataPrase(res[1])
                     userDataParse(res[2])
@@ -61,7 +57,6 @@ class MissionSystem {
     }
 
     missionDetect(mission) {
-        console.log('detect')
         if (mission.status == 'received') return
         this.detector[mission.required.mode.id](mission)
     }
@@ -78,7 +73,6 @@ class MissionSystem {
         return {
             train(mission) {
                 let trainData = app.learningdata.train.train
-                // console.log(trainData)
                 /**任務類型(每日/成長) */
                 trainData = dateFilter(mission, trainData)
                 let isNeedSpecificEnviro = (mission.required.enviro != null)
@@ -93,8 +87,6 @@ class MissionSystem {
             },
             practice(mission) {
                 let practiceData = app.learningdata.practice.practice
-                // console.log('practice', practiceData)
-                // console.log('practice', mission)
                 practiceData = dateFilter(mission, practiceData)
                 let isNeedSpecificEnviro = (mission.required.enviro != null)
                 let isNeedSpecificObject = (mission.required.object != null)
@@ -159,7 +151,6 @@ class MissionSystem {
         let date = new Date()
         let time = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
         apiManageGame({ type: 'update_mission', id: mission.id, time: time })
-            .then(res => console.log(res.data))
     }
 }
 

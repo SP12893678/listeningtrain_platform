@@ -108,10 +108,7 @@ PixiPlugin.registerPIXI(PIXI)
             //     })
             let arr = []
             data.forEach(item => {
-                console.log(arr)
-                if (arr.indexOf(item) <= -1) {
-                    arr.push(item)
-                }
+                if (arr.indexOf(item) <= -1) arr.push(item)
             })
 
             data = arr;

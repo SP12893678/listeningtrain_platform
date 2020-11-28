@@ -9,7 +9,7 @@
             <v-text-field
                 v-model="search"
                 append-icon="mdi-magnify"
-                label="Search"
+                label="學生帳戶搜尋欄"
                 data-v-step="Student-dashboard-search"
                 single-line
                 hide-details

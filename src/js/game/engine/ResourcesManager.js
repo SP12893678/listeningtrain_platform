@@ -72,8 +72,11 @@ import gear_center from '@/assets/images/gear-center.png'
 import gear_outside from '@/assets/images/gear-outside.png'
 import money_bag from '@/assets/images/money-bag.png'
 import bao from '@/assets/images/bao.png'
+import torch from '@/assets/images/torch.gif'
 // import ptvideo from '@/assets/video/practicemode.mp4'
 // import practicevideo from '@/assets/video/practicemode.mp4'
+import arrow from '@/assets/images/arrow.png'
+
 
 const resources = {
     loading_bg: loadingBackground,
@@ -143,7 +146,9 @@ const resources = {
     gift_open: gift_open,
     game_main_bg: game_main_bg,
     money_bag: money_bag,
-    bao: bao
+    bao: bao,
+    torch: torch,
+    arrow: arrow
     // ptvideo: ptvideo,
 }
 

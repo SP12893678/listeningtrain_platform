@@ -1,14 +1,13 @@
 import * as PIXI from 'pixi.js'
 import Scene from '@/js/game/engine/Scene'
 import Config from '@/js/game/Config'
-import VerticalScroller from 'Component/VerticalScroller'
 import Events from '@/js/game/Events'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
 import { style14, style15 } from '@/js/game/engine/TextStyleManager'
 import character from '@/js/game/character'
 import Button2 from 'Component/button2'
 import Environment from '@/js/game/Environment'
-import { OutlineFilter, ShockwaveFilter, GlowFilter } from 'pixi-filters'
+import { OutlineFilter, GlowFilter } from 'pixi-filters'
 import { Graphics, Container, Sprite, Text } from 'pixi.js/lib/core'
 import HorizontalScroller from 'Component/HorizontalScroller'
 import { apiManageAudio, apiManageLearning } from '@/js/api'
@@ -17,7 +16,8 @@ import { gsap } from 'gsap'
 import { PixiPlugin } from 'gsap/PixiPlugin'
 import trdescription from '@/js/game/traindescription'
 import video from '@/js/game/video'
-import * as dat from 'dat.gui'
+import * as Guide from '@/js/game/engine/GuideQueue'
+import { Polygon } from 'pixi.js/lib/core/math'
 
 gsap.registerPlugin(PixiPlugin)
 PixiPlugin.registerPIXI(PIXI)
@@ -28,6 +28,7 @@ export default class TrainModeScene extends Scene {
     constructor() {
         super()
         this.background = new PIXI.Graphics()
+        this.titleMenu = new TitleMenu()
         this.cover = new PIXI.Graphics()
         this.screenCover = new PIXI.Graphics()
         this.environment_mask = new PIXI.Graphics()
@@ -52,7 +53,7 @@ export default class TrainModeScene extends Scene {
         let date = new Date()
         let time = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
 
-        apiManageLearning({ type: 'update', mode: 'train', enviro: id, action: 'new', time: time }).then(res => { console.log(res.data) })
+        apiManageLearning({ type: 'update', mode: 'train', enviro: id, action: 'new', time: time })
 
         let environment = new TrainModeEnvironment()
         await environment.init(id)
@@ -111,15 +112,12 @@ export default class TrainModeScene extends Scene {
         environment.addChild(screenCover)
 
 
-        let cover = this.cover
-        var { x, y } = environment.objects[4].position
-        cover.beginFill(0xffffff, 0);
-        cover.drawCircle(x, y, 110);
-        cover.endFill();
-        environment.addChild(cover)
-
-
-
+        // let cover = this.cover
+        // var { x, y } = environment.objects[4].position
+        // cover.beginFill(0xffffff, 0);
+        // cover.drawCircle(x, y, 110);
+        // cover.endFill();
+        // environment.addChild(cover)
 
 
         let environment_mask = this.environment_mask
@@ -199,22 +197,18 @@ export default class TrainModeScene extends Scene {
         btn_guideend.setBackgroundColor('', 0)
         btn_guideend.setText(style15)
         btn_guideend.visible = false
-        btn_guideend.mouseover = function (mouseData) {
-            btn_guideend.scale.set(1.1)
-        }
-        btn_guideend.mouseout = function (mouseData) {
-            btn_guideend.scale.set(1)
-        }
+        btn_guideend.mouseover = () => btn_guideend.scale.set(1.1)
+
+        btn_guideend.mouseout = () => btn_guideend.scale.set(1)
+
         btn_guideend.click = () => {
             environment.visible = true
             btn_guideend.visible = false
             btn_guide.visible = true
             guide.setText('請點選情境中的物件\n就能聽到聲音喔')
-
             guide.visible = false
         }
         /* guide end */
-
 
         this.addChild(environment)
         this.addChild(objectList)
@@ -225,6 +219,61 @@ export default class TrainModeScene extends Scene {
         this.addChild(guide)
         this.addChild(trdescription)
         this.addChild(video)
+
+        let sprite = environment.objects[0]
+        let sprite2 = this.objectList.objects[1]
+
+        console.log(resources[sprite.data.audio.sound_src].sound)
+
+        const step1 = {
+            area: () => {
+                let global = sprite.parent.toGlobal(sprite.position)
+                let { x, y } = global
+                return new Polygon(x - 55, y - 55, x + 55, y - 55, x + 55, y + 55, x - 55, y + 55)
+            },
+            mission: () => {
+                return new Promise((resolve, reject) => {
+
+
+                })
+            }
+        }
+
+        let global = sprite.parent.toGlobal(sprite.position)
+        var { x, y } = global
+        let area = new Polygon(x - 55, y - 55, x + 55, y - 55, x + 55, y + 55, x - 55, y + 55)
+        let testGuide = new Guide.ModeGuide(sprite, area, null, null)
+        this.addChild(testGuide)
+
+
+        var { x, y } = this.character.armatureDisplay.position
+        let chatBox = new Guide.ChatBox(300, 200)
+            .addChat('點選箭頭指向的區域')
+            .addChat('點擊物件列表中的一個物件')
+        chatBox.position.set(x - chatBox.width / 2, y - chatBox.height * 2.2)
+
+
+
+
+        let myGuide = new Guide.MyGuide(testGuide, chatBox)
+        global = sprite2.parent.toGlobal(sprite2.position)
+        var { x, y } = global
+        area = new Polygon(x, y, x + sprite2.width, y, x + sprite2.width, y + sprite2.height, x, y + sprite2.height)
+
+        let testGuide2 = new Guide.ModeGuide(sprite2, area, null, null)
+        this.addChild(testGuide2)
+
+        let myGuide2 = new Guide.MyGuide(testGuide2, chatBox)
+
+        this.addChild(this.character.armatureDisplay)
+        myGuide.play()
+            .then(res => myGuide2.play())
+            .then(res => {
+                console.log('done2')
+            })
+            .catch(res => console.log('error'))
+
+
     }
 
     setBackground() {
@@ -234,83 +283,17 @@ export default class TrainModeScene extends Scene {
         background.endFill()
         this.addChild(background)
     }
-    setTitle() {
 
-        let title = this.title
-        /* titlePanel */
-        let titlePanel = new PIXI.Graphics()
-        let titleHeight = Config.screen.height * 0.08
-        titlePanel.beginFill(0xf8ba00)
-        titlePanel.drawRect(0, 0, Config.screen.width, titleHeight)
-        titlePanel.drawCircle(60, 60, 60)
-        title.addChild(titlePanel)
-        /* goBack Button */
-        let btn_goback = new Sprite(resources[ResourcesManager.goBack].texture)
-        let scale = 100 / btn_goback.width
-        btn_goback.scale.set(scale)
-        btn_goback.anchor.set(0.5)
-        btn_goback.interactive = true
-        btn_goback.buttonMode = true
-        btn_goback.position.set(60, 60)
-        btn_goback.click = () => {
+    setTitle() {
+        let titleMenu = this.titleMenu
+        titleMenu.goBackButton.click = () => {
             Sound.stopAll()
             Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
         }
-        btn_goback.mouseover = function (mouseData) {
-            btn_goback.scale.set(scale * 1.1)
-            goBackText.scale.set(1.1)
-        }
-        btn_goback.mouseout = function (mouseData) {
-            btn_goback.scale.set(scale)
-            goBackText.scale.set(1)
-        }
-        title.addChild(btn_goback)
-        /* goBack Text */
-        let goBackText = new PIXI.Text('返回', style15)
-        goBackText.anchor.set(0.5)
-        goBackText.position.set(160, titleHeight / 2)
-        title.addChild(goBackText)
-        /* title Text */
-        let titleText = new PIXI.Text('探索模式', style14)
-        titleText.anchor.set(0.5)
-        titleText.position.set(Config.screen.width / 2, titleHeight / 2)
-        title.addChild(titleText)
-        /* help */
-
-        let btn_help = new Button2(150, titleHeight * 0.8, ResourcesManager.help, '說明')
-        btn_help.pivot.set(150 / 2, titleHeight / 2)
-        btn_help.position.set(Config.screen.width - 70, titleHeight / 2 + titleHeight * 0.1)
-        btn_help.setBorder(0)
-        btn_help.setBackgroundColor('', 0)
-        btn_help.setText(style15)
-        btn_help.mouseover = function (mouseData) {
-            btn_help.scale.set(1.1)
-        }
-        btn_help.mouseout = function (mouseData) {
-            btn_help.scale.set(1)
-        }
-        btn_help.click = () => (this.trdescription.dialog.visible = !this.trdescription.dialog.visible)
-        title.addChild(btn_help)
-        /* video */
-        let btn_video = new Button2(150, titleHeight * 0.8, ResourcesManager.help, '影片導覽')
-        btn_video.pivot.set(150 / 2, titleHeight / 2)
-        btn_video.position.set(Config.screen.width - 230, titleHeight / 2 + titleHeight * 0.1)
-        btn_video.setBorder(0)
-        btn_video.setBackgroundColor('', 0)
-        btn_video.setText(style15)
-        btn_video.mouseover = function (mouseData) {
-            btn_video.scale.set(1.1)
-        }
-        btn_video.mouseout = function (mouseData) {
-            btn_video.scale.set(1)
-        }
-        btn_video.click = () => (this.video.dialog.visible = !this.video.dialog.visible)
-        title.addChild(btn_video)
-
-
-        this.addChild(title)
+        titleMenu.HelpButton.click = () => (this.trdescription.dialog.visible = !this.trdescription.dialog.visible)
+        titleMenu.VedioGudieButton.click = () => (this.video.dialog.visible = !this.video.dialog.visible)
+        this.addChild(titleMenu)
     }
-
 
     /* 建立角色 */
     async setCharacter() {
@@ -324,8 +307,6 @@ export default class TrainModeScene extends Scene {
         this.addChild(armatureDisplay)
         //this.armatureDisplay.animation.play('shakeHand',1);
     }
-
-
 }
 
 class TrainModeEnvironment extends Environment {
@@ -352,7 +333,6 @@ class TrainModeEnvironment extends Environment {
         Sound.add(object.data.audio.audio_id, resources[object.data.audio.sound_src])
         Sound.play(object.data.audio.audio_id, {
             complete: () => {
-                console.log('complete', object.data.audio.audio_id)
                 let date = new Date()
                 let item = {
                     enviro: this.data.environment.name,
@@ -360,7 +340,7 @@ class TrainModeEnvironment extends Environment {
                     object_name: object.data.name,
                     time: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
                 };
-                apiManageLearning({ type: 'update', mode: 'train', action: 'add', item: item }).then(res => { console.log(res.data) })
+                apiManageLearning({ type: 'update', mode: 'train', action: 'add', item: item })
             }
         })
         object.update()
@@ -455,5 +435,92 @@ class ObjectList extends Container {
         background.beginFill(0x1976d2, 1)
         background.drawRoundedRect(0, 0, 100, 100, 12)
         background.endFill()
+    }
+}
+
+class TitleMenu extends Container {
+    constructor() {
+        super()
+        this.titleHeight = Config.screen.height * 0.08
+        this.background = new Graphics()
+        this.goBackButton = new Sprite()
+        this.goBackText = new PIXI.Text('返回', style15)
+        this.titleText = new PIXI.Text('探索模式', style14)
+        this.HelpButton = new Button2(150, this.titleHeight * 0.8, ResourcesManager.help, '說明')
+        this.VedioGudieButton = new Button2(150, this.titleHeight * 0.8, ResourcesManager.help, '影片導覽')
+        this.setBackground()
+        this.setGoBackButton()
+        this.setTitle()
+        this.setVideoGuideButton()
+        this.setHelpButton()
+    }
+
+    setBackground() {
+        let background = this.background
+        background.beginFill(0xf8ba00)
+        background.drawRect(0, 0, Config.screen.width, this.titleHeight)
+        background.drawCircle(60, 60, 60)
+        this.addChild(background)
+    }
+
+    setGoBackButton() {
+        let titleHeight = this.titleHeight
+        let btn_goback = this.goBackButton
+        let goBackText = this.goBackText
+
+        btn_goback.texture = resources[ResourcesManager.goBack].texture
+        let scale = 100 / btn_goback.width
+        btn_goback.scale.set(scale)
+        btn_goback.anchor.set(0.5)
+        btn_goback.interactive = true
+        btn_goback.buttonMode = true
+        btn_goback.mouseover = () => {
+            btn_goback.scale.set(scale * 1.1)
+            goBackText.scale.set(1.1)
+        }
+        btn_goback.mouseout = () => {
+            btn_goback.scale.set(scale)
+            goBackText.scale.set(1)
+        }
+        btn_goback.position.set(60, 60)
+        this.addChild(btn_goback)
+
+        goBackText.anchor.set(0.5)
+        goBackText.position.set(160, titleHeight / 2)
+        this.addChild(goBackText)
+    }
+
+    setTitle() {
+        let titleHeight = this.titleHeight
+        let titleText = this.titleText
+        titleText.anchor.set(0.5)
+        titleText.position.set(Config.screen.width / 2, titleHeight / 2)
+        this.addChild(titleText)
+    }
+
+    setHelpButton() {
+        let titleHeight = this.titleHeight
+        let btn_help = this.HelpButton
+        btn_help.pivot.set(75, titleHeight / 2)
+        btn_help.position.set(Config.screen.width - 70, titleHeight / 2 + titleHeight * 0.1)
+        btn_help.setBorder(0)
+        btn_help.setBackgroundColor('', 0)
+        btn_help.setText(style15)
+        btn_help.mouseover = () => btn_help.scale.set(1.1)
+        btn_help.mouseout = () => btn_help.scale.set(1)
+        this.addChild(btn_help)
+    }
+
+    setVideoGuideButton() {
+        let titleHeight = this.titleHeight
+        let btn_video = this.VedioGudieButton
+        btn_video.pivot.set(75, titleHeight / 2)
+        btn_video.position.set(Config.screen.width - 230, titleHeight / 2 + titleHeight * 0.1)
+        btn_video.setBorder(0)
+        btn_video.setBackgroundColor('', 0)
+        btn_video.setText(style15)
+        btn_video.mouseover = () => btn_video.scale.set(1.1)
+        btn_video.mouseout = () => btn_video.scale.set(1)
+        this.addChild(btn_video)
     }
 }

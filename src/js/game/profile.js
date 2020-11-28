@@ -7,6 +7,7 @@ import { style1, style8, style9, style10, style11, style13 } from '@/js/game/eng
 import RadarChart from 'Component/RadarChart'
 import Button2 from 'Component/button2'
 import { apiManageLearning } from '@/js/api'
+import ScoreCaculate from '@/js/game/exam/ScoreCaculate'
 
 let Application = PIXI.Application,
     Container = PIXI.Container,
@@ -58,14 +59,20 @@ export default class profile extends PIXI.Container {
         this.setPersonInfoPanel()
         this.setLearningPanel()
         this.setStandardPanel()
+
+
+        let average_score_data = []
+        let scroeSystem = new ScoreCaculate()
+        await scroeSystem.getExamData()
+        if (scroeSystem.hasExamDataNoneID()) average_score_data = scroeSystem.getAverageScoreDataAll()
+        if (average_score_data.length != 0) this.chart.addChart('過去平均學習成績', average_score_data)
     }
     async checkData() {
         await this.character.get_character_data()
     }
 
     async show() {
-        await this.checkData()
-
+        this.dialog.visible = true
     }
 
     setDialog() {
@@ -255,15 +262,13 @@ export default class profile extends PIXI.Container {
         learningContainer.addChild(learningTitle)
         /* 雷達圖 */
         let labels = ['正確率', '反應\n速度', '  聲音頻率<300\n的正確率', '  聲音頻率>6000\n的正確率', '完成度']
-        let datasets = [
-            // { name: '最近一次測驗', data: [50, 10, 75, 40, 100] },
-            // { name: '個人學習平均值', data: [100, 70, 60, 80, 30] },
-        ]
+        let datasets = []
         let chart = new RadarChart(labels, datasets)
         chart.position.set(175, 275)
         chart.barLabel.position.set(-350, 350)
         chart.scale.set(325 / chart.width)
         learningContainer.addChild(chart)
+        this.chart = chart
         /* button:各能力計算標準 */
         let standardBtn = new Button2(150, 30, ResourcesManager.question, '能力計算標準')
         standardBtn.position.set(180, 470)
@@ -304,8 +309,8 @@ export default class profile extends PIXI.Container {
                 name: '反應速度',
                 data: '第一次測驗結果為0.5分，往後以第一次測驗數據為基準進行評分。',
             },
-            { name: '高頻辨識率', data: '高頻類題目答對總數/高頻類題目總數。' },
-            { name: '低頻辨識率', data: '低頻類題目答對總數/低頻類題目總數。' },
+            { name: '聲音頻率>6000辨識率', data: '聲音頻率>6000類題目答對總數/聲音頻率>6000類題目總數。' },
+            { name: '聲音頻率<300辨識率', data: '聲音頻率<300類題目答對總數/聲音頻率<300類題目總數。' },
         ]
         let index = 1
         standard.forEach((standard) => {

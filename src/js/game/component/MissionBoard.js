@@ -211,11 +211,8 @@ class MissionList extends Container {
 
     addListitem(data) {
         let content = this.content
-        let content_mask = this.content_mask
-
         let item = new MissionListItem(data)
         item.position.set(0, (content.children.length) * 150)
-        console.log(content.children.length)
         content.addChild(item)
 
         if (data.type == '每日任務') this.parent.everyday.push(item)
@@ -270,8 +267,6 @@ class MissionListItem extends Container {
 
     setRewards() {
         let rewards = this.rewards
-        console.log(this.mission.rewards)
-
 
         let addReward = (icon, index) => {
             let item = new Container()
@@ -301,7 +296,7 @@ class MissionListItem extends Container {
             else {
                 let gender = myCharacter.gender
                 let clothing = myCharacter.clothing
-                let getItem = clothing.showClothes(reward[gender].type, reward[gender].no, 0, 0)
+                let getItem = clothing.showClothes(reward[gender].type, reward[gender].no, -10, -10)
                 addReward(getItem, texture);
             }
         })

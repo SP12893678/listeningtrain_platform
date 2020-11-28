@@ -15,6 +15,7 @@ export default class Tips extends PIXI.Container {
         this.setTitle()
         this.setText()
         this.setEvent()
+        this.text.text = Config.text.tips[Math.round(Math.random() * (Config.text.tips.length - 1))]
     }
 
     setTitle() {
@@ -35,21 +36,23 @@ export default class Tips extends PIXI.Container {
     }
 
     setEvent() {
+        setInterval(() => { this.changeTipText() }, 4000)
+    }
+
+    changeTipText() {
         let text = this.text
-        setInterval(() => {
-            let tl = gsap.timeline({ duration: 1 })
-            tl.to(this, {
-                pixi: { alpha: 0 },
-                onComplete: () => {
-                    text.text =
-                        Config.text.tips[
-                            Math.round(
-                                Math.random() * (Config.text.tips.length - 1)
-                            )
-                        ]
-                },
-            })
-            tl.to(this, { pixi: { alpha: 1 }, duration: 1 })
-        }, 4000)
+        let tl = gsap.timeline({ duration: 1 })
+        tl.to(this, {
+            pixi: { alpha: 0 },
+            onComplete: () => {
+                text.text =
+                    Config.text.tips[
+                    Math.round(
+                        Math.random() * (Config.text.tips.length - 1)
+                    )
+                    ]
+            },
+        })
+        tl.to(this, { pixi: { alpha: 1 }, duration: 1 })
     }
 }

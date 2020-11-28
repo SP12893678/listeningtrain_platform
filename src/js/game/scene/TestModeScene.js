@@ -504,7 +504,6 @@ export default class TestModeScene extends Scene {
         let no = new PIXI.Text('No', textStyle)
         no.position.set(25, 355)
         result.addChild(no)
-        console.log('textS', textStyle)
 
         let correctAnswer = new Sprite(resources[ResourcesManager.correctAnswer].texture)
         correctAnswer.width = 35
@@ -659,50 +658,16 @@ export default class TestModeScene extends Scene {
         this.resultEnvironmentPic.scale.set(scale)
 
         /**取得資料庫測驗資料並計算學習平均成績 */
-        this.average_score_data = []
-        let past_exams = []
-        let the_enviro_past_exam = []
+        let average_score_data = []
         let scroeSystem = new ScoreCaculate()
-        let average_score = scroeSystem.getDefaultFormateObject()
+        await scroeSystem.getExamData()
+        if (scroeSystem.hasExamData(this.environment.data.environment.id)) {
+            average_score_data = scroeSystem.getAverageScoreData(this.environment.data.environment.id)
+            this.chart.addChart('過去次平均學習成績', average_score_data)
+        }
 
-        await apiManageLearning({ type: 'get' }).then((res) => {
-            if (res.data == null) return
-            console.log(res.data)
-            past_exams = JSON.parse(res.data.test).test
-            console.log(JSON.parse(res.data.test))
-
-            if (past_exams.length < 1) return
-            the_enviro_past_exam = past_exams.filter((exam) => exam.enviro_id == this.environment.data.environment.id)
-            scroeSystem.first_response_rate = past_exams[0].response_rate
-            the_enviro_past_exam.forEach((exam) => {
-                average_score.accuracy.your += exam.accuracy.your
-                average_score.accuracy.all += exam.accuracy.all
-                average_score.completion.your += exam.completion.your
-                average_score.completion.all += exam.completion.all
-                average_score.response_rate += exam.response_rate
-                average_score.high_frequency_accuracy.your += exam.high_frequency_accuracy.your
-                average_score.high_frequency_accuracy.all += exam.high_frequency_accuracy.all
-                average_score.low_frequency_accuracy.your += exam.low_frequency_accuracy.your
-                average_score.low_frequency_accuracy.all += exam.low_frequency_accuracy.all
-                average_score.total++
-            })
-            console.log(average_score)
-        })
-
-        let average_score_data = [
-            Math.round((average_score.accuracy.your / average_score.accuracy.all) * 100),
-            Math.round(
-                (average_score.response_rate / average_score.total / (scroeSystem.first_response_rate * 2)) * 100
-            ),
-            Math.round((average_score.low_frequency_accuracy.your / average_score.low_frequency_accuracy.all) * 100),
-            Math.round((average_score.high_frequency_accuracy.your / average_score.high_frequency_accuracy.all) * 100),
-            Math.round((average_score.completion.your / average_score.completion.all) * 100),
-        ]
-        console.log(average_score_data)
-        if (the_enviro_past_exam.length != 0) this.chart.addChart('過去次平均學習成績', average_score_data)
 
         /**計算當前測驗成績 */
-        console.log(this.questionSystem)
         let exam = {
             questions: [],
         }
@@ -766,7 +731,6 @@ export default class TestModeScene extends Scene {
             all: low_frequency_question_counts,
         }
 
-        console.log(exam)
         exam.enviro_id = this.environment.data.environment.id
         exam.enviro_name = this.environment.data.environment.name
         exam.usetime = this.timer.text.text
@@ -777,7 +741,6 @@ export default class TestModeScene extends Scene {
             console.log(res.data)
         })
         let have_answer = exam.questions.filter((question) => question.your_answer_id != '').length
-        console.log('have_answer', have_answer)
         let correctTotal = correct_questions.length
         let resultText = this.resultText
         resultText.text =
@@ -967,8 +930,6 @@ class TestModeEnvironment extends Environment {
                     }
 
                     frequencies.push({ min, max })
-
-                    console.log(frequency, min, max)
                 })
                 object.audio.frequency = frequencies
             })

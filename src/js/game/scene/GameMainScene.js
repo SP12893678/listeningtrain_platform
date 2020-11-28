@@ -17,7 +17,6 @@ import emitter2 from '@/assets/json/emitter2.json'
 import MissionBoard from '../component/MissionBoard'
 import { gsap } from 'gsap'
 import { PixiPlugin } from 'gsap/PixiPlugin'
-import loadClothes from '@/js/game/loadClothes'
 
 gsap.registerPlugin(PixiPlugin)
 PixiPlugin.registerPIXI(PIXI)
@@ -47,7 +46,6 @@ export default class GameMainScene extends Scene {
         this.btn_achievement = new RoundedButton(120, 60, '排行榜')
         this.test = new Sprite()
         this.bao = new Sprite()
-        console.log(new loadClothes())
 
 
         this.setBackground()
@@ -140,7 +138,7 @@ export default class GameMainScene extends Scene {
         btn_profile.setBackgroundColor(0xff968d)
         btn_profile.setText(style7)
         btn_profile.position.set(850, 440)
-        btn_profile.click = () => (this.profile.dialog.visible = !this.profile.dialog.visible)
+        btn_profile.click = async () => (await this.profile.show())
         this.addChild(btn_profile)
     }
     setBackPackButton() {
