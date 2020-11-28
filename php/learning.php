@@ -2,7 +2,7 @@
  session_start();
     require_once './connect.php';
     $type = $_GET['type'];
-    if(isset($_SESSION['account']))
+    if(isset($_SESSION['account']) && !isset($_SESSION['demoGame']))
     switch ($type) {
         case 'get':
             $data = [];

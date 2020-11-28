@@ -22,15 +22,17 @@
                     :items="explore"
                     :search="search"
                     item-key="name"
-                    :single-expand="true"
+                    :single-expand="false"
                     :expanded.sync="expanded"
                     show-expand
                     multi-sort
                 >
+                    <template v-slot:item.time="{ item }">
+                        {{ envirotimes(item) }}
+                    </template>
                     <template v-slot:expanded-item="{ headers, item }">
                         <td :colspan="headers.length">
-                            <!-- {{ objects.name }} -->
-                            <v-simple-table>
+                            <v-simple-table dark>
                                 <template v-slot:default>
                                     <thead>
                                         <tr>
@@ -48,7 +50,8 @@
                                             <td>
                                                 {{ items.name }}
                                             </td>
-                                            <td></td>
+
+                                            <td>{{ objecttimes(items) }}</td>
                                         </tr>
                                     </tbody>
                                 </template>
@@ -83,6 +86,7 @@ export default {
             explore: [],
             objects: [],
             expanded: [],
+            explore_record: [],
         };
     },
     computed: {
@@ -93,14 +97,40 @@ export default {
                 );
             };
         },
+        envirotimes: function () {
+            return function (item) {
+                var record = this.explore_record;
+                var count = 0;
+                record.forEach((record) => {
+                    if (record.enviro == item.id) {
+                        count++;
+                    }
+                });
+
+                return count;
+            };
+        },
+        objecttimes: function () {
+            return function (items) {
+                var record = this.explore_record;
+                var count = 0;
+                record.forEach((record) => {
+                    record.items.forEach((record2) => {
+                        if (record2.id == items.id) {
+                            count++;
+                        }
+                    });
+                });
+                return count;
+            };
+        },
     },
     mounted() {
         console.log("explore Page run");
         apiManageLearning({ type: "get" }).then((res) => {
             res.data.train = JSON.parse(res.data.train);
             console.log(res.data.train.train);
-
-            // this.explore = res.data.train.train;
+            this.explore_record = res.data.train.train;
         });
         apiManageEnviroment({ type: "get", amount: "all" })
             .then((res) => {

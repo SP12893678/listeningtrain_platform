@@ -51,29 +51,28 @@ export default class Character {
     //     }
     // }
     get_character_data() {
-        return apiManageRoleData({ type: 'getData' })
-            .then((res) => {
-                // console.log('data',res.data)
-                if (res.data != null) {
-                    this.account = res.data.account
-                    this.gender = res.data.gender
-                    this.nickname = res.data.nickname
-                    this.birthday = res.data.birthday
-                    this.title = res.data.title
-                    this.money = res.data.money
-                }
-                this.clothing_data = res.data;
-            })
-            .catch((error) => {
-                console.error(error);
-            })
-    }
-    async check_if_has_data() {
+        return apiManageRoleData({ type: 'getData'})
+        .then((res) => {
+            if(res.data != '' && res.data != null){
+                this.account = res.data.account
+                this.gender = res.data.gender
+                this.nickname = res.data.nickname
+                this.birthday = res.data.birthday
+                this.title = res.data.title
+                this.money = res.data.money
+            }
+            this.clothing_data = res.data;
+        })
+        .catch((error) => {
+            console.error(error);
+        })
+    } 
+    async check_if_has_data(){
         await this.get_character_data();
         await this.show_character(this.gender);
         this.clothing = new clothing(this.armatureDisplay, this.factory, this.gender);
         this.action = new action(this.armatureDisplay)
-        if (this.clothing_data != '' && this.clothing_data != null) {
+        if(this.clothing_data != '' && this.clothing_data != null){
             await this.clothing.changeClothes(this.clothing_data);
         }
     }

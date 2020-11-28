@@ -79,29 +79,13 @@
                     </v-row>
                 </v-sheet>
             </v-carousel-item>
-            <v-carousel-item>
+            <v-carousel-item
+                eager
+            >
                 <v-sheet :color="colors[1]" height="100%">
-                    <v-row
-                        class="fill-height ma-2"
-                        align="center"
-                        justify="center"
-                    >
-                        <v-col align="center" justify="center">
-                            <v-lazy
-                                v-model="isActive"
-                                :options="{
-                                    threshold: 0.5,
-                                }"
-                                min-height="200"
-                                transition="fade-transition"
-                            >
-                                <canvas
-                                    v-resize="onResizeCanvas"
-                                    id="enviro1"
-                                    class="enviro"
-                                    style="border: 1px solid #000000"
-                                ></canvas>
-                            </v-lazy>
+                    <v-row class="fill-height ma-2" align="center" justify="center">
+                        <v-col align="center" justify="center" class="ma-5">
+                            <canvas v-resize="onResizeCanvas" id="enviro1" class="enviro" style="border:1px solid #000000;"></canvas>
                         </v-col>
                         <v-col align="center" justify="center">
                             <v-card
@@ -111,22 +95,17 @@
                                 color="#FFFFFFAA"
                                 width="80%"
                             >
-                                <v-card-title
-                                    class="text-h3 font-weight-bold"
-                                    >{{ mode1.title }}</v-card-title
-                                >
-                                <v-card-subtitle class="headline">{{
-                                    mode1.text
-                                }}</v-card-subtitle>
-                                <v-card-text class="text-h6" align="left">{{
-                                    mode1.features
-                                }}</v-card-text>
+                                <v-card-title class="text-h3 font-weight-bold">{{mode[0].title}}</v-card-title>
+                                <v-card-subtitle class="headline">{{mode[0].text}}</v-card-subtitle>
+                                <v-card-text class="text-h6" align="left">{{mode[0].features}}</v-card-text>
                             </v-card>
                         </v-col>
                     </v-row>
                 </v-sheet>
             </v-carousel-item>
-            <v-carousel-item>
+            <v-carousel-item
+                eager
+            >
                 <v-sheet :color="colors[2]" height="100%">
                     <v-row
                         class="fill-height ma-2"
@@ -141,43 +120,24 @@
                                 color="#FFFFFFAA"
                                 width="80%"
                             >
-                                <v-card-title
-                                    class="text-h3 font-weight-bold"
-                                    >{{ mode2.title }}</v-card-title
-                                >
-                                <v-card-subtitle class="headline">{{
-                                    mode2.text
-                                }}</v-card-subtitle>
-                                <v-card-text class="text-h6" align="left">{{
-                                    mode2.features
-                                }}</v-card-text>
+                                <v-card-title class="text-h3 font-weight-bold">{{mode[1].title}}</v-card-title>
+                                <v-card-subtitle class="headline">{{mode[1].text}}</v-card-subtitle>
+                                <v-card-text class="text-h6" align="left">{{mode[1].features}}</v-card-text>
                             </v-card>
                         </v-col>
-                        <v-col align="center" justify="center">
-                            <canvas
-                                v-resize="onResizeCanvas"
-                                id="enviro2"
-                                class="enviro"
-                                style="border: 1px solid #000000"
-                            ></canvas>
+                        <v-col align="center" justify="center" class="ma-5">
+                            <canvas v-resize="onResizeCanvas" id="enviro2" class="enviro" style="border:1px solid #000000;"></canvas>
                         </v-col>
                     </v-row>
                 </v-sheet>
             </v-carousel-item>
-            <v-carousel-item>
+            <v-carousel-item
+                eager
+            >
                 <v-sheet :color="colors[3]" height="100%">
-                    <v-row
-                        class="fill-height ma-2"
-                        align="center"
-                        justify="center"
-                    >
-                        <v-col align="center" justify="center">
-                            <canvas
-                                v-resize="onResizeCanvas"
-                                id="enviro3"
-                                class="enviro"
-                                style="border: 1px solid #000000"
-                            ></canvas>
+                    <v-row class="fill-height ma-2" align="center" justify="center">
+                        <v-col align="center" justify="center" class="ma-5"> 
+                            <canvas v-resize="onResizeCanvas" id="enviro3" class="enviro" style="border:1px solid #000000;"></canvas>
                         </v-col>
                         <v-col align="center" justify="center">
                             <v-card
@@ -187,46 +147,121 @@
                                 color="#FFFFFFAA"
                                 width="80%"
                             >
-                                <v-card-title
-                                    class="text-h3 font-weight-bold"
-                                    >{{ mode3.title }}</v-card-title
-                                >
-                                <v-card-subtitle class="headline">{{
-                                    mode3.text
-                                }}</v-card-subtitle>
-                                <v-card-text class="text-h6" align="left">{{
-                                    mode3.features
-                                }}</v-card-text>
+                                <v-card-title class="text-h3 font-weight-bold">{{mode[2].title}}</v-card-title>
+                                <v-card-subtitle class="headline">{{mode[2].text}}</v-card-subtitle>
+                                <v-card-text class="text-h6" align="left">{{mode[2].features}}</v-card-text>
                             </v-card>
                         </v-col>
                     </v-row>
                 </v-sheet>
             </v-carousel-item>
-            <v-carousel-item>
+            <v-carousel-item
+             eager
+            >
                 <v-sheet :color="colors[4]" height="100%">
-                    <v-row class="fill-height" align="center" justify="center">
-                        <v-card
-                            class="text-center"
-                            light
-                            color="#FF000000"
-                            width="800"
-                        >
-                            <v-card-text class="text-h2">角色系統</v-card-text>
-                        </v-card>
+                    <v-row class="fill-height ma-2" align="center" justify="center">
+                        <v-col> 
+                            <v-row align="center" justify="center">
+                                <v-card
+                                    class="text-center"
+                                    dark
+                                    color="#00000000"
+                                    elevation="0"
+                                >
+                                    <v-card-title class="text-h2 font-weight-bold brown--text">{{mode[3].title}}</v-card-title>
+                                    <v-card-text class="text-h3 font-weight-bold orange--text">{{mode[3].text}}</v-card-text>
+                                </v-card>
+                            </v-row>
+                            <v-row
+                                v-for="(item, i) in mode[3].features"
+                                :key="i"
+                                :justify="i%2==0 ? 'start' : 'end'"
+                                class = "ma-3"
+                            >
+                                <v-chip
+                                    x-large
+                                >{{item}}
+                                </v-chip>
+                            </v-row>
+                            <v-row align="center" justify="center" class="ma-5"> 
+                                <v-card
+                                    class="text-center"
+                                    dark
+                                    color="#00000000"
+                                    elevation="0"
+                                >
+                                    <v-card-text class="text-h6 font-weight-black black--text font-italic">{{mode[3].end}}</v-card-text>
+                                </v-card>
+                            </v-row>
+                        </v-col>
+                        <v-col align="center" justify="center" class="ma-5"> 
+                            <canvas v-resize="onResizeCanvas" id="enviro4" class="enviro" style="border:1px solid #000000;"></canvas>
+                        </v-col>
                     </v-row>
                 </v-sheet>
             </v-carousel-item>
             <v-carousel-item>
                 <v-sheet :color="colors[5]" height="100%">
                     <v-row class="fill-height" align="center" justify="center">
-                        <v-card
-                            class="text-center"
-                            light
-                            color="#FF000000"
-                            width="800"
-                        >
-                            <v-card-text class="text-h2">身分功能</v-card-text>
-                        </v-card>
+                        <v-col>
+                        <v-row align="center" justify="center">
+                            <v-card
+                                class="text-center pa-2 ma-2"
+                                light
+                                color="#FF000000"
+                                elevation="0"
+                                width="100%"
+                            >
+                                <v-card-text class="text-h3 font-weight-black">{{identityIntro.title}}</v-card-text>
+                                <v-card-text class="text-h6 font-weight-bold">{{identityIntro.text}}</v-card-text>
+                            </v-card>
+                        </v-row>
+                        <v-row align="center" justify="center">
+                            <v-col cols="4"
+                                v-for="(item,i) in identityIntro.features"
+                                :key="i"
+                                align="center"
+                            > 
+                                <v-card class="ma-2"
+                                    light
+                                    elevation="24"
+                                    :color="(i%2==0)?'yellow':'light-green accent-2'"
+                                >
+                                    <v-list-item>
+                                    <v-list-item-content>
+                                        <v-list-item-title class="text-h6 font-weight-black">
+                                            <v-icon
+                                                light
+                                            >
+                                            {{item.icon}}
+                                            </v-icon>
+                                            {{item.id}}
+                                        </v-list-item-title>
+                                    </v-list-item-content>
+                                    </v-list-item>
+                                    <v-divider></v-divider>
+                                    <v-list-item
+                                        v-for="(fun,j) in item.function"
+                                        :key="j"
+                                    >
+                                    <v-list-item-content>
+                                        <v-list-item-title>{{fun.item}}</v-list-item-title>
+                                    </v-list-item-content>
+                                    <v-list-item-content>
+                                        <v-list-item-title>
+                                            <v-icon
+                                                light
+                                                :color="(fun.yn=='y')?'green':'red'"
+                                            >
+                                            {{(fun.yn=='y')?'mdi-checkbox-marked-circle':'mdi-cancel'}}
+                                            </v-icon>
+                                        </v-list-item-title>
+                                    </v-list-item-content>
+                                    </v-list-item>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                        </v-col>
                     </v-row>
                 </v-sheet>
             </v-carousel-item>
@@ -254,6 +289,8 @@ import Sound from "pixi-sound";
 import TrainModeScene from "@/js/game/scene/TrainModeScene";
 import PracticeModeScene from "Scene/PracticeModeScene";
 import TestModeScene from "Scene/TestModeScene";
+import CreateRoleScene from 'Scene/CreateRoleScene'
+
 import {
     apiManageEnviroment,
     apiManageObject,
@@ -274,7 +311,7 @@ export default {
                 "pink lighten-1",
                 "light-blue lighten-2",
                 "yellow lighten-1",
-                "cyan accent-3",
+                "#00CEDA",
                 "amber darken-1",
                 // "cyan lighten-5",
                 // "pink lighten-5",
@@ -306,39 +343,76 @@ export default {
                 ],
                 end: "透過以上內容來增加受訓者對環境和聲音的印象。",
             },
-            mode1: {
-                title: "探索模式",
-                text: "「認識情境圖有哪些環境音」",
-                features:
-                    "點選情境裡帶有紫色邊框的物件聆聽物件聲音，或是點選情境圖下⽅的物件列表聆聽。",
-            },
-            mode2: {
-                title: "練習模式",
-                text: "「練習辨認各情境圖之環境音」",
-                features:
-                    "聆聽後點選適合該聲⾳的物件，立即顯示該題是否正確。可無限練習，直到手動結束。",
-            },
-            mode3: {
-                title: "測驗模式",
-                text: "「立即檢視學習成效」",
-                features:
-                    "聆聽後點選適合該聲音的物件，測驗結束顯⽰此次作答情況。一次作答題數為10題。",
-            },
+            mode:[
+                {
+                    title:"探索模式",
+                    text:"「認識情境圖有哪些環境音」",
+                    features:"點選情境裡帶有紫色邊框的物件聆聽物件聲音，或是點選情境圖下⽅的物件列表聆聽。"
+                },
+                {
+                    title:"練習模式",
+                    text:"「練習辨認各情境圖之環境音」",
+                    features:"聆聽後點選適合該聲⾳的物件，立即顯示該題是否正確。可無限練習，直到手動結束。"
+                },
+                {
+                    title:"測驗模式",
+                    text:"「立即檢視學習成效」",
+                    features:"聆聽後點選適合該聲音的物件，測驗結束顯⽰此次作答情況。一次作答題數為10題。"
+                },
+                {
+                    title:"角色系統",
+                    text:"「創建屬於自己的角色」",
+                    features:["依照喜好自己搭配服飾","或是由系統幫你隨機搭配","選擇第一套服飾陪伴你學習"],
+                    end:"更多服飾等著你去收集！"
+                }
+                
+            ],
+            identityIntro:{
+                    title:"身分介紹",
+                    text:"分為「老師」以及「學生」",
+                    features:[
+                        {
+                            id:"老師 Teacher",
+                            icon:'mdi-teach',
+                            function:[
+                                {item:"遊玩遊戲",yn:"y"},
+                                {item:"查看個人學習紀錄",yn:"y"},
+                                {item:"協助編輯教材",yn:"y"},
+                                {item:"提供教學素材",yn:"y"},
+                                {item:"批次匯入班級帳號",yn:"y"},
+                                {item:"查看學生學習狀況",yn:"y"}
+                            ]
+                        },
+                        {
+                            id:"學生 Student",
+                            icon:'mdi-human-child',
+                            function:[
+                                {item:"遊玩遊戲",yn:"y"},
+                                {item:"查看個人各模式學習紀錄",yn:"y"},
+                                {item:"協助編輯教材",yn:"n"},
+                                {item:"提供教學素材",yn:"n"},
+                                {item:"批次匯入班級帳號",yn:"n"},
+                                {item:"查看學生學習狀況",yn:"n"}
+                            ]
+                        },
+                    ],
+                    end:""}
+            ,
             audio: [],
             audio_type_arr: [],
             enviro_container: null,
             environment: null,
         };
     },
-    async mounted() {
-        document.querySelector(".v-carousel__controls").style.right = 0;
-        this.setCarouselEvent();
-        console.log("1");
-        let simple_id = 1;
-        await this.requestDataAndLoad(simple_id);
-        console.log("2");
-        console.log("3");
-    },
+    // async mounted() {
+    //     document.querySelector(".v-carousel__controls").style.right = 0;
+    //     this.setCarouselEvent();
+    //     console.log("1");
+    //     let simple_id = 1;
+    //     await this.requestDataAndLoad(simple_id);
+    //     console.log("2");
+    //     console.log("3");
+    // },
     computed: {
         getValue: {
             get: function () {
@@ -354,6 +428,7 @@ export default {
         setCarouselEvent() {
             var app = this;
             window.addEventListener("wheel", function (event) {
+                Sound.stopAll();
                 if (!app.scrollable) return;
                 let offset = event.deltaY < 0 ? -1 : 1;
                 let slides_length = app.$refs["carousel"].$slots.default.length;
@@ -393,13 +468,16 @@ export default {
                 space_height / default_height
             );
 
-            var element = document.getElementsByClassName("enviro")[0];
-            element.style.cssText = `width: ${default_width * aspect_ratio}px; 
-                                    height: ${
-                                        default_height * aspect_ratio
-                                    }px;`;
+            var element = document.getElementsByClassName("enviro");
+            for (let index = 0; index < element.length; index++) {
+                
+                element[index].style.cssText = `width: ${default_width * aspect_ratio}px; 
+                                        height: ${
+                                            default_height * aspect_ratio
+                                        }px;`;
+            }
         },
-        async creatEnvrioment() {
+        creatEnvrioment() {
             PIXI.settings.RESOLUTION = window.devicePixelRatio || 1;
 
             let Application = PIXI.Application,
@@ -409,49 +487,35 @@ export default {
                 TextureCache = PIXI.utils.TextureCache,
                 Sprite = PIXI.Sprite;
 
-            let app = new Application({
-                width: 1600,
-                height: 900,
-                antialias: true,
-                transparent: false,
+           for(let i=0;i<this.mode.length;i++){
+                let app = new Application({
+                    width: 1600,
+                    height: 900,
+                    antialias: true,
+                    transparent: false,
 
-                resolution: 1,
-                view: document.getElementById("enviro1"),
-            });
-
-            let environment = new TrainModeScene();
-            environment.init(this.enviro.id);
-            environment.position.set(0, 0);
-            app.stage.addChild(environment);
-            console.log("render");
-        },
-        creatEnvrioment2() {
-            PIXI.settings.RESOLUTION = window.devicePixelRatio || 1;
-
-            let Application = PIXI.Application,
-                Container = PIXI.Container,
-                loader = PIXI.loader,
-                resources = PIXI.loader.resources,
-                TextureCache = PIXI.utils.TextureCache,
-                Sprite = PIXI.Sprite;
-
-            let app = new Application({
-                width: 1600,
-                height: 900,
-                antialias: true,
-                transparent: false,
-
-                resolution: 1,
-                view: document.getElementById("enviro2"),
-            });
-
-            let environment = new PracticeModeScene();
-            environment.init(this.enviro.id);
-            let enviro_container = environment;
-            enviro_container.position.set(0, 0);
-            app.stage.addChild(enviro_container);
-            console.log("render");
-            // this.environment.object_click(this.objects[0]);
+                    resolution: 1,
+                    view: document.getElementById("enviro"+(i+1)),
+                });
+                let environment;
+                switch(this.mode[i].title){
+                    case "探索模式": environment =  new TrainModeScene();
+                        environment.init(this.enviro.id);
+                        break;
+                    case "練習模式": environment = new PracticeModeScene();
+                        environment.init(this.enviro.id);
+                        environment.character.gender = 'mm'
+                        break;
+                    case "測驗模式": environment = new TestModeScene();
+                        environment.init(this.enviro.id);
+                        break;
+                    case "角色系統": environment = new CreateRoleScene();
+                        break;
+                }
+                environment.position.set(0, 0);
+                app.stage.addChild(environment);
+                console.log("render");
+           }
         },
         requestDataAndLoad: async function (enviro_name) {
             var app = this;
@@ -498,17 +562,14 @@ export default {
             });
 
             // 判定有無資源須加載，並執行情境建立與設定
-            console.log("2.3", load_arr);
+            // console.log("2.3", load_arr);
             if (load_arr.length <= 0) {
                 console.log("hello");
                 this.creatEnvrioment();
                 this.creatEnvrioment2();
-            } else
-                PIXI.loader
-                    .add(load_arr)
-                    .load(this.creatEnvrioment)
-                    .load(this.creatEnvrioment2);
-            console.log("2.4");
+            }
+            else PIXI.loader.add(load_arr).load(this.creatEnvrioment);
+            // console.log("2.4");
         },
         /**請求後端並取得該情境教材資料
          * @async

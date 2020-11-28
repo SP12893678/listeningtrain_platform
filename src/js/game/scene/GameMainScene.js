@@ -47,7 +47,6 @@ export default class GameMainScene extends Scene {
         this.test = new Sprite()
         this.bao = new Sprite()
 
-
         this.setBackground()
         // this.doParticles()
         this.setButtonsBg()

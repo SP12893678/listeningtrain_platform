@@ -2,7 +2,8 @@
     session_start();
     require_once './connect.php';
     $type = $_GET['type'];
-    if(isset($_SESSION['account'])){
+
+    if(isset($_SESSION['account']) && !isset($_SESSION['demoGame'])){//有登入帳號 並且 沒有在demo遊戲&& !isset($SESSION['demoGame'])
         $account = $_SESSION['account'];
     switch ($type) {
         /* 讀取角色個人資料 */

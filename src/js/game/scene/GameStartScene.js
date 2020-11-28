@@ -81,15 +81,15 @@ export default class GameStartScene extends Scene {
     }
 
     async gotoNextScene() {
-        await apiManageLogin({ type: "checklogin", })
-            .then((res) => {
-                console.log('checkLogin', res.data);
-                this.logindata = res.data;
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-        if (this.logindata.islogin != "1") {
+        await apiManageLogin({type: "checklogin",check:'game'})
+        .then((res) => {
+            console.log('checkLogin',res.data);
+            this.logindata = res.data;
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+        if(this.logindata.islogin != "1"){
             this.dialog.visible = true
             this.interactive = false
             this.buttonMode = false

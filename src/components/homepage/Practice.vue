@@ -24,11 +24,6 @@
                     multi-sort
                     class="elevation-1"
                 >
-                    <!-- <template v-slot:item.firstCorrect="{ item }">
-                        <v-card-text >
-                            {{ getFirstCount(item.questions) }}</v-card-text
-                        >
-                    </template> -->
                 </v-data-table>
             </v-list-item-content>
         </v-list-item>
@@ -41,7 +36,6 @@ export default {
     data() {
         return {
             search: null,
-            ans: 0,
             practice_header: [
                 {
                     text: "情境",
@@ -56,18 +50,12 @@ export default {
             practice: [],
         };
     },
-    computed: {
-        getFirstCount(questions) {
-            // return this.practice.filter((item) => {});
-            return 1;
-        },
-    },
+
     mounted() {
         console.log("practice Page run");
         apiManageLearning({ type: "get" }).then((res) => {
             res.data.practice = JSON.parse(res.data.practice);
             console.log(res.data.practice.practice);
-
             this.practice = res.data.practice.practice;
         });
     },

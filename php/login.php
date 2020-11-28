@@ -4,8 +4,6 @@ session_start();
 require_once './connect.php'; 
 $logintype = $_GET['type'];
 
-
-
 switch ($logintype) {
     case 'inforcheck':
         $ac = $_GET['account'];
@@ -31,8 +29,11 @@ switch ($logintype) {
     break;
 
     case 'checklogin':
+        if(isset($_GET['check'])){
+            if($_GET['check'] == 'game')unset($_SESSION['demoGame']);
+            else $_SESSION['demoGame'] = 1;
+        }
         if(!isset($_SESSION['account']) ) {
-           
             $data = [0,0];
             echo json_encode($data, JSON_UNESCAPED_UNICODE); 
         }else{

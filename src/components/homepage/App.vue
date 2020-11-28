@@ -490,6 +490,7 @@
             color="blue"
             expand-on-hover
             app
+            stateless
         >
             <v-divider></v-divider>
             <v-list nav>
@@ -502,9 +503,13 @@
                     >
                 </v-list-item>
                 <v-divider></v-divider>
-                <v-list-item-group
-                    active-class="deep-purple--text text--accent-4"
-                >
+                <v-list-item-group active-class="white--text text--accent-4">
+                    <v-list-item to="/learnstate">
+                        <v-list-item-icon>
+                            <v-icon>mdi-format-list-bulleted</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>學習狀況總覽</v-list-item-title>
+                    </v-list-item>
                     <v-list-item to="/explore">
                         <v-list-item-icon>
                             <v-icon>mdi-magnify</v-icon>
@@ -551,6 +556,7 @@
 <script>
 import { apiManageLogin } from "@/js/api";
 import { apiManageRegister } from "@/js/api";
+import Sound from "pixi-sound";
 export default {
     data() {
         return {
@@ -614,13 +620,14 @@ export default {
     },
     methods: {
         goToIntroducePage(val) {
+            Sound.stopAll();
             if (this.$route.path != "/")
                 this.$router.push({ name: "introduction" });
             this.value = val;
         },
         goToLearningstatus() {
             this.$router.push({
-                name: "explore",
+                name: "learnstate",
                 // params: { passdata: obj },
             });
         },
@@ -664,7 +671,7 @@ export default {
                 // params: { passdata: obj },
             });
             return apiManageLogin({
-                type: "checklogin",
+                type: "checklogin",check: "main"
             })
                 .then((res) => {
                     console.log(res.data);
@@ -693,7 +700,6 @@ export default {
             })
                 .then((res) => {
                     console.log(res.data);
-                    this.learningstatus = false;
                     if (res.data == 1) {
                         this.msg = true;
                         this.card = "登出成功!";
@@ -703,6 +709,8 @@ export default {
                         this.showMail = null;
                         this.ac = null;
                         this.pw = null;
+                        this.learningstatus = false;
+                        this.goToIntroducePage(0);
                     } else {
                         this.msg = true;
                         this.card = "登出失敗";
