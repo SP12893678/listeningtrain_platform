@@ -2,6 +2,7 @@ const path = require('path')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
+const CompressionPlugin = require('compression-webpack-plugin')
 
 module.exports = {
     mode: 'production',
@@ -169,7 +170,10 @@ module.exports = {
             chunks: ['manage'],
             minify: process.env.NODE_ENV != 'development'
         }),
-        new VueLoaderPlugin()
+        new VueLoaderPlugin(),
+        new CompressionPlugin({
+            algorithm: 'gzip'
+        })
     ],
     resolve: {
         alias: {
