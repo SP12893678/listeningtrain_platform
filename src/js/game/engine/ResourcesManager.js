@@ -1,11 +1,5 @@
-import loadingBackground from '@/assets/images/OLO2ED0.jpg'
-import sound001 from '@/assets/images/game-start.jpg'
-import sound002 from '@/assets/images/game-main.jpg'
-import sound003 from '@/assets/images/role.jpg'
-import sound004 from '@/assets/images/particle.png'
-import sound005 from '@/assets/images/loadingbar.png'
-import sound006 from '@/assets/images/OLO2ED0.jpg'
-import sound007 from '@/assets/images/OLO2ED0.jpg'
+
+import particle from '@/assets/images/particle.png'
 import menu from '@/assets/images/menu001.png'
 import menu_btn from '@/assets/images/menu-btn.png'
 
@@ -72,22 +66,14 @@ import gear_center from '@/assets/images/gear-center.png'
 import gear_outside from '@/assets/images/gear-outside.png'
 import money_bag from '@/assets/images/money-bag.png'
 import bao from '@/assets/images/bao.png'
-import torch from '@/assets/images/torch.gif'
+// import torch from '@/assets/images/torch.gif'
 // import ptvideo from '@/assets/video/practicemode.mp4'
 // import practicevideo from '@/assets/video/practicemode.mp4'
 import arrow from '@/assets/images/arrow.png'
 
-
 const resources = {
-    loading_bg: loadingBackground,
     create_role_bg: create_role_bg,
-    game_start: sound001,
-    game_main: sound002,
-    create_role: sound003,
-    particles: sound004,
-    loading_bar: sound005,
-    sound006: sound006,
-    sound007: sound007,
+    particles: particle,
     menu: menu,
     menu_btn: menu_btn,
     character_stage: character_stage,
@@ -147,7 +133,7 @@ const resources = {
     game_main_bg: game_main_bg,
     money_bag: money_bag,
     bao: bao,
-    torch: torch,
+    // torch: torch,
     arrow: arrow
     // ptvideo: ptvideo,
 }

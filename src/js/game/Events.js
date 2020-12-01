@@ -18,47 +18,47 @@ import { PixiPlugin } from 'gsap/PixiPlugin'
 gsap.registerPlugin(PixiPlugin)
 PixiPlugin.registerPIXI(PIXI)
 
-var EventEmitter = require('eventemitter3')
-var events = new EventEmitter()
+const EventEmitter = require('eventemitter3')
+const events = new EventEmitter()
 
 events.on('goto', (val) => {
     console.log(val)
     if (ScenesManager.scenes[val.id]) ScenesManager.goToScene(val.id)
     else {
         switch (val.id) {
-            case 'loading':
-                ScenesManager.createScene(val.id, new LoadingScene())
-                break
-            case 'game_start':
-                ScenesManager.createScene(val.id, new GameStartScene())
-                break
-            case 'create_role':
-                ScenesManager.createScene(val.id, new CreateRoleScene())
-                break
-            case 'game_main':
-                ScenesManager.createScene(val.id, new GameMainScene())
-                break
-            case 'enviro_select':
-                ScenesManager.createScene(val.id, new EnviromentSelectScene())
-                break
-            case 'enviro_detail':
-                ScenesManager.createScene(val.id, new EnviromentDetailScene())
-                break
-            case 'train_mode':
-                ScenesManager.createScene(val.id, new TrainModeScene())
-                ScenesManager.scenes[val.id].init(val.environmentId)
-                break
-            case 'practice_mode':
-                ScenesManager.createScene(val.id, new PracticeModeScene())
-                break
-            case 'test_mode':
-                ScenesManager.createScene(val.id, new TestModeScene())
-                break
-            case 'backpack':
-                ScenesManager.createScene(val.id, new BackpackScene())
-                break
-            default:
-                break
+        case 'loading':
+            ScenesManager.createScene(val.id, new LoadingScene())
+            break
+        case 'game_start':
+            ScenesManager.createScene(val.id, new GameStartScene())
+            break
+        case 'create_role':
+            ScenesManager.createScene(val.id, new CreateRoleScene())
+            break
+        case 'game_main':
+            ScenesManager.createScene(val.id, new GameMainScene())
+            break
+        case 'enviro_select':
+            ScenesManager.createScene(val.id, new EnviromentSelectScene())
+            break
+        case 'enviro_detail':
+            ScenesManager.createScene(val.id, new EnviromentDetailScene())
+            break
+        case 'train_mode':
+            ScenesManager.createScene(val.id, new TrainModeScene())
+            ScenesManager.scenes[val.id].init(val.environmentId)
+            break
+        case 'practice_mode':
+            ScenesManager.createScene(val.id, new PracticeModeScene())
+            break
+        case 'test_mode':
+            ScenesManager.createScene(val.id, new TestModeScene())
+            break
+        case 'backpack':
+            ScenesManager.createScene(val.id, new BackpackScene())
+            break
+        default:
+            break
         }
         ScenesManager.goToScene(val.id)
     }
@@ -67,39 +67,39 @@ events.on('goto', (val) => {
     ScenesManager.scenes[val.id].alpha = 0
     gsap.to(ScenesManager.scenes[val.id], {
         pixi: {
-            alpha: 1,
+            alpha: 1
         },
-        duration: 1,
+        duration: 1
     })
 })
 
 events.on('warning', (val) => {
     switch (val.no) {
-        case -1:
-            let warningDialog = new Dialog('你已獲得過此服裝', 2)
-            warningDialog.name = 'repeatClothes'
-            ScenesManager.currentScene.addChild(warningDialog)
-            warningDialog.yesBtn.click = () => {
-                ScenesManager.currentScene.removeChild(warningDialog)
-            }
-            break
-        default:
-            break
+    case -1:
+        const warningDialog = new Dialog('你已獲得過此服裝', 2)
+        warningDialog.name = 'repeatClothes'
+        ScenesManager.currentScene.addChild(warningDialog)
+        warningDialog.yesBtn.click = () => {
+            ScenesManager.currentScene.removeChild(warningDialog)
+        }
+        break
+    default:
+        break
     }
 })
 
 events.on('receive', (val) => {
     switch (val.no) {
-        case -1:
-            let warningDialog = new Dialog('你已獲得過此服裝', 2)
-            warningDialog.name = 'repeatClothes'
-            ScenesManager.currentScene.addChild(warningDialog)
-            warningDialog.yesBtn.click = () => {
-                ScenesManager.currentScene.removeChild(warningDialog)
-            }
-            break
-        default:
-            break
+    case -1:
+        const warningDialog = new Dialog('你已獲得過此服裝', 2)
+        warningDialog.name = 'repeatClothes'
+        ScenesManager.currentScene.addChild(warningDialog)
+        warningDialog.yesBtn.click = () => {
+            ScenesManager.currentScene.removeChild(warningDialog)
+        }
+        break
+    default:
+        break
     }
 })
 

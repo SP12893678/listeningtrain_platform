@@ -22,10 +22,10 @@ import { Polygon } from 'pixi.js/lib/core/math'
 gsap.registerPlugin(PixiPlugin)
 PixiPlugin.registerPIXI(PIXI)
 
-let resources = PIXI.loader.resources
+const resources = PIXI.loader.resources
 
 export default class TrainModeScene extends Scene {
-    constructor() {
+    constructor () {
         super()
         this.background = new PIXI.Graphics()
         this.titleMenu = new TitleMenu()
@@ -48,38 +48,36 @@ export default class TrainModeScene extends Scene {
         this.setCharacter()
     }
 
-    async init(id) {
-        /**新增探索資料 */
-        let date = new Date()
-        let time = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+    async init (id) {
+        /** 新增探索資料 */
+        const date = new Date()
+        const time = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
 
         apiManageLearning({ type: 'update', mode: 'train', enviro: id, action: 'new', time: time })
 
-        let environment = new TrainModeEnvironment()
+        const environment = new TrainModeEnvironment()
         await environment.init(id)
-        let scale = 1000 / environment.width
+        const scale = 1000 / environment.width
         environment.scale.set(scale, scale)
 
-
-        let objectList = this.objectList
+        const objectList = this.objectList
         objectList.objects = []
         environment.data.objects.forEach((object) => objectList.addListItem(object))
         objectList.position.set(500, 750)
 
-        let scroller = new HorizontalScroller(10, objectList.list_content, objectList.list_mask)
+        const scroller = new HorizontalScroller(10, objectList.list_content, objectList.list_mask)
         scroller.position.set(500, 860)
 
-        let gearlocking = this.gearlocking
+        const gearlocking = this.gearlocking
         gearlocking.filters = [new GlowFilter(30, 2.5, 20)]
         gearlocking.position.set(0, 0)
 
         environment.objects.forEach((object) => {
             object.update = () => {
-                let { x, y } = object.position
+                const { x, y } = object.position
                 gearlocking.position.set(x - gearlocking.xxx / 2, y - gearlocking.yyy / 2)
-                let objectList_object = objectList.objects.filter((o) => o.id == object.data.id)[0]
+                const objectList_object = objectList.objects.filter((o) => o.id == object.data.id)[0]
                 objectList.selectListItem(objectList_object)
-
             }
         })
 
@@ -87,30 +85,29 @@ export default class TrainModeScene extends Scene {
             object.interactive = true
             object.buttonMode = true
             object.click = () => {
-                let obj = environment.objects.filter((o) => o.data.id == object.id)[0]
+                const obj = environment.objects.filter((o) => o.data.id == object.id)[0]
                 environment.objectClick(obj)
             }
         })
 
-        let trdescription = this.trdescription
+        const trdescription = this.trdescription
         trdescription.position.set(0, 0)
 
-        let video = this.video
+        const video = this.video
         video.position.set(0, 0)
 
-        var { x, y } = environment.objects[1].position
-        let screenCover = this.screenCover
+        const { x, y } = environment.objects[1].position
+        const screenCover = this.screenCover
         // screenCover.beginFill(0x000000, 0.5)
         // screenCover.drawRoundedRect(0, 0, 1000, 625)
         screenCover.beginFill(0x000000, 0.9)
             .drawPolygon(0, 0, 1000, 0, 1000, 625, 0, 625)
             .drawPolygon(x - 55, y - 55, x + 55, y - 55, x + 55, y + 55, x - 55, y + 55)
-            .addHole();
+            .addHole()
         screenCover.endFill()
         screenCover.interactive = true
         screenCover.visible = false
         environment.addChild(screenCover)
-
 
         // let cover = this.cover
         // var { x, y } = environment.objects[4].position
@@ -119,8 +116,7 @@ export default class TrainModeScene extends Scene {
         // cover.endFill();
         // environment.addChild(cover)
 
-
-        let environment_mask = this.environment_mask
+        const environment_mask = this.environment_mask
         environment_mask.beginFill(0x000000, 0)
         environment_mask.drawRect(0, 0, 1000, 625)
         environment_mask.endFill()
@@ -130,11 +126,11 @@ export default class TrainModeScene extends Scene {
         environment.addChild(gearlocking)
 
         /* guide  */
-        let guide = new PIXI.Text('請點選情境中的物件\n就能聽到聲音喔', style15)
+        const guide = new PIXI.Text('請點選情境中的物件\n就能聽到聲音喔', style15)
         guide.position.set(120, 300)
         guide.visible = false
 
-        let btn_guide = this.btn_guide
+        const btn_guide = this.btn_guide
         btn_guide.pivot.set(btn_guide.btnWidth / 2, btn_guide.btnHeight / 2)
         btn_guide.position.set(250, 350)
         btn_guide.setBorder(0)
@@ -148,7 +144,6 @@ export default class TrainModeScene extends Scene {
         }
         btn_guide.visible = true
         btn_guide.click = () => {
-
             btn_guide.visible = false
             guide.visible = true
             // environment.mask = cover
@@ -160,10 +155,9 @@ export default class TrainModeScene extends Scene {
             gsap.delayedCall(5, () => {
                 btn_guidestep.visible = true
             })
-
         }
 
-        let btn_guidestep = this.btn_guidestep
+        const btn_guidestep = this.btn_guidestep
         btn_guidestep.pivot.set(btn_guidestep.btnWidth / 2, btn_guidestep.btnHeight / 2)
         btn_guidestep.position.set(250, 250)
         btn_guidestep.setBorder(0)
@@ -177,7 +171,6 @@ export default class TrainModeScene extends Scene {
             btn_guidestep.scale.set(1)
         }
         btn_guidestep.click = () => {
-
             btn_guidestep.visible = false
             environment.mask = environment_mask
             screenCover.visible = false
@@ -190,7 +183,7 @@ export default class TrainModeScene extends Scene {
             })
         }
 
-        let btn_guideend = this.btn_guideend
+        const btn_guideend = this.btn_guideend
         btn_guideend.pivot.set(btn_guideend.btnWidth / 2, btn_guideend.btnHeight / 2)
         btn_guideend.position.set(250, 250)
         btn_guideend.setBorder(0)
@@ -220,72 +213,65 @@ export default class TrainModeScene extends Scene {
         this.addChild(trdescription)
         this.addChild(video)
 
-        let sprite = environment.objects[0]
-        let sprite2 = this.objectList.objects[1]
+        const sprite = environment.objects[0]
+        const sprite2 = this.objectList.objects[1]
 
         console.log(resources[sprite.data.audio.sound_src].sound)
 
-        const step1 = {
-            area: () => {
-                let global = sprite.parent.toGlobal(sprite.position)
-                let { x, y } = global
-                return new Polygon(x - 55, y - 55, x + 55, y - 55, x + 55, y + 55, x - 55, y + 55)
-            },
-            mission: () => {
-                return new Promise((resolve, reject) => {
+        // const step1 = {
+        //     area: () => {
+        //         let global = sprite.parent.toGlobal(sprite.position)
+        //         let { x, y } = global
+        //         return new Polygon(x - 55, y - 55, x + 55, y - 55, x + 55, y + 55, x - 55, y + 55)
+        //     },
+        //     mission: () => {
+        //         return new Promise((resolve, reject) => {
 
+        //         })
+        //     }
+        // }
 
-                })
-            }
-        }
+        // let global = sprite.parent.toGlobal(sprite.position)
+        // var { x, y } = global
+        // let area = new Polygon(x - 55, y - 55, x + 55, y - 55, x + 55, y + 55, x - 55, y + 55)
+        // let testGuide = new Guide.ModeGuide(sprite, area, null, null)
+        // this.addChild(testGuide)
 
-        let global = sprite.parent.toGlobal(sprite.position)
-        var { x, y } = global
-        let area = new Polygon(x - 55, y - 55, x + 55, y - 55, x + 55, y + 55, x - 55, y + 55)
-        let testGuide = new Guide.ModeGuide(sprite, area, null, null)
-        this.addChild(testGuide)
+        // var { x, y } = this.character.armatureDisplay.position
+        // let chatBox = new Guide.ChatBox(300, 200)
+        //     .addChat('點選箭頭指向的區域')
+        //     .addChat('點擊物件列表中的一個物件')
+        // chatBox.position.set(x - chatBox.width / 2, y - chatBox.height * 2.2)
 
+        // let myGuide = new Guide.MyGuide(testGuide, chatBox)
+        // global = sprite2.parent.toGlobal(sprite2.position)
+        // var { x, y } = global
+        // area = new Polygon(x, y, x + sprite2.width, y, x + sprite2.width, y + sprite2.height, x, y + sprite2.height)
 
-        var { x, y } = this.character.armatureDisplay.position
-        let chatBox = new Guide.ChatBox(300, 200)
-            .addChat('點選箭頭指向的區域')
-            .addChat('點擊物件列表中的一個物件')
-        chatBox.position.set(x - chatBox.width / 2, y - chatBox.height * 2.2)
+        // let testGuide2 = new Guide.ModeGuide(sprite2, area, null, null)
+        // this.addChild(testGuide2)
 
+        // let myGuide2 = new Guide.MyGuide(testGuide2, chatBox)
 
-
-
-        let myGuide = new Guide.MyGuide(testGuide, chatBox)
-        global = sprite2.parent.toGlobal(sprite2.position)
-        var { x, y } = global
-        area = new Polygon(x, y, x + sprite2.width, y, x + sprite2.width, y + sprite2.height, x, y + sprite2.height)
-
-        let testGuide2 = new Guide.ModeGuide(sprite2, area, null, null)
-        this.addChild(testGuide2)
-
-        let myGuide2 = new Guide.MyGuide(testGuide2, chatBox)
-
-        this.addChild(this.character.armatureDisplay)
-        myGuide.play()
-            .then(res => myGuide2.play())
-            .then(res => {
-                console.log('done2')
-            })
-            .catch(res => console.log('error'))
-
-
+        // this.addChild(this.character.armatureDisplay)
+        // myGuide.play()
+        //     .then(res => myGuide2.play())
+        //     .then(res => {
+        //         console.log('done2')
+        //     })
+        //     .catch(res => console.log('error'))
     }
 
-    setBackground() {
-        let background = this.background
+    setBackground () {
+        const background = this.background
         background.beginFill(0xff9300)
         background.drawRect(0, 0, Config.screen.width, Config.screen.height)
         background.endFill()
         this.addChild(background)
     }
 
-    setTitle() {
-        let titleMenu = this.titleMenu
+    setTitle () {
+        const titleMenu = this.titleMenu
         titleMenu.goBackButton.click = () => {
             Sound.stopAll()
             Events.emit('goto', { id: 'enviro_select', animate: 'fadeIn' })
@@ -296,23 +282,23 @@ export default class TrainModeScene extends Scene {
     }
 
     /* 建立角色 */
-    async setCharacter() {
+    async setCharacter () {
         /* Character */
-        let character = this.character
+        const character = this.character
         await character.check_if_has_data()
-        let factory = character.factory
-        let armatureDisplay = character.armatureDisplay
+        const factory = character.factory
+        const armatureDisplay = character.armatureDisplay
         armatureDisplay.position.set(250, 670)
         armatureDisplay.scale.set(0.4)
         this.addChild(armatureDisplay)
-        //this.armatureDisplay.animation.play('shakeHand',1);
+        // this.armatureDisplay.animation.play('shakeHand',1);
     }
 }
 
 class TrainModeEnvironment extends Environment {
-    async init(id) {
+    async init (id) {
         await super.init(id)
-        let audio_arr = this.data.objects.map((item) => item.sound_src)
+        const audio_arr = this.data.objects.map((item) => item.sound_src)
         await apiManageAudio({ type: 'get', amount: 'part', items: audio_arr }).then((res) => {
             this.data.objects.forEach((object) => {
                 object.audio = res.data.filter((audio) => audio.id == object.sound_src)[0]
@@ -328,18 +314,18 @@ class TrainModeEnvironment extends Environment {
         })
     }
 
-    objectClick(object) {
+    objectClick (object) {
         Sound.stopAll()
         Sound.add(object.data.audio.audio_id, resources[object.data.audio.sound_src])
         Sound.play(object.data.audio.audio_id, {
             complete: () => {
-                let date = new Date()
-                let item = {
+                const date = new Date()
+                const item = {
                     enviro: this.data.environment.name,
                     id: object.data.id,
                     object_name: object.data.name,
                     time: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-                };
+                }
                 apiManageLearning({ type: 'update', mode: 'train', action: 'add', item: item })
             }
         })
@@ -348,7 +334,7 @@ class TrainModeEnvironment extends Environment {
 }
 
 class GearLocking extends Container {
-    constructor() {
+    constructor () {
         super()
         this.circle_inside = new Sprite()
         this.circle_center = new Sprite()
@@ -380,7 +366,7 @@ class GearLocking extends Container {
 }
 
 class ObjectList extends Container {
-    constructor() {
+    constructor () {
         super()
         this.objects = []
         this.list_content = new Container()
@@ -394,18 +380,18 @@ class ObjectList extends Container {
         this.addChild(this.list_mask)
     }
 
-    addListItem(data) {
-        let list_content = this.list_content
-        let list_item = new Container()
+    addListItem (data) {
+        const list_content = this.list_content
+        const list_item = new Container()
 
-        let background = new Graphics()
+        const background = new Graphics()
         background.beginFill(0xffffff, 0.5)
         background.drawRoundedRect(0, 0, 100, 100, 12)
         background.endFill()
 
-        let image = new Sprite()
+        const image = new Sprite()
         image.texture = resources[data.pic_src].texture
-        let scale = Math.min(100 / image.width, 100 / image.height)
+        const scale = Math.min(100 / image.width, 100 / image.height)
         image.scale.set(scale, scale)
         image.position.set((100 - image.width) / 2, (100 - image.height) / 2)
 
@@ -421,16 +407,16 @@ class ObjectList extends Container {
         this.objects.push(list_item)
     }
 
-    selectListItem(object) {
+    selectListItem (object) {
         this.objects.forEach((o) => {
-            let background = o.background
+            const background = o.background
             background.clear()
             background.beginFill(0xffffff, 0.5)
             background.drawRoundedRect(0, 0, 100, 100, 12)
             background.endFill()
         })
 
-        let background = object.background
+        const background = object.background
         background.clear()
         background.beginFill(0x1976d2, 1)
         background.drawRoundedRect(0, 0, 100, 100, 12)
@@ -439,7 +425,7 @@ class ObjectList extends Container {
 }
 
 class TitleMenu extends Container {
-    constructor() {
+    constructor () {
         super()
         this.titleHeight = Config.screen.height * 0.08
         this.background = new Graphics()
@@ -455,21 +441,21 @@ class TitleMenu extends Container {
         this.setHelpButton()
     }
 
-    setBackground() {
-        let background = this.background
+    setBackground () {
+        const background = this.background
         background.beginFill(0xf8ba00)
         background.drawRect(0, 0, Config.screen.width, this.titleHeight)
         background.drawCircle(60, 60, 60)
         this.addChild(background)
     }
 
-    setGoBackButton() {
-        let titleHeight = this.titleHeight
-        let btn_goback = this.goBackButton
-        let goBackText = this.goBackText
+    setGoBackButton () {
+        const titleHeight = this.titleHeight
+        const btn_goback = this.goBackButton
+        const goBackText = this.goBackText
 
         btn_goback.texture = resources[ResourcesManager.goBack].texture
-        let scale = 100 / btn_goback.width
+        const scale = 100 / btn_goback.width
         btn_goback.scale.set(scale)
         btn_goback.anchor.set(0.5)
         btn_goback.interactive = true
@@ -490,17 +476,17 @@ class TitleMenu extends Container {
         this.addChild(goBackText)
     }
 
-    setTitle() {
-        let titleHeight = this.titleHeight
-        let titleText = this.titleText
+    setTitle () {
+        const titleHeight = this.titleHeight
+        const titleText = this.titleText
         titleText.anchor.set(0.5)
         titleText.position.set(Config.screen.width / 2, titleHeight / 2)
         this.addChild(titleText)
     }
 
-    setHelpButton() {
-        let titleHeight = this.titleHeight
-        let btn_help = this.HelpButton
+    setHelpButton () {
+        const titleHeight = this.titleHeight
+        const btn_help = this.HelpButton
         btn_help.pivot.set(75, titleHeight / 2)
         btn_help.position.set(Config.screen.width - 70, titleHeight / 2 + titleHeight * 0.1)
         btn_help.setBorder(0)
@@ -511,9 +497,9 @@ class TitleMenu extends Container {
         this.addChild(btn_help)
     }
 
-    setVideoGuideButton() {
-        let titleHeight = this.titleHeight
-        let btn_video = this.VedioGudieButton
+    setVideoGuideButton () {
+        const titleHeight = this.titleHeight
+        const btn_video = this.VedioGudieButton
         btn_video.pivot.set(75, titleHeight / 2)
         btn_video.position.set(Config.screen.width - 230, titleHeight / 2 + titleHeight * 0.1)
         btn_video.setBorder(0)

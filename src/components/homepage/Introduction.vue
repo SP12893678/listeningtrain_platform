@@ -401,18 +401,18 @@ export default {
             audio: [],
             audio_type_arr: [],
             enviro_container: null,
-            environment: null,
+            environment: null, 
         };
     },
-    // async mounted() {
-    //     document.querySelector(".v-carousel__controls").style.right = 0;
-    //     this.setCarouselEvent();
-    //     console.log("1");
-    //     let simple_id = 1;
-    //     await this.requestDataAndLoad(simple_id);
-    //     console.log("2");
-    //     console.log("3");
-    // },
+    async mounted() {
+        document.querySelector(".v-carousel__controls").style.right = 0;
+        this.setCarouselEvent();
+        console.log("1");
+        let simple_id = 1;
+        await this.requestDataAndLoad(simple_id);
+        console.log("2");
+        console.log("3");
+    },
     computed: {
         getValue: {
             get: function () {

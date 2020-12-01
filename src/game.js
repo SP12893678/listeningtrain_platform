@@ -43,6 +43,17 @@ PixiPlugin.registerPIXI(PIXI)
 
         function start() {
             console.log('game ready')
+            // Events.emit('goto', { id: 'loading' })
+            // let index = 0;
+            // let timer = setInterval(()=>{
+            //     if(index== 100) clearInterval(timer)
+            //     scenesManager.scenes['loading'].progress_bar.setProgress(
+            //         index / 100
+            //     )
+            //     index++;
+            // },20)
+          
+
             Events.emit('goto', { id: 'game_start' })
         }
 
