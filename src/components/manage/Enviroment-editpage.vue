@@ -201,7 +201,7 @@
               </v-btn>
               <v-slider
                 v-model="select_object.scale"
-                max="20"
+                :max="getScaleMax"
                 min="0.0001"
                 step="0.0001"
                 class="mb-3 mt-3"
@@ -1063,6 +1063,11 @@ export default {
                 })
             }
             return null
+        },
+        getScaleMax () {
+            if (this.sprite == null || this.select_object == null) return 20
+            const max = Math.min(1000 / (this.sprite.width / this.select_object.scale), (625 / (this.sprite.height / this.select_object.scale)))
+            return max
         }
     },
     watch: {
@@ -1520,6 +1525,7 @@ export default {
         preview () {
 
         }
+
     }
 }
 </script>
