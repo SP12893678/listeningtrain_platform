@@ -1,25 +1,29 @@
 import * as PIXI from 'pixi.js'
 
 export default class Scene extends PIXI.Container {
-    constructor(background) {
+    constructor (background) {
         super(background)
         this.paused = false
-        this.updateCB = function() {}
+        this.updateCB = function () {}
     }
-    onUpdate(updateCB) {
+
+    onUpdate (updateCB) {
         this.updateCB = updateCB
     }
 
-    update() {
+    update () {
         this.updateCB()
     }
-    pause() {
+
+    pause () {
         this.paused = true
     }
-    resume() {
+
+    resume () {
         this.paused = false
     }
-    isPaused() {
+
+    isPaused () {
         return this.paused
     }
 }

@@ -1,5 +1,4 @@
 
-
 import * as PIXI from 'pixi.js'
 import ResourcesManager from '@/js/game/engine/ResourcesManager'
 import TextInput from 'Component/TextInput'
@@ -8,22 +7,20 @@ import Sound from 'pixi-sound'
 import {
     style7,
     style13,
-    style14,
+    style14
 } from '@/js/game/engine/TextStyleManager'
 import Button2 from 'Component/button2'
 import Button3 from 'Component/button3'
 
-
-let Application = PIXI.Application,
-    Container = PIXI.Container,
-    Graphics = PIXI.Graphics,
-    Text = PIXI.Text,
-    Sprite = PIXI.Sprite,
-    resources = PIXI.loader.resources
-
+const Application = PIXI.Application
+const Container = PIXI.Container
+const Graphics = PIXI.Graphics
+const Text = PIXI.Text
+const Sprite = PIXI.Sprite
+const resources = PIXI.loader.resources
 
 export default class set extends PIXI.Container {
-    constructor() {
+    constructor () {
         super()
         this.dialog = new Dialog('', 1)
         this.input = new TextInput({
@@ -32,130 +29,129 @@ export default class set extends PIXI.Container {
                 fontSize: '20px',
                 padding: '3px',
                 width: '270px',
-                color: '#000000',
+                color: '#000000'
             },
             box: {
                 default: {
                     fill: '',
                     rounded: 1,
-                    stroke: { color: '', width: 0 },
+                    stroke: { color: '', width: 0 }
                 },
                 focused: {
                     fill: '',
                     rounded: 1,
-                    stroke: { color: 0xffffff, width: 2 },
+                    stroke: { color: 0xffffff, width: 2 }
                 },
-                disabled: { fill: '', rounded: 1 },
-            },
+                disabled: { fill: '', rounded: 1 }
+            }
         })
         this.InfoContainer = new Container()
 
         this.init()
-
     }
-    async init() {
+
+    async init () {
         this.setDialog()
         this.setInfoContainer()
-
     }
 
-    setDialog() {
-        let dialog = this.dialog
+    setDialog () {
+        const dialog = this.dialog
         dialog.visible = false
         dialog.setSize(800, 430)
         dialog.setBackgroundColor(0xff9300, 0.99)
         dialog.setCloseBtnBackgroundColor(0xf8ba00, 0.99)
         dialog.closeBtn.click = () => {
             dialog.visible = false
-
         }
         this.addChild(dialog)
     }
-    setInfoContainer() {
-        let InfoContainer = this.InfoContainer
+
+    setInfoContainer () {
+        const InfoContainer = this.InfoContainer
         InfoContainer.position.set(
             this.dialog.dialog.x,
             this.dialog.dialog.y
         )
         /* title:操作說明 */
-        let learningTitle = new Text("其他功能", style14)
+        const learningTitle = new Text('其他功能', style14)
         learningTitle.position.set(300, 15)
         InfoContainer.addChild(learningTitle)
 
-        let standard = [
+        const standard = [
             { data: '音量設定:' },
             { data: '語言選擇:' },
             { data: '給我們的意見:' },
-            { data: '返回平台首頁:' },
+            { data: '返回平台首頁:' }
         ]
         let index = 1
         standard.forEach((standard) => {
-            let str = standard.data
-            let data = new Text(str, style7)
+            const str = standard.data
+            const data = new Text(str, style7)
             data.position.set(100, 35 + 80 * index)
             InfoContainer.addChild(data)
             index++
         })
 
-        let rectangle = new Graphics();
-        rectangle.lineStyle(1, 0xFF3300, 1);
-        rectangle.drawRect(0, 0, 300, 1);
-        rectangle.endFill();
-        rectangle.x = 250;
-        rectangle.y = 140;
-        InfoContainer.addChild(rectangle);
+        const rectangle = new Graphics()
+        rectangle.lineStyle(1, 0xFF3300, 1)
+        rectangle.drawRect(0, 0, 300, 1)
+        rectangle.endFill()
+        rectangle.x = 250
+        rectangle.y = 140
+        InfoContainer.addChild(rectangle)
 
-        let circle = new Graphics();
-        circle.beginFill(0x9966FF);
-        circle.drawCircle(0, 0, 10);
-        circle.endFill();
-        circle.x = 400;
-        circle.y = 140;
-        circle.interactive = true;
-        circle.buttonMode = true;
-        circle.scale.set(1);
+        const circle = new Graphics()
+        circle.beginFill(0x9966FF)
+        circle.drawCircle(0, 0, 10)
+        circle.endFill()
+        circle.x = 400
+        circle.y = 140
+        circle.interactive = true
+        circle.buttonMode = true
+        circle.scale.set(1)
 
-        let num = undefined;
-        num = new Text("50", style13);
-        InfoContainer.addChild(num);
-        num.position.set(390, 95);
+        let num
+        num = new Text('50', style13)
+        InfoContainer.addChild(num)
+        num.position.set(390, 95)
         circle
             .on('pointerdown', onDragStart)
             .on('pointerup', onDragEnd)
             .on('pointerupoutside', onDragEnd)
-            .on('pointermove', onDragMove);
-        InfoContainer.addChild(circle);
+            .on('pointermove', onDragMove)
+        InfoContainer.addChild(circle)
 
-        function onDragStart(event) {
-            this.data = event.data;
-            this.alpha = 0.8;
-            this.dragging = true;
+        function onDragStart (event) {
+            this.data = event.data
+            this.alpha = 0.8
+            this.dragging = true
         }
 
-        function onDragEnd() {
-            this.alpha = 1;
-            this.dragging = false;
+        function onDragEnd () {
+            this.alpha = 1
+            this.dragging = false
             // set the interaction data to null
-            this.data = null;
+            this.data = null
         }
 
-        function onDragMove() {
+        function onDragMove () {
             if (this.dragging) {
-                const newPosition = this.data.getLocalPosition(this.parent);
+                const newPosition = this.data.getLocalPosition(this.parent)
                 if (newPosition.x > 250 && newPosition.x < 550) {
-                    this.x = newPosition.x;
-                    this.y = 140;
-                    num.text = Math.round((newPosition.x - 250) / 300 * 100);
+                    this.x = newPosition.x
+                    this.y = 140
+                    num.text = Math.round((newPosition.x - 250) / 300 * 100)
                 }
             }
         }
 
-        let bt_back = new Button2(
+        const bt_back = new Button2(
             120,
             30,
             ResourcesManager.goBack,
             ' 返回'
-        );
+        )
         bt_back.position.set(350, 355)
         bt_back.setText(style13)
         bt_back.setBorder(0)
@@ -164,16 +160,16 @@ export default class set extends PIXI.Container {
         bt_back.interactive = true
         bt_back.buttonMode = true
         bt_back.click = function () {
-            window.location.href = "./";
+            window.location.href = './'
         }
         InfoContainer.addChild(bt_back)
 
-        let sound = new Button2(
+        const sound = new Button2(
             160,
             30,
             ResourcesManager.listen,
             ' 音量測試'
-        );
+        )
         sound.position.set(600, 120)
         sound.setText(style13)
         sound.setBorder(0)
@@ -183,21 +179,20 @@ export default class set extends PIXI.Container {
         sound.buttonMode = true
         sound.click = function () {
             Sound.stopAll()
-            Sound.add('test', 'https://pixijs.io/pixi-sound/examples/resources/buzzer.mp3')
+            // Sound.add('test', 'https://pixijs.io/pixi-sound/examples/resources/buzzer.mp3')
+            Sound.add('test', ResourcesManager.opening1)
             Sound.volumeAll = num.text / 100
             Sound.play('test')
-
         }
         InfoContainer.addChild(sound)
 
-
-        let input = this.input;
+        const input = this.input
         input._placeholderColor = 0x000000
         input.maxLength = 20
         input.position.set(270, 270)
         InfoContainer.addChild(input)
 
-        let bt_opinion = new Button3(120, 30, '輸入')
+        const bt_opinion = new Button3(120, 30, '輸入')
         bt_opinion.position.set(600, 270)
         bt_opinion.setText(style13)
         bt_opinion.setBorder(0)
@@ -210,14 +205,13 @@ export default class set extends PIXI.Container {
         }
         InfoContainer.addChild(bt_opinion)
 
-        var language_selection = new Sprite(resources[ResourcesManager.correctAnswer].texture)
+        const language_selection = new Sprite(resources[ResourcesManager.correctAnswer].texture)
         language_selection.width = 40
         language_selection.height = 40
         language_selection.position.set(280, 185)
         InfoContainer.addChild(language_selection)
 
-
-        let bt_ch = new Button3(100, 30, '中文')
+        const bt_ch = new Button3(100, 30, '中文')
         bt_ch.position.set(330, 190)
         bt_ch.setText(style13)
         bt_ch.setBorder(0)
@@ -231,7 +225,7 @@ export default class set extends PIXI.Container {
         }
         InfoContainer.addChild(bt_ch)
 
-        let bt_en = new Button3(100, 30, '英文')
+        const bt_en = new Button3(100, 30, '英文')
         bt_en.position.set(570, 190)
         bt_en.setText(style13)
         bt_en.setBorder(0)
@@ -245,12 +239,6 @@ export default class set extends PIXI.Container {
         }
         InfoContainer.addChild(bt_en)
 
-
-
-
-
-
         this.dialog.addChild(InfoContainer)
     }
-
 }

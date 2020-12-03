@@ -21,10 +21,10 @@ import ScoreCaculate from '@/js/game/exam/ScoreCaculate'
 gsap.registerPlugin(PixiPlugin)
 PixiPlugin.registerPIXI(PIXI)
 
-let resources = PIXI.loader.resources
+const resources = PIXI.loader.resources
 
 export default class EnviromentDetailScene extends Scene {
-    constructor() {
+    constructor () {
         super()
         this.background = new Graphics()
         this.background.beginFill(0xffffff, 1)
@@ -44,7 +44,7 @@ export default class EnviromentDetailScene extends Scene {
         this.gamemodeArea = new Container()
     }
 
-    async init(id) {
+    async init (id) {
         this.environmentArea.removeChild(...this.environmentArea.children)
         this.gamemodeArea.removeChild(...this.gamemodeArea.children)
         /**
@@ -56,39 +56,38 @@ export default class EnviromentDetailScene extends Scene {
             this.data.environment = res.data
         })
 
-        let object_arr = this.data.environment.object.split(',')
+        const object_arr = this.data.environment.object.split(',')
         await apiManageObject({ type: 'get', amount: 'part', items: object_arr }).then((res) => {
             console.log(res.data)
             this.data.objects = res.data
         })
 
-        /**取得資料庫測驗資料並計算學習平均成績 */
+        /** 取得資料庫測驗資料並計算學習平均成績 */
         this.average_score_data = []
-        let scroeSystem = new ScoreCaculate()
+        const scroeSystem = new ScoreCaculate()
         await scroeSystem.getExamData()
-        if (scroeSystem.hasExamData(this.data.environment.id))
-            this.average_score_data = scroeSystem.getAverageScoreData(this.data.environment.id)
+        if (scroeSystem.hasExamData(this.data.environment.id)) { this.average_score_data = scroeSystem.getAverageScoreData(this.data.environment.id) }
 
         this.built()
     }
 
-    built() {
+    built () {
         this.setEnvironmentArea()
         this.setGameModeArea()
     }
 
-    setgoBackArea() {
-        let goBackArea = this.goBackArea
-        let background = new Sprite()
+    setgoBackArea () {
+        const goBackArea = this.goBackArea
+        const background = new Sprite()
         background.texture = resources[ResourcesManager.fluid_shape002].texture
 
-        let icon = new Sprite()
+        const icon = new Sprite()
         icon.texture = resources[ResourcesManager.undo001].texture
-        let scale = 56 / icon.width
+        const scale = 56 / icon.width
         icon.scale.set(scale, scale)
         icon.position.set(152, 140)
 
-        let text = new Text('返回', style18)
+        const text = new Text('返回', style18)
         text.position.set(152, 197)
 
         goBackArea.addChild(background)
@@ -105,21 +104,21 @@ export default class EnviromentDetailScene extends Scene {
         this.addChild(goBackArea)
     }
 
-    setEnvironmentArea() {
-        let environmentArea = this.environmentArea
+    setEnvironmentArea () {
+        const environmentArea = this.environmentArea
 
-        let background = new Sprite()
+        const background = new Sprite()
         background.texture = resources[ResourcesManager.fluid_shape001].texture
 
-        let image_container = new Container()
-        let image_mask = new Graphics()
+        const image_container = new Container()
+        const image_mask = new Graphics()
         image_mask.beginFill(0x000000, 1)
         image_mask.drawRoundedRect(0, 0, 450, 280, 16)
         image_mask.endFill()
 
-        let image = new Sprite()
+        const image = new Sprite()
         image.texture = resources[this.data.environment.background_src].texture
-        let scale = 450 / image.width
+        const scale = 450 / image.width
         image.scale.set(scale, scale)
         image.mask = image_mask
 
@@ -127,20 +126,20 @@ export default class EnviromentDetailScene extends Scene {
         image_container.addChild(image)
         image_container.position.set(136, 48)
 
-        let objectList = new Container()
-        let list_content = new Container()
-        let list_mask = new Graphics()
+        const objectList = new Container()
+        const list_content = new Container()
+        const list_mask = new Graphics()
 
         this.data.objects.forEach((object, index) => {
-            let container = new Container()
-            let background = new Graphics()
+            const container = new Container()
+            const background = new Graphics()
             background.beginFill(0xffffff, 0.5)
             background.drawRoundedRect(0, 0, 75, 75, 12)
             background.endFill()
 
-            let item = new Sprite()
+            const item = new Sprite()
             item.texture = resources[object.pic_src].texture
-            let scale = Math.min(75 / item.width, 75 / item.height)
+            const scale = Math.min(75 / item.width, 75 / item.height)
             item.scale.set(scale, scale)
             item.position.set((75 - item.width) / 2, (75 - item.height) / 2)
 
@@ -159,13 +158,13 @@ export default class EnviromentDetailScene extends Scene {
         objectList.addChild(list_content)
         objectList.addChild(list_mask)
 
-        let scroller = new HorizontalScroller(10, list_content, list_mask)
+        const scroller = new HorizontalScroller(10, list_content, list_mask)
         scroller.position.set(136, 444)
         objectList.position.set(136, 358)
 
-        let labels = ['正確率', '反應\n速度', '  聲音頻率<300\n的正確率', '  聲音頻率>6000\n的正確率', '完成度']
-        let datasets = []
-        let radar = new RadarChart(labels, datasets)
+        const labels = ['正確率', '反應\n速度', '  聲音頻率<300\n的正確率', '  聲音頻率>6000\n的正確率', '完成度']
+        const datasets = []
+        const radar = new RadarChart(labels, datasets)
         if (this.average_score_data.length != 0) radar.addChart('上一次平均學習成績', this.average_score_data)
         radar.position.set(radar.width / 2 + 800, radar.height / 2 + 100)
         radar.barLabel.position.set(-350, 320)
@@ -180,38 +179,41 @@ export default class EnviromentDetailScene extends Scene {
         this.addChild(environmentArea)
     }
 
-    setGameModeArea() {
-        let gamemodeArea = this.gamemodeArea
-        let btn_train_mode = new SlimeButton('探索模式')
+    setGameModeArea () {
+        const gamemodeArea = this.gamemodeArea
+        const btn_train_mode = new SlimeButton('探索模式')
         btn_train_mode.scale.set(0.7, 0.7)
         btn_train_mode.click = () => {
-            ScenesManager.scenes['train_mode'] = null
+            Events.emit('loading')
+            ScenesManager.scenes.train_mode = null
             ScenesManager.createScene('train_mode', new TrainModeScene())
-            ScenesManager.scenes['train_mode'].init(this.data.environment.id)
+            ScenesManager.scenes.train_mode.init(this.data.environment.id)
             ScenesManager.goToScene('train_mode')
-            ScenesManager.scenes['train_mode'].alpha = 0
-            gsap.to(ScenesManager.scenes['train_mode'], { pixi: { alpha: 1 }, duration: 1 })
+            ScenesManager.scenes.train_mode.alpha = 0
+            gsap.to(ScenesManager.scenes.train_mode, { pixi: { alpha: 1 }, duration: 1 })
         }
-        let btn_practice_mode = new SlimeButton('練習模式', 'red')
+        const btn_practice_mode = new SlimeButton('練習模式', 'red')
         btn_practice_mode.scale.set(0.7, 0.7)
         btn_practice_mode.click = () => {
-            ScenesManager.scenes['practice_mode'] = null
+            Events.emit('loading')
+            ScenesManager.scenes.practice_mode = null
             ScenesManager.createScene('practice_mode', new PracticeModeScene())
-            ScenesManager.scenes['practice_mode'].init(this.data.environment.id)
+            ScenesManager.scenes.practice_mode.init(this.data.environment.id)
             ScenesManager.goToScene('practice_mode')
-            ScenesManager.scenes['practice_mode'].alpha = 0
-            gsap.to(ScenesManager.scenes['practice_mode'], { pixi: { alpha: 1 }, duration: 1 })
+            ScenesManager.scenes.practice_mode.alpha = 0
+            gsap.to(ScenesManager.scenes.practice_mode, { pixi: { alpha: 1 }, duration: 1 })
         }
 
-        let btn_test_mode = new SlimeButton('測驗模式', 'blue')
+        const btn_test_mode = new SlimeButton('測驗模式', 'blue')
         btn_test_mode.scale.set(0.7, 0.7)
         btn_test_mode.click = () => {
-            ScenesManager.scenes['test_mode'] = null
+            Events.emit('loading')
+            ScenesManager.scenes.test_mode = null
             ScenesManager.createScene('test_mode', new TestModeScene())
-            ScenesManager.scenes['test_mode'].init(this.data.environment.id)
+            ScenesManager.scenes.test_mode.init(this.data.environment.id)
             ScenesManager.goToScene('test_mode')
-            ScenesManager.scenes['test_mode'].alpha = 0
-            gsap.to(ScenesManager.scenes['test_mode'], { pixi: { alpha: 1 }, duration: 1 })
+            ScenesManager.scenes.test_mode.alpha = 0
+            gsap.to(ScenesManager.scenes.test_mode, { pixi: { alpha: 1 }, duration: 1 })
         }
 
         btn_train_mode.position.set(0, 0)
@@ -228,25 +230,25 @@ export default class EnviromentDetailScene extends Scene {
 }
 
 class SlimeButton extends Container {
-    constructor(text, color = 'green') {
+    constructor (text, color = 'green') {
         super()
-        let image = {
+        const image = {
             green: {
                 background: ResourcesManager.slime_green,
-                tooth: ResourcesManager.slime_tooth_green,
+                tooth: ResourcesManager.slime_tooth_green
             },
             red: {
                 background: ResourcesManager.slime_red,
-                tooth: ResourcesManager.slime_tooth_red,
+                tooth: ResourcesManager.slime_tooth_red
             },
             blue: {
                 background: ResourcesManager.slime_blue,
-                tooth: ResourcesManager.slime_tooth_blue,
-            },
+                tooth: ResourcesManager.slime_tooth_blue
+            }
         }
         this.background = new Sprite()
         this.background.texture = resources[image[color].background].texture
-        let style = {}
+        const style = {}
         Object.assign(style, style18)
         this.text = new Text(text, style)
         this.tooth = new Sprite()
@@ -263,12 +265,12 @@ class SlimeButton extends Container {
         this.interactive = true
         this.buttonMode = true
         this.mouseover = () => {
-            let tl = gsap.timeline({ duration: 0.2 })
+            const tl = gsap.timeline({ duration: 0.2 })
             tl.to(this.text, { pixi: { positionY: 319 }, duration: 0.4 })
             tl.to(this.tooth, { pixi: { alpha: 1 }, duration: 0.2 })
         }
         this.mouseout = () => {
-            let tl = gsap.timeline({ duration: 0.2 })
+            const tl = gsap.timeline({ duration: 0.2 })
             tl.to(this.text, { pixi: { positionY: 330 }, duration: 0.4 })
             tl.to(this.tooth, { pixi: { alpha: 0 }, duration: 0.2 })
         }

@@ -1081,7 +1081,7 @@ export default {
                     ',' +
                     Math.round(this.select_object.position.y)
                 this.objects[i].degree = this.select_object.degree
-                this.objects[i].sound_src = this.select_object.audio.id
+                if (this.select_object.audio != null) { this.objects[i].sound_src = this.select_object.audio.id }
                 this.objects[i].scale = this.select_object.scale
             },
             deep: true
@@ -1516,6 +1516,9 @@ export default {
                     }
                 })
             })
+        },
+        preview () {
+
         }
     }
 }

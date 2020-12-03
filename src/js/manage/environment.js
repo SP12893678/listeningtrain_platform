@@ -2,15 +2,15 @@ import * as PIXI from 'pixi.js'
 import { OutlineFilter } from 'pixi-filters'
 import { Text } from 'pixi.js/lib/core'
 
-let Application = PIXI.Application,
-    Container = PIXI.Container,
-    loader = PIXI.loader,
-    resources = PIXI.loader.resources,
-    TextureCache = PIXI.utils.TextureCache,
-    Sprite = PIXI.Sprite
+const Application = PIXI.Application
+const Container = PIXI.Container
+const loader = PIXI.loader
+const resources = PIXI.loader.resources
+const TextureCache = PIXI.utils.TextureCache
+const Sprite = PIXI.Sprite
 
 export class Environment {
-    constructor(app, enviro_data, object_data) {
+    constructor (app, enviro_data, object_data) {
         this.app = app
         this.enviro_data = enviro_data
         this.object_data = object_data
@@ -19,55 +19,55 @@ export class Environment {
         this.setup()
     }
 
-    setup() {
+    setup () {
         this.drawText()
         this.creat_Background()
         this.creat_Objects()
     }
 
-    drawText() {
-        let text = new Text('請使用右側編輯區功能匯入情境背景與物件')
+    drawText () {
+        const text = new Text('請使用右側編輯區功能匯入情境背景與物件')
         const style = new PIXI.TextStyle({
             fontFamily: 'jf-openhuninn',
             fontSize: 36,
-            fill: '#ffffff',
+            fill: '#ffffff'
         })
         text.style = style
         text.position.set((1000 - text.width) / 2, (625 - text.height) / 2)
         this.enviro_container.addChild(text)
     }
 
-    creat_Background() {
+    creat_Background () {
         // 新增情境背景並設定大小
         this.enviro_bg = new Sprite()
         if (this.enviro_data.background_src != undefined) {
-            let texture = resources[this.enviro_data.background_src].texture
+            const texture = resources[this.enviro_data.background_src].texture
             this.enviro_bg.texture = texture
         }
-        var scale = this.app.screen.width / this.enviro_bg.width
+        const scale = this.app.screen.width / this.enviro_bg.width
         this.enviro_bg.scale.set(scale, scale)
         this.enviro_container.addChild(this.enviro_bg)
     }
 
-    creat_Objects() {
+    creat_Objects () {
         this.object_data.forEach((object_item) => {
-            var object_texture = resources[object_item.pic_src].texture
-            var object = this.creat_Object(object_item, object_texture)
+            const object_texture = resources[object_item.pic_src].texture
+            const object = this.creat_Object(object_item, object_texture)
             this.enviro_container.addChild(object)
             object_item.sprite = object
         })
     }
 
-    creat_Object(object_item, texture) {
-        var object = new Sprite(texture)
-        var scale = object_item.size / object.width
-        object.scale.set(scale, scale)
+    creat_Object (object_item, texture) {
+        const object = new Sprite(texture)
+        const scale = object_item.size / object.width
+        object.scale.set(object_item.scale)
         // object.pivot.set(object.width / 2, object.height / 2);
         // console.log(object.pivot)
-        var position_arr = object_item.coordinate.split(',')
+        const position_arr = object_item.coordinate.split(',')
         object.position.set(position_arr[0], position_arr[1])
 
-        object.filters = [new OutlineFilter(3, 0xf0aaee)] //邊框
+        object.filters = [new OutlineFilter(3, 0xf0aaee)] // 邊框
 
         object.interactive = true // 設定可以互動
         object.buttonMode = true // 當滑鼠滑過時顯示為手指圖示
@@ -80,27 +80,26 @@ export class Environment {
         return object
         // this.enviro_container.addChild(object);
         // object_item.sprite = object;
-        console.log(666)
     }
 
-    getBackground() {
+    getBackground () {
         return this.enviro_bg
     }
 
-    getEnvironment() {
+    getEnvironment () {
         return this.enviro_container
     }
 }
 
 export class Editor extends Environment {
-    constructor(editor, app, enviro_data, object_data) {
+    constructor (editor, app, enviro_data, object_data) {
         super(app, enviro_data, object_data)
         this.editor = editor
         this.control()
     }
 
-    control() {
-        var app = this
+    control () {
+        const app = this
         if (this.object_data.length <= 0) return
         this.object_data.forEach((object_item) => {
             object_item.sprite.click = function () {
@@ -110,8 +109,8 @@ export class Editor extends Environment {
         })
     }
 
-    object_click(object_item) {
-        var app = this
+    object_click (object_item) {
+        const app = this
         app.object_data.forEach((object_item) => {
             object_item.sprite.filters = [new OutlineFilter(3, 0xf0aaee)]
             object_item.sprite.mouseover = function () {
@@ -127,6 +126,7 @@ export class Editor extends Environment {
         // console.log(object_item)
         app.editor.sprite = object_item.sprite
         app.editor.select_object.id = object_item.id
+
         app.editor.select_object.name = object_item.name
         if (object_item.audio != null) app.editor.audio_type = object_item.audio.category[0]
         else app.editor.audio_type = null
@@ -139,7 +139,7 @@ export class Editor extends Environment {
         app.editor.model = app.editor.objects.indexOf(object_item)
     }
 
-    object_drag(object_item) {
+    object_drag (object_item) {
         object_item.sprite
             .on('mousedown', this.onDragStart)
             .on('mouseup', this.onDragEnd)
@@ -147,7 +147,7 @@ export class Editor extends Environment {
             .on('mousemove', this.onDragMove)
     }
 
-    onDragStart(event) {
+    onDragStart (event) {
         this.data = event.data
         this.alpha = 0.7
         this.dragging = true
@@ -156,15 +156,15 @@ export class Editor extends Environment {
         this.offset_y = this.data.getLocalPosition(this.parent).y - this.position._y
     }
 
-    onDragEnd() {
+    onDragEnd () {
         this.alpha = 1
         this.dragging = false
         this.data = null
     }
 
-    onDragMove() {
+    onDragMove () {
         if (this.dragging) {
-            var newPosition = this.data.getLocalPosition(this.parent)
+            const newPosition = this.data.getLocalPosition(this.parent)
             this.position.x = newPosition.x - this.offset_x
             this.position.y = newPosition.y - this.offset_y
         }

@@ -142,12 +142,12 @@
             <v-list-item-content>
               <v-list-item-title>
                 {{
-                  user.name
+                  $store.state.user.name
                 }}
               </v-list-item-title>
               <v-list-item-subtitle>
                 {{
-                  user.identity
+                  $store.state.user.identity
                 }}
               </v-list-item-subtitle>
             </v-list-item-content>
@@ -242,7 +242,6 @@
 </template>
 
 <script>
-import { apiManageLogin } from '@/js/api'
 import vDescriptionManual from './Description-manual.vue'
 import vDialogBox from './utils/DialogBox.vue'
 
@@ -291,19 +290,12 @@ export default {
             'color:red;font-family:system-ui;font-size:4rem;-webkit-text-stroke: 1px black;font-weight:bold',
             'font-family:system-ui;font-size:16px;-webkit-text-stroke: 1px black;font-weight:bold'
         )
-        apiManageLogin({ type: 'checklogin' })
-            .then((res) => {
-                const { name, identity } = res.data.user
-                this.user.name = name
-                this.user.identity = identity
-            })
-            .catch((error) => {
-                console.error(error)
-            })
+
         /** Todo
          * requset personal data and update name and identity
          * else router push to Website Index
          */
+        this.$store.dispatch('getUserData')
     },
     methods: {
         test () {

@@ -213,10 +213,10 @@ export default class TrainModeScene extends Scene {
         this.addChild(trdescription)
         this.addChild(video)
 
-        const sprite = environment.objects[0]
-        const sprite2 = this.objectList.objects[1]
+        // const sprite = environment.objects[0]
+        // const sprite2 = this.objectList.objects[1]
 
-        console.log(resources[sprite.data.audio.sound_src].sound)
+        // console.log(resources[sprite.data.audio.sound_src].sound)
 
         // const step1 = {
         //     area: () => {

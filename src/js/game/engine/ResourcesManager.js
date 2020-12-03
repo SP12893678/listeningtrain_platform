@@ -70,6 +70,7 @@ import bao from '@/assets/images/bao.png'
 // import ptvideo from '@/assets/video/practicemode.mp4'
 // import practicevideo from '@/assets/video/practicemode.mp4'
 import arrow from '@/assets/images/arrow.png'
+import opening1 from '@/assets/audio/opening1.mp3'
 
 const resources = {
     create_role_bg: create_role_bg,
@@ -134,7 +135,8 @@ const resources = {
     money_bag: money_bag,
     bao: bao,
     // torch: torch,
-    arrow: arrow
+    arrow: arrow,
+    opening1: opening1
     // ptvideo: ptvideo,
 }
 

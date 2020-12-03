@@ -21,18 +21,18 @@ import { PixiPlugin } from 'gsap/PixiPlugin'
 gsap.registerPlugin(PixiPlugin)
 PixiPlugin.registerPIXI(PIXI)
 
-let Application = PIXI.Application,
-    Container = PIXI.Container,
-    loader = PIXI.loader,
-    resources = PIXI.loader.resources,
-    TextureCache = PIXI.utils.TextureCache,
-    Sprite = PIXI.Sprite
+const Application = PIXI.Application
+const Container = PIXI.Container
+const loader = PIXI.loader
+const resources = PIXI.loader.resources
+const TextureCache = PIXI.utils.TextureCache
+const Sprite = PIXI.Sprite
 
 export default class GameMainScene extends Scene {
-    constructor() {
+    constructor () {
         super()
         this.background = new Sprite()
-        this.container = new Container() //for bubble
+        this.container = new Container() // for bubble
         this.character = new character(this.account)
         this.profile = new profile(this.account)
         this.set = new set()
@@ -61,18 +61,19 @@ export default class GameMainScene extends Scene {
 
         this.init()
     }
-    async init() {
+
+    async init () {
         await this.setCharacter()
         this.setBao()
         this.setProfile()
         this.setSet()
         this.addChild(this.missionBoard)
         this.missionBoard.visible = false
-
     }
-    setBackground() {
-        let background = new Sprite(resources[ResourcesManager.game_main_bg].texture)
-        let scale = Config.screen.width / background.width
+
+    setBackground () {
+        const background = new Sprite(resources[ResourcesManager.game_main_bg].texture)
+        const scale = Config.screen.width / background.width
         background.scale.set(scale, scale)
 
         // let background = new PIXI.Graphics()
@@ -81,19 +82,20 @@ export default class GameMainScene extends Scene {
         // background.endFill()
         this.addChild(background)
     }
+
     /* 背景泡泡 */
-    doParticles() {
+    doParticles () {
         this.addChild(this.container)
         emitter2.pos.x = 0
         emitter2.pos.y = 0
-        var emitter = new particles.Emitter(this.container, [PIXI.Texture.fromImage(ResourcesManager.bubble)], emitter2)
+        const emitter = new particles.Emitter(this.container, [PIXI.Texture.fromImage(ResourcesManager.bubble)], emitter2)
         // Calculate the current time
-        var elapsed = Date.now()
+        let elapsed = Date.now()
         // Update function every frame
         var update = function () {
             // Update the next frame
             requestAnimationFrame(update)
-            var now = Date.now()
+            const now = Date.now()
             // The emitter requires the elapsed
             // number of seconds since the last update
             emitter.update((now - elapsed) * 0.001)
@@ -102,37 +104,41 @@ export default class GameMainScene extends Scene {
         emitter.emit = true
         update()
     }
-    setButtonsBg() {
-        let btnsBg = new PIXI.Graphics()
+
+    setButtonsBg () {
+        const btnsBg = new PIXI.Graphics()
         btnsBg.beginFill(0xff96d7, 0.18)
         btnsBg.drawRoundedRect(800, 270, 500, 400, 50)
         btnsBg.endFill()
         this.addChild(btnsBg)
     }
-    setButton() {
-        let button = this.button
+
+    setButton () {
+        const button = this.button
         button.setBorder(0)
         button.setBackgroundColor(0x8b8dff, 0.8)
-        let style = style7.clone()
+        const style = style7.clone()
         style.fontSize = 36
         button.setText(style)
         button.position.set(850, 320)
         button.click = async () => {
-            if (!ScenesManager.scenes['enviro_select']) ScenesManager.createScene('enviro_select', new EnviromentSelectScene())
-            await ScenesManager.scenes['enviro_select'].init()
+            Events.emit('loading')
+            if (!ScenesManager.scenes.enviro_select) ScenesManager.createScene('enviro_select', new EnviromentSelectScene())
+            await ScenesManager.scenes.enviro_select.init()
             ScenesManager.goToScene('enviro_select')
-            ScenesManager.scenes['enviro_select'].alpha = 0
-            gsap.to(ScenesManager.scenes['enviro_select'], {
+            ScenesManager.scenes.enviro_select.alpha = 0
+            gsap.to(ScenesManager.scenes.enviro_select, {
                 pixi: {
-                    alpha: 1,
+                    alpha: 1
                 },
-                duration: 1,
+                duration: 1
             })
         }
         this.addChild(button)
     }
-    setProfileButton() {
-        let btn_profile = this.btn_profile
+
+    setProfileButton () {
+        const btn_profile = this.btn_profile
         btn_profile.setBorder(0)
         btn_profile.setBackgroundColor(0xff968d)
         btn_profile.setText(style7)
@@ -140,8 +146,9 @@ export default class GameMainScene extends Scene {
         btn_profile.click = async () => (await this.profile.show())
         this.addChild(btn_profile)
     }
-    setBackPackButton() {
-        let btn_backpack = this.btn_backpack
+
+    setBackPackButton () {
+        const btn_backpack = this.btn_backpack
         btn_backpack.setBorder(0)
         btn_backpack.setBackgroundColor(0xff968d)
         btn_backpack.setText(style7)
@@ -150,8 +157,8 @@ export default class GameMainScene extends Scene {
         this.addChild(btn_backpack)
     }
 
-    setSetButton() {
-        let btn_set = this.btn_set
+    setSetButton () {
+        const btn_set = this.btn_set
         btn_set.setBorder(0)
         btn_set.setBackgroundColor(0xff968d)
         btn_set.setText(style7)
@@ -160,8 +167,8 @@ export default class GameMainScene extends Scene {
         this.addChild(btn_set)
     }
 
-    setMissionButton() {
-        let btn_mission = this.btn_mission
+    setMissionButton () {
+        const btn_mission = this.btn_mission
         btn_mission.setBorder(0)
         btn_mission.setBackgroundColor(0xff968d)
         btn_mission.setText(style7)
@@ -170,8 +177,8 @@ export default class GameMainScene extends Scene {
         this.addChild(btn_mission)
     }
 
-    setShopButton() {
-        let btn_shop = this.btn_shop
+    setShopButton () {
+        const btn_shop = this.btn_shop
         btn_shop.setBorder(0)
         btn_shop.setBackgroundColor(0xff968d)
         btn_shop.setText(style7)
@@ -179,8 +186,8 @@ export default class GameMainScene extends Scene {
         this.addChild(btn_shop)
     }
 
-    setAchievementButton() {
-        let btn_achievement = this.btn_achievement
+    setAchievementButton () {
+        const btn_achievement = this.btn_achievement
         btn_achievement.setBorder(0)
         btn_achievement.setBackgroundColor(0xff968d)
         btn_achievement.setText(style7)
@@ -188,8 +195,8 @@ export default class GameMainScene extends Scene {
         this.addChild(btn_achievement)
     }
 
-    setGetButton() {
-        let temp = this.test
+    setGetButton () {
+        const temp = this.test
         temp.interactive = true
         temp.buttonMode = true
         temp.texture = resources[ResourcesManager.gift].texture
@@ -202,10 +209,10 @@ export default class GameMainScene extends Scene {
         temp.position.set(1500, 100)
         temp.click = () => {
             temp.texture = resources[ResourcesManager.gift_open].texture
-            let category = 'clothes'
-            let no = this.character.gender == 'gg' ? 5 : 6
+            const category = 'clothes'
+            const no = this.character.gender == 'gg' ? 5 : 6
             if (this.dialog == null) {
-                let dialog = new Dialog('恭喜你獲得', 2)
+                const dialog = new Dialog('恭喜你獲得', 2)
                 dialog.setSize(400, 300)
                 dialog.text.position.set(dialog.text.x, dialog.text.y - 60)
                 dialog.yesBtn.position.set(dialog.yesBtn.x, dialog.yesBtn.y + 30)
@@ -216,15 +223,15 @@ export default class GameMainScene extends Scene {
                 /* yesBtn action */
                 this.dialog.yesBtn.click = () => {
                     temp.texture = resources[ResourcesManager.gift].texture
-                    let check = this.character.clothing.addWardrobeClothes(category, no)
+                    const check = this.character.clothing.addWardrobeClothes(category, no)
                     this.dialog.visible = false
                     check.then((success) => {
                         Events.emit('warning', { no: success })
                     })
                 }
-                //獲得服飾顯示（for test）
-                let clothing = this.character.clothing
-                let getItem = clothing.showClothes(category, no, this.dialog.dialog.x + 140, this.dialog.dialog.y + 90)
+                // 獲得服飾顯示（for test）
+                const clothing = this.character.clothing
+                const getItem = clothing.showClothes(category, no, this.dialog.dialog.x + 140, this.dialog.dialog.y + 90)
                 this.dialog.addChild(getItem)
             } else {
                 this.dialog.visible = true
@@ -232,21 +239,22 @@ export default class GameMainScene extends Scene {
         }
         this.addChild(temp)
 
-        let style = style7.clone()
+        const style = style7.clone()
         style.fill = 0x000000
-        let text = new PIXI.Text('新手禮包', style)
+        const text = new PIXI.Text('新手禮包', style)
         text.anchor.set(0.5)
         text.position.set(1500, 115)
         this.addChild(text)
     }
+
     /* 建立角色 */
-    async setCharacter() {
+    async setCharacter () {
         /* Character */
-        let character = this.character
+        const character = this.character
         await character.check_if_has_data()
-        let factory = character.factory
-        let armatureDisplay = character.armatureDisplay
-        let t = this
+        const factory = character.factory
+        const armatureDisplay = character.armatureDisplay
+        const t = this
         armatureDisplay.position.set(500, 500)
         armatureDisplay.scale.set(0.4)
         this.addChild(armatureDisplay)
@@ -257,36 +265,39 @@ export default class GameMainScene extends Scene {
             // armatureDisplay.animation.fadeIn('shakeHand',0,1,1)
             // armatureDisplay.animation.fadeIn('fighting',0,1,2)
             if (!armatureDisplay.animation.isPlaying) {
-                let handAnimation = armatureDisplay.animation.fadeIn('shakeHand', 0, 1, 1, 'hand')
-                let emojiAnimation = armatureDisplay.animation.fadeIn('emoji_hello', 0, 1, 0, 'emoji')
-                emojiAnimation.addBoneMask('emoji') //只顯示表情這部分
+                const handAnimation = armatureDisplay.animation.fadeIn('shakeHand', 0, 1, 1, 'hand')
+                const emojiAnimation = armatureDisplay.animation.fadeIn('emoji_hello', 0, 1, 0, 'emoji')
+                emojiAnimation.addBoneMask('emoji') // 只顯示表情這部分
             }
         }
         armatureDisplay.mouseout = function (mouseData) { }
         armatureDisplay.click = function () {
             t.profile.dialog.visible = !t.profile.dialog.visible
         }
-        //this.armatureDisplay.animation.play('shakeHand',1);
+        // this.armatureDisplay.animation.play('shakeHand',1);
     }
-    setProfile() {
-        let profile = this.profile
+
+    setProfile () {
+        const profile = this.profile
         this.addChild(profile)
     }
-    setSet() {
-        let set = this.set
+
+    setSet () {
+        const set = this.set
         this.addChild(set)
     }
-    setBao() {
-        let bao = this.bao
+
+    setBao () {
+        const bao = this.bao
         bao.texture = resources[ResourcesManager.bao].texture
-        bao.interactive = true;
-        bao.buttonMode = true;
-        let scale = 300 / bao.width;
+        bao.interactive = true
+        bao.buttonMode = true
+        const scale = 300 / bao.width
         bao.anchor.set(0, 1)
         bao.scale.set(scale)
         bao.position.set(350, 650)
 
-        let tl = gsap.timeline({ duration: 0.2, repeat: -1, repeatDelay: 0 })
+        const tl = gsap.timeline({ duration: 0.2, repeat: -1, repeatDelay: 0 })
         tl.to(bao, { pixi: { scaleY: scale / 2 }, duration: 0.5, ease: 'Power2.easeOut' })
         tl.to(bao, { pixi: { scaleY: scale * 1.1, positionY: 350 }, duration: 0.8, ease: 'Power2.easeOut' })
         tl.to(bao, { pixi: { scaleY: scale, positionY: 650 }, duration: 0.8, ease: 'Power2.easeIn' })
@@ -307,8 +318,9 @@ export default class GameMainScene extends Scene {
             }
         })
     }
-    /*---------*/
-    update() {
+
+    /* --------- */
+    update () {
         super.update()
     }
 }

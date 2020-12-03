@@ -2,7 +2,7 @@
  session_start();
     require_once './connect.php';
     $type = $_GET['type'];
-    if(isset($_SESSION['account']) && !isset($_SESSION['demoGame']))
+    if(isset($_SESSION['account']))
     switch ($type) {
         case 'get':
             $data = [];
@@ -16,6 +16,7 @@
             echo json_encode(mysqli_fetch_array($result), JSON_UNESCAPED_UNICODE);
             break;
         case 'update':
+            if(isset($_SESSION['demoGame'])) return;
             $data = [];
             $mode = $_GET['mode'];
             switch ($mode) {

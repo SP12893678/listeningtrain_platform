@@ -3,7 +3,7 @@
     src: url('./assets/font/jf-openhuninn-1.0.woff');
 }
 * {
-    font-family: 'jf-openhuninn';
+    font-family: 'jf-openhuninn' !important;
 }
 
 .border {

@@ -17,14 +17,13 @@ import { gsap } from 'gsap'
 import { PixiPlugin } from 'gsap/PixiPlugin'
 import ScoreCaculate from '@/js/game/exam/ScoreCaculate'
 
-
 gsap.registerPlugin(PixiPlugin)
 PixiPlugin.registerPIXI(PIXI)
 
-let resources = PIXI.loader.resources
+const resources = PIXI.loader.resources
 
 export default class EnviromentSelectScene extends Scene {
-    constructor() {
+    constructor () {
         super()
         this.environments = []
         this.current_environments = []
@@ -37,13 +36,13 @@ export default class EnviromentSelectScene extends Scene {
         this.setgoBackArea()
     }
 
-    async init() {
+    async init () {
         await apiManageEnviroment({ type: 'get', amount: 'all' }).then((res) => {
             this.environments = res.data
             this.environments.forEach((environment) => (environment.category = environment.category.split(';')))
         })
 
-        let scroeSystem = new ScoreCaculate()
+        const scroeSystem = new ScoreCaculate()
         await scroeSystem.getExamData()
 
         this.environments.forEach(enviro => {
@@ -51,28 +50,28 @@ export default class EnviromentSelectScene extends Scene {
         })
     }
 
-    /**設定背景 */
-    setBackground() {
-        let background = this.background
+    /** 設定背景 */
+    setBackground () {
+        const background = this.background
         background.beginFill(0xffffff, 1)
         background.drawRect(0, 0, Config.screen.width, Config.screen.height)
         background.endFill()
         this.addChild(background)
     }
 
-    /**設定返回按鈕 */
-    setgoBackArea() {
-        let goBackArea = this.goBackArea
-        let background = new Sprite()
+    /** 設定返回按鈕 */
+    setgoBackArea () {
+        const goBackArea = this.goBackArea
+        const background = new Sprite()
         background.texture = resources[ResourcesManager.fluid_shape002].texture
 
-        let icon = new Sprite()
+        const icon = new Sprite()
         icon.texture = resources[ResourcesManager.undo001].texture
-        let scale = 56 / icon.width
+        const scale = 56 / icon.width
         icon.scale.set(scale, scale)
         icon.position.set(152, 140)
 
-        let text = new Text('返回', style6)
+        const text = new Text('返回', style6)
         text.position.set(152, 197)
 
         goBackArea.addChild(background)
@@ -88,17 +87,17 @@ export default class EnviromentSelectScene extends Scene {
         this.addChild(goBackArea)
     }
 
-    async setCategoryList() {
-        let environments = this.environments
+    async setCategoryList () {
+        const environments = this.environments
         let current_environments = this.current_environments
-        let environmentlist = this.environmentlist
+        const environmentlist = this.environmentlist
 
         await apiManageEnviroment({ type: 'get', amount: 'all' }).then((res) => {
             this.environments = res.data
             this.environments.forEach((environment) => (environment.category = environment.category.split(';')))
         })
 
-        let listboard = new ListBoard()
+        const listboard = new ListBoard()
         listboard.getListItems().forEach((item) => {
             item.click = () => {
                 listboard.getListItems().forEach((i) => i.drawBackground(0x29d4ff))
@@ -114,15 +113,15 @@ export default class EnviromentSelectScene extends Scene {
         this.addChild(listboard)
     }
 
-    setEnviromentList() {
-        let listboard = this.environmentlist
+    setEnviromentList () {
+        const listboard = this.environmentlist
         listboard.position.set(240 + 350, 50)
         this.addChild(listboard)
     }
 }
 
 class ListBoard extends Container {
-    constructor() {
+    constructor () {
         super()
         this.background = new Graphics()
         this.title = new Text('情境類別選單')
@@ -139,8 +138,8 @@ class ListBoard extends Container {
         this.addChild(this.scroller)
     }
 
-    setBackground() {
-        let background = new Graphics()
+    setBackground () {
+        const background = new Graphics()
         background.beginFill(0xc8d5ff, 1)
         GraphicsTool.setPaintingContainer(background)
         GraphicsTool.drawRoundedRect(350, 800, 12, 0, 12, 0)
@@ -153,9 +152,9 @@ class ListBoard extends Container {
         this.addChild(background)
     }
 
-    setTitle() {
-        let title = this.title
-        let style = {}
+    setTitle () {
+        const title = this.title
+        const style = {}
         Object.assign(style, style6)
         style.fill = 0x4d53ff
         title.style = style
@@ -164,13 +163,13 @@ class ListBoard extends Container {
         this.addChild(title)
     }
 
-    getListItems() {
+    getListItems () {
         return this.list.items
     }
 }
 
 class List extends Container {
-    constructor() {
+    constructor () {
         super()
         this.environments = []
         this.current_environments = []
@@ -189,13 +188,13 @@ class List extends Container {
         this.addChild(this.content_mask)
     }
 
-    setItems() {
-        let categories = this.categories
-        let content = this.content
-        let items = this.items
+    setItems () {
+        const categories = this.categories
+        const content = this.content
+        const items = this.items
 
         categories.forEach((category, index) => {
-            let item = new RoundedButton(category.text)
+            const item = new RoundedButton(category.text)
             item.type = category.name
             item.position.set((300 - item.width) / 2, index * 100)
             content.addChild(item)
@@ -205,7 +204,7 @@ class List extends Container {
 }
 
 class EnviromentListBoard extends Container {
-    constructor() {
+    constructor () {
         super()
         this.background = new Graphics()
         this.list = new EnviromentList()
@@ -217,8 +216,8 @@ class EnviromentListBoard extends Container {
         this.addChild(this.scroller)
     }
 
-    setBackground() {
-        let background = new Graphics()
+    setBackground () {
+        const background = new Graphics()
         background.beginFill(0x8898ff, 1)
         GraphicsTool.setPaintingContainer(background)
         GraphicsTool.drawRoundedRect(800, 800, 0, 12, 0, 12)
@@ -226,16 +225,15 @@ class EnviromentListBoard extends Container {
         this.addChild(background)
     }
 
-    showCurrentLists(current_environments) {
-        let list = this.list
+    showCurrentLists (current_environments) {
+        const list = this.list
         list.content.removeChild(...list.content.children)
         current_environments.forEach((enviroment) => list.addListitem(enviroment))
-
     }
 }
 
 class EnviromentList extends Container {
-    constructor() {
+    constructor () {
         super()
         this.content = new Container()
         this.content_mask = new Graphics()
@@ -248,11 +246,11 @@ class EnviromentList extends Container {
         this.addChild(this.content_mask)
     }
 
-    addListitem(data) {
-        let content = this.content
-        let content_mask = this.content_mask
+    addListitem (data) {
+        const content = this.content
+        const content_mask = this.content_mask
 
-        let item = new EnviromentListItem(data)
+        const item = new EnviromentListItem(data)
         item.position.set((content.children.length % 2) * 350, Math.floor(content.children.length / 2) * 350)
         item.updateCompleteBox()
         content.addChild(item)
@@ -260,14 +258,14 @@ class EnviromentList extends Container {
 }
 
 class EnviromentListItem extends Container {
-    constructor(data) {
+    constructor (data) {
         super()
         this.data = data
         this.background = new Graphics()
         this.thumbnail_container = new Container()
         this.profile_container = new Container()
 
-        let background = this.background
+        const background = this.background
         background.beginFill(0xffffff, 0.5)
         background.drawRoundedRect(0, 0, 340, 340, 16)
         background.endFill()
@@ -277,18 +275,18 @@ class EnviromentListItem extends Container {
         this.setProfile()
     }
 
-    setThumbnail() {
-        let data = this.data
-        let thumbnail_container = this.thumbnail_container
+    setThumbnail () {
+        const data = this.data
+        const thumbnail_container = this.thumbnail_container
 
-        let thumbnail_mask = new Graphics()
+        const thumbnail_mask = new Graphics()
         thumbnail_mask.beginFill(0x000000, 1)
         thumbnail_mask.drawRoundedRect(0, 0, 320, 200, 16)
         thumbnail_mask.endFill()
 
-        let thumbnail = new Sprite()
+        const thumbnail = new Sprite()
         thumbnail.texture = resources[data.background_src].texture
-        let scale = Math.max(320 / thumbnail.width, 200 / thumbnail.height)
+        const scale = Math.max(320 / thumbnail.width, 200 / thumbnail.height)
         thumbnail.scale.set(scale, scale)
         thumbnail.mask = thumbnail_mask
 
@@ -298,10 +296,10 @@ class EnviromentListItem extends Container {
         this.addChild(thumbnail_container)
     }
 
-    setProfile() {
-        let data = this.data
-        let profile_container = this.profile_container
-        let border = new Graphics()
+    setProfile () {
+        const data = this.data
+        const profile_container = this.profile_container
+        const border = new Graphics()
         border.lineStyle(2, 0xae5eff, 1)
         GraphicsTool.setPaintingContainer(border)
         GraphicsTool.drawRoundedRect(320, 100, 12, 50, 12, 50)
@@ -312,14 +310,14 @@ class EnviromentListItem extends Container {
         border.lineTo(200, 56)
         border.endFill()
 
-        let style = {}
+        const style = {}
         Object.assign(style, style6)
         style.fontSize = 40
         style.fill = 0xbd7dfe
-        let title = new Text(data.name, style)
+        const title = new Text(data.name, style)
         title.position.set(8, 8)
 
-        let btn_go = new Sprite()
+        const btn_go = new Sprite()
         btn_go.texture = resources[ResourcesManager.circle_go001].texture
         btn_go.anchor.set(0.5, 0.5)
         btn_go.position.set(320 - 105 + btn_go.width / 2, btn_go.height / 2 - 5)
@@ -328,25 +326,26 @@ class EnviromentListItem extends Container {
         btn_go.mouseover = () => gsap.to(btn_go, { pixi: { rotation: 360 }, duration: 0.5 })
         btn_go.mouseout = () => gsap.to(btn_go, { pixi: { rotation: -360 }, duration: 0.5 })
         btn_go.click = async () => {
+            Events.emit('loading')
             ScenesManager.createScene('environment_detail', new EnviromentDetailScene())
-            await ScenesManager.scenes['environment_detail'].init(data.id)
+            await ScenesManager.scenes.environment_detail.init(data.id)
             ScenesManager.goToScene('environment_detail')
-            ScenesManager.scenes['environment_detail'].alpha = 0
-            gsap.to(ScenesManager.scenes['environment_detail'], { pixi: { alpha: 1 }, duration: 1 })
+            ScenesManager.scenes.environment_detail.alpha = 0
+            gsap.to(ScenesManager.scenes.environment_detail, { pixi: { alpha: 1 }, duration: 1 })
         }
 
-        let style2 = {}
+        const style2 = {}
         Object.assign(style2, style6)
         style2.fontSize = 24
         style2.fill = 0xbd7dfe
-        let title_complete = new Text('完成度', style2)
+        const title_complete = new Text('完成度', style2)
         title_complete.position.set(8, 65)
 
-        let text_complete = new Text('0%', style4)
+        const text_complete = new Text('0%', style4)
         text_complete.anchor.set(0.5, 0)
         text_complete.position.set(title_complete.position.x + title_complete.width + 10 + 50, 68)
 
-        let box_complete = new Graphics()
+        const box_complete = new Graphics()
         box_complete.lineStyle(2, 0xbd7dfe, 1)
         box_complete.drawRect(0, 0, 100, 20)
         box_complete.endFill()
@@ -370,11 +369,11 @@ class EnviromentListItem extends Container {
         this.profile_container = profile_container
     }
 
-    updateCompleteBox() {
-        let data = this.data
-        let profile_container = this.profile_container
-        let text_complete = this.text_complete
-        let box_complete = this.box_complete
+    updateCompleteBox () {
+        const data = this.data
+        const profile_container = this.profile_container
+        const text_complete = this.text_complete
+        const box_complete = this.box_complete
         box_complete.clear()
         box_complete.lineStyle(2, 0xbd7dfe, 1)
         box_complete.drawRect(0, 0, 100, 20)

@@ -22,7 +22,7 @@ const EventEmitter = require('eventemitter3')
 const events = new EventEmitter()
 
 events.on('goto', (val) => {
-    console.log(val)
+    // Events.emit('loading')
     if (ScenesManager.scenes[val.id]) ScenesManager.goToScene(val.id)
     else {
         switch (val.id) {
@@ -66,6 +66,17 @@ events.on('goto', (val) => {
     if (val.animate == undefined) return
     ScenesManager.scenes[val.id].alpha = 0
     gsap.to(ScenesManager.scenes[val.id], {
+        pixi: {
+            alpha: 1
+        },
+        duration: 1
+    })
+})
+
+events.on('loading', () => {
+    ScenesManager.goToScene('loading')
+    ScenesManager.scenes.loading.alpha = 0
+    gsap.to(ScenesManager.scenes.loading, {
         pixi: {
             alpha: 1
         },
