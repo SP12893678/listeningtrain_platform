@@ -75,7 +75,7 @@ export default class TrainModeScene extends Scene {
         environment.objects.forEach((object) => {
             object.update = () => {
                 const { x, y } = object.position
-                gearlocking.position.set(x - gearlocking.xxx / 2, y - gearlocking.yyy / 2)
+                gearlocking.position.set(x - gearlocking.xxx / 2 + object.width / 2, y - gearlocking.yyy / 2 + object.height / 2)
                 const objectList_object = objectList.objects.filter((o) => o.id == object.data.id)[0]
                 objectList.selectListItem(objectList_object)
             }

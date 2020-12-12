@@ -43,9 +43,11 @@ export default class Environment extends Container {
         object.texture = PIXI.loader.resources[data.pic_src].texture
         // let scale = data.size / object.width
         object.scale.set(data.scale)
-        object.anchor.set(0.5, 0.5)
+        // object.anchor.set(0.5, 0.5)
         const [x, y] = data.coordinate.split(',')
-        object.position.set(x * 1 + object.width / 2, y * 1 + object.height / 2)
+        object.position.set(x * 1, y * 1)
+        console.log(data.angle, data.angle / (180 / Math.PI))
+        object.rotation = data.angle / (180 / Math.PI)
 
         object.filters = [new OutlineFilter(3, 0xf0aaee)]
         this.addChild(object)

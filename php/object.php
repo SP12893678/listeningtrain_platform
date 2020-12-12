@@ -54,7 +54,7 @@
             $name = $item['name'];
             $coordinate = $item['coordinate'];
             $size = $item['size'];
-            $angle = $item['angle'];
+            $angle = $item['degree'];
             $scale = $item['scale'];
 
             if ($id == -1) {
